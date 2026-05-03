@@ -1,0 +1,5 @@
+# macOS
+.DS_Store
+
+# エディタ（任意：チームで Cursor / VS Code を使う場合）
+.cursor/

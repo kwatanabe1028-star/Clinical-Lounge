@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>臨床ツール — 窓口</title>
+  <style>
+    :root {
+      --color-bg:      #E2DFCC;
+      --color-dark:    #455F51;
+      --color-accent1: #99CB38;
+      --color-accent2: #63A537;
+      --color-accent3: #37A76F;
+      --color-accent4: #44C1A3;
+      --color-accent5: #4EB3CF;
+      --color-accent6: #51C3F9;
+      --color-warning: #EE7B08;
+      --color-white:   #FFFFFF;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--color-dark);
+      background: var(--color-bg);
+    }
+    .wrap {
+      max-width: 42rem;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 3rem;
+    }
+    header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid color-mix(in srgb, var(--color-dark) 20%, var(--color-white));
+    }
+    h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .lede {
+      margin: 0;
+      font-size: 0.9rem;
+      color: color-mix(in srgb, var(--color-dark) 70%, var(--color-bg));
+    }
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    a.card {
+      display: block;
+      padding: 1.1rem 1.15rem;
+      background: var(--color-white);
+      border: 1px solid color-mix(in srgb, var(--color-dark) 20%, var(--color-white));
+      border-radius: 10px;
+      box-shadow: 0 1px 3px color-mix(in srgb, var(--color-dark) 10%, transparent);
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    a.card:hover {
+      border-color: var(--color-accent3);
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--color-accent3) 28%, transparent);
+    }
+    a.card:focus-visible {
+      outline: 2px solid var(--color-accent4);
+      outline-offset: 2px;
+    }
+    .card-title {
+      margin: 0 0 0.25rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--color-accent3);
+    }
+    a.card:hover .card-title {
+      color: var(--color-accent2);
+    }
+    .card-desc {
+      margin: 0;
+      font-size: 0.875rem;
+      color: color-mix(in srgb, var(--color-dark) 70%, var(--color-bg));
+    }
+    footer {
+      margin-top: 2.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid color-mix(in srgb, var(--color-dark) 20%, var(--color-white));
+      font-size: 0.8rem;
+      color: color-mix(in srgb, var(--color-dark) 70%, var(--color-bg));
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>臨床ツール窓口</h1>
+      <p class="lede">利用するツールを選んでください。新しい HTML を追加したら、このページにリンクを足してください。</p>
+    </header>
+    <main>
+      <ul>
+        <li>
+          <a class="card" href="../ベンゾジアゼピン系薬剤の換算/benzo_calculator.html">
+            <p class="card-title">ベンゾジアゼピン系薬剤の換算</p>
+            <p class="card-desc">ベンゾジアゼピン換算計算（benzo_calculator）</p>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="../高齢者うつチェックリスト/高齢者うつ病評価統合シート.html">
+            <p class="card-title">高齢者うつ病評価統合シート</p>
+            <p class="card-desc">チェックリスト・評価の統合シート</p>
+          </a>
+        </li>
+      </ul>
+    </main>
+    <footer>
+      場所: <code>06_product/portal/index.html</code> — ブックマーク用の入口として使えます。
+    </footer>
+  </div>
+</body>
+</html>
