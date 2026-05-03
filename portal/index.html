@@ -34,20 +34,86 @@
       margin: 0 auto;
       padding: 2rem 1.25rem 3rem;
     }
-    header {
-      margin-bottom: 2rem;
-      padding-bottom: 1.25rem;
-      border-bottom: 1px solid color-mix(in srgb, var(--color-dark) 20%, var(--color-white));
+    header.site-header {
+      margin-bottom: 2.25rem;
+      border-radius: 12px;
+      background: var(--color-white);
+      border: 1px solid color-mix(in srgb, var(--color-dark) 10%, var(--color-white));
+      box-shadow:
+        0 1px 2px color-mix(in srgb, var(--color-dark) 5%, transparent),
+        0 12px 32px color-mix(in srgb, var(--color-accent4) 14%, transparent);
+      overflow: hidden;
     }
-    h1 {
-      margin: 0 0 0.35rem;
-      font-size: 1.5rem;
+    .site-header__ribbon {
+      height: 4px;
+      width: 100%;
+      background: linear-gradient(
+        90deg,
+        var(--color-accent2) 0%,
+        var(--color-accent4) 42%,
+        var(--color-accent6) 100%
+      );
+    }
+    .site-header__body {
+      position: relative;
+      padding: 1.4rem 1.35rem 1.35rem;
+    }
+    .site-header__body::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto auto;
+      width: min(52%, 14rem);
+      height: 5.5rem;
+      pointer-events: none;
+      background: radial-gradient(
+        ellipse 100% 100% at 100% 0%,
+        color-mix(in srgb, var(--color-accent5) 14%, transparent) 0%,
+        transparent 72%
+      );
+    }
+    .site-header__eyebrow {
+      position: relative;
+      margin: 0 0 0.45rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      color: color-mix(in srgb, var(--color-accent5) 70%, var(--color-dark));
+    }
+    .site-header__headline {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 0.5rem 0.85rem;
+      margin: 0 0 0.75rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid color-mix(in srgb, var(--color-dark) 12%, var(--color-white));
+    }
+    h1.site-header__title {
+      margin: 0;
+      font-size: clamp(1.5rem, 4.2vw, 1.95rem);
       font-weight: 700;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.03em;
+      line-height: 1.2;
+      color: var(--color-dark);
+    }
+    .site-header__pill {
+      display: inline-block;
+      margin-bottom: 0.12em;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 0.35em 0.65em 0.38em;
+      border-radius: 999px;
+      color: color-mix(in srgb, var(--color-dark) 92%, var(--color-white));
+      background: color-mix(in srgb, var(--color-accent4) 16%, var(--color-white));
+      border: 1px solid color-mix(in srgb, var(--color-accent3) 28%, var(--color-white));
     }
     .lede {
+      position: relative;
       margin: 0;
       font-size: 0.9rem;
+      line-height: 1.65;
       color: color-mix(in srgb, var(--color-dark) 70%, var(--color-bg));
     }
     .desk {
@@ -138,9 +204,16 @@
 </head>
 <body>
   <div class="wrap">
-    <header>
-      <h1>クリニカルラウンジ</h1>
-      <p class="lede">役割・分野ごとの<strong>クリニカルデスク</strong>からツールを選びます。新しい HTML を追加したら、該当デスクのリストにリンクを足してください。</p>
+    <header class="site-header">
+      <div class="site-header__ribbon" aria-hidden="true"></div>
+      <div class="site-header__body">
+        <p class="site-header__eyebrow">臨床補助ツールの入口</p>
+        <div class="site-header__headline">
+          <h1 class="site-header__title">クリニカルラウンジ</h1>
+          <span class="site-header__pill">ツール窓口</span>
+        </div>
+        <p class="lede">役割・分野ごとの<strong>クリニカルデスク</strong>からツールを選びます。</p>
+      </div>
     </header>
     <main>
       <section class="desk" aria-labelledby="desk-pharma">
