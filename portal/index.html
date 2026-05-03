@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>臨床ツール — 窓口</title>
+  <title>クリニカルラウンジ</title>
   <style>
     :root {
       --color-bg:      #E2DFCC;
@@ -30,7 +30,7 @@
       background: var(--color-bg);
     }
     .wrap {
-      max-width: 42rem;
+      max-width: 48rem;
       margin: 0 auto;
       padding: 2rem 1.25rem 3rem;
     }
@@ -49,6 +49,42 @@
       margin: 0;
       font-size: 0.9rem;
       color: color-mix(in srgb, var(--color-dark) 70%, var(--color-bg));
+    }
+    .desk {
+      margin-bottom: 2rem;
+    }
+    .desk:last-of-type {
+      margin-bottom: 0;
+    }
+    .desk-title {
+      margin: 0 0 0.5rem;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--color-dark);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.35rem 0.6rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid color-mix(in srgb, var(--color-accent4) 55%, var(--color-white));
+    }
+    .desk-title .role {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: color-mix(in srgb, var(--color-dark) 65%, var(--color-bg));
+    }
+    .desk-title .name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--color-accent3);
+    }
+    .desk-lede {
+      margin: 0 0 0.85rem;
+      font-size: 0.82rem;
+      color: color-mix(in srgb, var(--color-dark) 72%, var(--color-bg));
+      line-height: 1.5;
     }
     ul {
       list-style: none;
@@ -103,27 +139,43 @@
 <body>
   <div class="wrap">
     <header>
-      <h1>臨床ツール窓口</h1>
-      <p class="lede">利用するツールを選んでください。新しい HTML を追加したら、このページにリンクを足してください。</p>
+      <h1>クリニカルラウンジ</h1>
+      <p class="lede">役割・分野ごとの<strong>クリニカルデスク</strong>からツールを選びます。新しい HTML を追加したら、該当デスクのリストにリンクを足してください。</p>
     </header>
     <main>
-      <ul>
-        <li>
-          <a class="card" href="../ベンゾジアゼピン系薬剤の換算/benzo_calculator.html">
-            <p class="card-title">ベンゾジアゼピン系薬剤の換算</p>
-            <p class="card-desc">ベンゾジアゼピン換算計算（benzo_calculator）</p>
-          </a>
-        </li>
-        <li>
-          <a class="card" href="../高齢者うつチェックリスト/高齢者うつ病評価統合シート.html">
-            <p class="card-title">高齢者うつ病評価統合シート</p>
-            <p class="card-desc">チェックリスト・評価の統合シート</p>
-          </a>
-        </li>
-      </ul>
+      <section class="desk" aria-labelledby="desk-pharma">
+        <h2 id="desk-pharma" class="desk-title">
+          <span class="role">クリニカルデスク</span>
+          <span class="name">薬物療法・処方支援</span>
+        </h2>
+        <p class="desk-lede">換算・用量の確認など、薬学的な補助ツール。</p>
+        <ul>
+          <li>
+            <a class="card" href="../ベンゾジアゼピン系薬剤の換算/benzo_calculator.html">
+              <p class="card-title">ベンゾジアゼピン系薬剤の換算</p>
+              <p class="card-desc">ベンゾジアゼピン換算計算（benzo_calculator）</p>
+            </a>
+          </li>
+        </ul>
+      </section>
+      <section class="desk" aria-labelledby="desk-psy-gero">
+        <h2 id="desk-psy-gero" class="desk-title">
+          <span class="role">クリニカルデスク</span>
+          <span class="name">精神・老年医療（評価）</span>
+        </h2>
+        <p class="desk-lede">スクリーニングや重症度の整理に使う評価系ツール。</p>
+        <ul>
+          <li>
+            <a class="card" href="../高齢者うつチェックリスト/高齢者うつ病評価統合シート.html">
+              <p class="card-title">高齢者うつ病評価統合シート</p>
+              <p class="card-desc">チェックリスト・評価の統合シート</p>
+            </a>
+          </li>
+        </ul>
+      </section>
     </main>
     <footer>
-      場所: <code>06_product/portal/index.html</code> — ブックマーク用の入口として使えます。
+      場所: <code>06_product/portal/index.html</code> — クリニカルラウンジの入口としてブックマークできます。
     </footer>
   </div>
 </body>
