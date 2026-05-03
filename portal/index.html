@@ -34,20 +34,91 @@
       margin: 0 auto;
       padding: 2rem 1.25rem 3rem;
     }
-    header {
-      margin-bottom: 2rem;
-      padding-bottom: 1.25rem;
-      border-bottom: 1px solid color-mix(in srgb, var(--color-dark) 20%, var(--color-white));
+    header.site-header {
+      position: relative;
+      margin-bottom: 2.25rem;
+      padding: 0;
+      border: none;
+      border-radius: 12px;
+      background: var(--color-white);
+      box-shadow:
+        0 1px 2px color-mix(in srgb, var(--color-dark) 6%, transparent),
+        0 8px 24px color-mix(in srgb, var(--color-accent3) 12%, transparent),
+        0 0 0 1px color-mix(in srgb, var(--color-dark) 8%, var(--color-white));
+      overflow: hidden;
     }
-    h1 {
-      margin: 0 0 0.35rem;
-      font-size: 1.5rem;
+    header.site-header::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      background: linear-gradient(
+        180deg,
+        var(--color-accent2) 0%,
+        var(--color-accent4) 45%,
+        var(--color-accent6) 100%
+      );
+    }
+    .site-header__inner {
+      position: relative;
+      padding: 1.35rem 1.35rem 1.35rem 1.65rem;
+      margin-left: 5px;
+    }
+    .site-header__kicker {
+      margin: 0 0 0.4rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      color: color-mix(in srgb, var(--color-accent5) 75%, var(--color-dark));
+    }
+    .site-header__title-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.5rem 0.75rem;
+      margin: 0 0 0.65rem;
+    }
+    h1.site-header__title {
+      margin: 0;
+      font-size: clamp(1.45rem, 4vw, 1.85rem);
       font-weight: 700;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.04em;
+      line-height: 1.25;
+      color: var(--color-dark);
+    }
+    .site-header__title-mark {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      padding: 0.2em 0.55em 0.22em;
+      border-radius: 6px;
+      color: color-mix(in srgb, var(--color-dark) 88%, var(--color-white));
+      background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--color-accent1) 22%, var(--color-white)) 0%,
+        color-mix(in srgb, var(--color-accent4) 18%, var(--color-white)) 100%
+      );
+      border: 1px solid color-mix(in srgb, var(--color-accent3) 35%, var(--color-white));
+    }
+    .site-header__rule {
+      height: 1px;
+      margin: 0 0 0.85rem;
+      max-width: min(12rem, 55%);
+      background: linear-gradient(
+        90deg,
+        var(--color-accent3),
+        color-mix(in srgb, var(--color-accent6) 70%, var(--color-white))
+      );
+      border-radius: 1px;
+      opacity: 0.9;
     }
     .lede {
       margin: 0;
       font-size: 0.9rem;
+      line-height: 1.65;
       color: color-mix(in srgb, var(--color-dark) 70%, var(--color-bg));
     }
     .desk {
@@ -138,9 +209,16 @@
 </head>
 <body>
   <div class="wrap">
-    <header>
-      <h1>クリニカルラウンジ</h1>
-      <p class="lede">役割・分野ごとの<strong>クリニカルデスク</strong>からツールを選びます。新しい HTML を追加したら、該当デスクのリストにリンクを足してください。</p>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <p class="site-header__kicker">臨床補助ツールの入口</p>
+        <div class="site-header__title-wrap">
+          <h1 class="site-header__title">クリニカルラウンジ</h1>
+          <span class="site-header__title-mark">ツール窓口</span>
+        </div>
+        <div class="site-header__rule" aria-hidden="true"></div>
+        <p class="lede">役割・分野ごとの<strong>クリニカルデスク</strong>からツールを選びます。新しい HTML を追加したら、該当デスクのリストにリンクを足してください。</p>
+      </div>
     </header>
     <main>
       <section class="desk" aria-labelledby="desk-pharma">
