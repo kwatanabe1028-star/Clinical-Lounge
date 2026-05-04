@@ -29,7 +29,7 @@
 
 ## 更新の流れ
 
-1. `portal/desks.json` や各ツール HTML を編集する（新しいツール用フォルダをリポジトリ直下に追加しても、ワークフローが自動で公開物に含めます。`.git` / `.github` / `README.md` は除外されます）。
+1. `portal/desks.json` や各ツール HTML を編集する（新しいツール用フォルダを **このフォルダ（クリニカルラウンジ）直下** に追加すれば、ワークフローが公開物に含めます。サイトからは `.git` / `.github` / `README.md` を除外します）。
 2. `file://` 向けに `portal/manifest.js` を使う場合は `python3 portal/sync_manifest.py` を実行する。
 3. `CHANGELOG.md` に一言追記する。
 4. `git add` / `git commit` / `git push` — Actions が再デプロイする。
