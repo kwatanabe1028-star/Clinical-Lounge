@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>クリニカルラウンジ</title>
+  <title>Clinical Lounge</title>
   <style>
     :root {
       --color-bg:      #E2DFCC;
@@ -97,25 +97,19 @@
       letter-spacing: 0.18em;
       color: var(--text-subtle);
     }
-    .site-header__headline {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: flex-end;
-      gap: 0.5rem 0.85rem;
-      margin: 0 0 0.75rem;
-    }
-    /* タイトル：シャープな幾何＋強調（このブロックのみ演出） */
+    /* タイトル（Lounge）：上位階層 — ティール〜シアン寄りのクールな緑 */
     h1.site-header__title {
-      margin: 0;
+      margin: 0 0 0.75rem;
       position: relative;
       display: inline-flex;
       align-items: stretch;
       gap: 0;
-      font-size: clamp(1.65rem, 4.8vw, 2.35rem);
+      font-family: system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: clamp(1.7rem, 5vw, 2.45rem);
       font-weight: 800;
       line-height: 1.05;
-      letter-spacing: 0.02em;
-      color: var(--color-dark);
+      letter-spacing: 0.03em;
+      color: var(--color-white);
       isolation: isolate;
     }
     h1.site-header__title::before {
@@ -127,53 +121,58 @@
       width: 4px;
       background: linear-gradient(
         180deg,
-        var(--color-accent6) 0%,
-        var(--color-accent4) 45%,
-        var(--color-accent2) 100%
+        color-mix(in srgb, var(--color-white) 82%, var(--color-accent6)) 0%,
+        var(--color-white) 45%,
+        color-mix(in srgb, var(--color-white) 70%, var(--color-accent4)) 100%
       );
       clip-path: polygon(0 0, 100% 6%, 100% 94%, 0 100%);
       transform: skewY(-8deg);
       transform-origin: center left;
-      z-index: -1;
-      box-shadow: 2px 0 0 color-mix(in srgb, var(--color-dark) 88%, transparent);
+      z-index: 1;
+      box-shadow: 2px 0 0 color-mix(in srgb, var(--color-dark) 45%, transparent);
     }
     .site-header__title-core {
       display: inline-flex;
       align-items: baseline;
       flex-wrap: wrap;
-      gap: 0.15em 0.45em;
-      padding: 0.2em 0 0.22em 0.85rem;
-      background-image: linear-gradient(
-        90deg,
-        var(--color-dark) 0%,
-        color-mix(in srgb, var(--color-dark) 50%, var(--color-accent4)) 52%,
-        color-mix(in srgb, var(--color-dark) 18%, var(--color-accent6)) 100%
+      gap: 0.18em 0.5em;
+      padding: 0.48rem 1rem 0.52rem 1rem;
+      margin-left: 0.72rem;
+      background: linear-gradient(
+        118deg,
+        color-mix(in srgb, var(--color-dark) 50%, var(--color-accent3)) 0%,
+        color-mix(in srgb, var(--color-accent3) 55%, var(--color-accent4)) 32%,
+        color-mix(in srgb, var(--color-accent4) 50%, var(--color-accent5)) 68%,
+        color-mix(in srgb, var(--color-accent5) 42%, var(--color-accent6)) 100%
       );
-      background-size: 100% 2px;
-      background-position: 0 100%;
-      background-repeat: no-repeat;
+      border: 1px solid color-mix(in srgb, var(--color-dark) 28%, var(--color-accent4));
+      box-shadow:
+        inset 0 1px 0 color-mix(in srgb, var(--color-white) 28%, transparent),
+        0 2px 0 color-mix(in srgb, var(--color-dark) 22%, transparent),
+        0 10px 28px color-mix(in srgb, var(--color-dark) 18%, transparent);
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
     }
     .site-header__title-core em.site-header__title-wa {
       margin: 0;
       font-style: normal;
       font-weight: 700;
-      font-size: 0.52em;
-      letter-spacing: 0.28em;
-      text-transform: none;
-      color: color-mix(in srgb, var(--color-dark) 78%, var(--color-bg));
+      font-size: 0.5em;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, var(--color-white) 78%, var(--color-accent6));
       line-height: 1;
-      border-bottom: 1px solid color-mix(in srgb, var(--color-dark) 35%, transparent);
-      padding-bottom: 0.15em;
+      border-bottom: 1px solid color-mix(in srgb, var(--color-white) 34%, var(--color-accent5));
+      padding-bottom: 0.18em;
     }
     .site-header__title-core strong.site-header__title-wb {
       font-weight: 900;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.04em;
+      text-transform: none;
       background: linear-gradient(
-        118deg,
-        var(--color-dark) 0%,
-        var(--color-dark) 38%,
-        var(--color-accent3) 72%,
-        var(--color-accent6) 100%
+        168deg,
+        var(--color-white) 0%,
+        color-mix(in srgb, var(--color-white) 86%, var(--color-accent4)) 42%,
+        color-mix(in srgb, var(--color-white) 68%, var(--color-accent6)) 100%
       );
       -webkit-background-clip: text;
       background-clip: text;
@@ -182,22 +181,10 @@
     }
     @supports not (background-clip: text) {
       .site-header__title-core strong.site-header__title-wb {
-        color: var(--color-dark);
+        color: var(--color-white);
         -webkit-text-fill-color: unset;
         background: none;
       }
-    }
-    .site-header__tag {
-      display: inline-block;
-      font-size: 0.625rem;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      padding: 0.25em 0.5em 0.28em;
-      line-height: 1;
-      color: var(--color-dark);
-      border: 1px solid var(--color-dark);
-      background: color-mix(in srgb, var(--color-accent5) 35%, var(--color-white));
-      border-radius: 0;
     }
     .lede {
       margin: 0;
@@ -214,33 +201,100 @@
     .desk {
       margin: 0;
     }
-    .desk-title {
-      margin: 0 0 0.4rem;
-      padding: 0 0 0.55rem 0.65rem;
-      font-size: 0.8125rem;
+    /* デスク見出し：下位階層 — オリーブ〜ライム寄りのウォームな緑（Lounge より黄緑寄り） */
+    h2.desk-title {
+      margin: 0 0 0.45rem;
+      position: relative;
+      display: inline-flex;
+      align-items: stretch;
+      max-width: 100%;
+      font-size: clamp(0.95rem, 2.8vw, 1.125rem);
       font-weight: 800;
-      letter-spacing: 0.05em;
-      color: var(--color-dark);
-      display: flex;
-      flex-wrap: wrap;
+      line-height: 1.12;
+      letter-spacing: 0.02em;
+      color: var(--color-white);
+      isolation: isolate;
+    }
+    h2.desk-title::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.1em;
+      bottom: 0.1em;
+      width: 3px;
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--color-white) 78%, var(--color-accent1)) 0%,
+        var(--color-white) 48%,
+        color-mix(in srgb, var(--color-white) 72%, var(--color-accent2)) 100%
+      );
+      clip-path: polygon(0 0, 100% 6%, 100% 94%, 0 100%);
+      transform: skewY(-8deg);
+      transform-origin: center left;
+      z-index: 1;
+      box-shadow: 2px 0 0 color-mix(in srgb, var(--color-dark) 45%, transparent);
+    }
+    .desk-title__core {
+      display: inline-flex;
       align-items: baseline;
-      gap: 0.35rem 0.55rem;
-      border-left: 3px solid var(--color-accent6);
+      flex-wrap: wrap;
+      gap: 0.2em 0.55em;
+      padding: 0.38rem 0.85rem 0.42rem 0.85rem;
+      margin-left: 0.65rem;
+      max-width: 100%;
+      background: linear-gradient(
+        128deg,
+        color-mix(in srgb, var(--color-dark) 58%, var(--color-accent2)) 0%,
+        color-mix(in srgb, var(--color-dark) 22%, var(--color-accent2)) 28%,
+        color-mix(in srgb, var(--color-accent2) 75%, var(--color-accent1)) 62%,
+        color-mix(in srgb, var(--color-accent1) 58%, var(--color-bg)) 100%
+      );
+      border: 1px solid color-mix(in srgb, var(--color-dark) 38%, var(--color-accent2));
+      box-shadow:
+        inset 0 1px 0 color-mix(in srgb, var(--color-white) 26%, transparent),
+        0 2px 0 color-mix(in srgb, var(--color-dark) 22%, transparent),
+        0 8px 22px color-mix(in srgb, var(--color-dark) 16%, transparent);
+      clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
     }
-    .desk-title .role {
-      font-size: 0.6875rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      color: var(--text-subtle);
+    h2.desk-title em.desk-title__type {
+      margin: 0;
+      font-style: normal;
+      font-family: system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: 0.58em;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, var(--color-white) 80%, var(--color-accent1));
+      line-height: 1;
+      border-bottom: 1px solid color-mix(in srgb, var(--color-white) 32%, var(--color-accent2));
+      padding-bottom: 0.15em;
     }
-    .desk-title .name {
-      font-size: 0.9375rem;
-      font-weight: 800;
-      color: var(--color-dark);
+    h2.desk-title strong.desk-title__name {
+      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      font-size: 1.05em;
+      background: linear-gradient(
+        168deg,
+        var(--color-white) 0%,
+        color-mix(in srgb, var(--color-white) 90%, var(--color-accent1)) 50%,
+        color-mix(in srgb, var(--color-white) 72%, var(--color-accent2)) 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+    }
+    @supports not (background-clip: text) {
+      h2.desk-title strong.desk-title__name {
+        color: var(--color-white);
+        -webkit-text-fill-color: unset;
+        background: none;
+      }
     }
     .desk-lede {
       margin: 0 0 0.6rem;
-      padding-left: 0.65rem;
+      padding-left: 0;
       font-size: 0.8125rem;
       color: var(--text-muted);
       line-height: 1.45;
@@ -360,16 +414,13 @@
   <div class="wrap">
     <header class="site-header">
       <p class="site-header__eyebrow">臨床補助ツールの入口</p>
-      <div class="site-header__headline">
-        <h1 class="site-header__title" aria-label="クリニカルラウンジ">
-          <span class="site-header__title-core">
-            <em class="site-header__title-wa">クリニカル</em>
-            <strong class="site-header__title-wb">ラウンジ</strong>
-          </span>
-        </h1>
-        <span class="site-header__tag">ツール窓口</span>
-      </div>
-      <p class="lede">役割・分野ごとの<strong>クリニカルデスク</strong>からツールを選びます。</p>
+      <h1 class="site-header__title" lang="en" aria-label="Clinical Lounge">
+        <span class="site-header__title-core">
+          <em class="site-header__title-wa">Clinical</em>
+          <strong class="site-header__title-wb">Lounge</strong>
+        </span>
+      </h1>
+      <p class="lede">役割・分野ごとの<strong lang="en">Clinical desk</strong>からツールを選びます。</p>
     </header>
     <main id="portal-main" aria-live="polite"></main>
     <footer>
@@ -487,14 +538,24 @@
           var h2 = document.createElement("h2");
           h2.id = desk.id;
           h2.className = "desk-title";
-          var role = document.createElement("span");
-          role.className = "role";
-          role.textContent = desk.roleLabel || "クリニカルデスク";
-          var name = document.createElement("span");
-          name.className = "name";
+          var label = (desk.roleLabel || "Clinical desk").trim() || "Clinical desk";
+          h2.setAttribute("aria-label", label + " — " + desk.name);
+
+          var core = document.createElement("span");
+          core.className = "desk-title__core";
+
+          var role = document.createElement("em");
+          role.className = "desk-title__type";
+          role.setAttribute("lang", "en");
+          role.textContent = label;
+
+          var name = document.createElement("strong");
+          name.className = "desk-title__name";
           name.textContent = desk.name;
-          h2.appendChild(role);
-          h2.appendChild(name);
+
+          core.appendChild(role);
+          core.appendChild(name);
+          h2.appendChild(core);
 
           var lede = document.createElement("p");
           lede.className = "desk-lede";

@@ -6,7 +6,7 @@ window.PORTAL_MANIFEST = {
   "desks": [
     {
       "id": "desk-pharma",
-      "roleLabel": "クリニカルデスク",
+      "roleLabel": "Clinical desk",
       "name": "薬物療法・処方支援",
       "lede": "換算・用量の確認など、薬学的な補助ツール。",
       "tools": [
@@ -19,7 +19,7 @@ window.PORTAL_MANIFEST = {
     },
     {
       "id": "desk-psy-gero",
-      "roleLabel": "クリニカルデスク",
+      "roleLabel": "Clinical desk",
       "name": "精神・老年医療（評価）",
       "lede": "スクリーニングや重症度の整理に使う評価系ツール。",
       "tools": [
