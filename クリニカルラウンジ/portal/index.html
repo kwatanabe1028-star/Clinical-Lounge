@@ -234,6 +234,29 @@
     a.tool-link:hover .tool-link__mark {
       color: var(--color-accent6);
     }
+    .portal-error {
+      margin: 0;
+      padding: 1rem 1rem 1.05rem;
+      border: 1px solid var(--border-ui);
+      background: color-mix(in srgb, var(--color-warning) 12%, var(--color-white));
+      border-radius: 10px;
+      box-shadow: var(--shadow-paper);
+      color: var(--color-dark);
+    }
+    .portal-error__title {
+      margin: 0 0 0.5rem;
+      font-size: 0.9375rem;
+      font-weight: 800;
+    }
+    .portal-error__body {
+      margin: 0;
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      color: var(--text-muted);
+    }
+    .footer-meta {
+      margin: 0.35rem 0 0;
+    }
     footer {
       margin-top: 2.5rem;
       padding-top: 0.85rem;
@@ -268,51 +291,192 @@
       </div>
       <p class="lede">役割・分野ごとの<strong>クリニカルデスク</strong>からツールを選びます。</p>
     </header>
-    <main>
-      <section class="desk" aria-labelledby="desk-pharma">
-        <h2 id="desk-pharma" class="desk-title">
-          <span class="role">クリニカルデスク</span>
-          <span class="name">薬物療法・処方支援</span>
-        </h2>
-        <p class="desk-lede">換算・用量の確認など、薬学的な補助ツール。</p>
-        <div class="tool-panel">
-          <ul class="tool-list">
-            <li>
-              <a class="tool-link" href="../ベンゾジアゼピン系薬剤の換算/benzo_calculator.html">
-                <div class="tool-link__body">
-                  <p class="tool-link__title">ベンゾジアゼピン系薬剤の換算</p>
-                  <p class="tool-link__desc">ベンゾジアゼピン換算計算（benzo_calculator）</p>
-                </div>
-                <span class="tool-link__mark" aria-hidden="true">→</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-      <section class="desk" aria-labelledby="desk-psy-gero">
-        <h2 id="desk-psy-gero" class="desk-title">
-          <span class="role">クリニカルデスク</span>
-          <span class="name">精神・老年医療（評価）</span>
-        </h2>
-        <p class="desk-lede">スクリーニングや重症度の整理に使う評価系ツール。</p>
-        <div class="tool-panel">
-          <ul class="tool-list">
-            <li>
-              <a class="tool-link" href="../高齢者うつチェックリスト/高齢者うつ病評価統合シート.html">
-                <div class="tool-link__body">
-                  <p class="tool-link__title">高齢者うつ病評価統合シート</p>
-                  <p class="tool-link__desc">チェックリスト・評価の統合シート</p>
-                </div>
-                <span class="tool-link__mark" aria-hidden="true">→</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-    </main>
+    <main id="portal-main" aria-live="polite"></main>
     <footer>
-      場所: <code>06_product/portal/index.html</code> — クリニカルラウンジの入口としてブックマークできます。
+      <p>場所: <code>06_product/クリニカルラウンジ/portal/index.html</code> — 入口としてブックマークできます。</p>
+      <p id="footer-meta" class="footer-meta"></p>
+      <p>変更の一覧: ひとつ上のフォルダの <code>CHANGELOG.md</code></p>
     </footer>
   </div>
+  <script>
+    (function () {
+      var mainEl = document.getElementById("portal-main");
+      var footerMeta = document.getElementById("footer-meta");
+
+      function loadScript(src) {
+        return new Promise(function (resolve, reject) {
+          var s = document.createElement("script");
+          s.src = src;
+          s.async = true;
+          s.onload = function () {
+            resolve();
+          };
+          s.onerror = function () {
+            reject(new Error("script load failed: " + src));
+          };
+          document.head.appendChild(s);
+        });
+      }
+
+      function fetchManifest() {
+        return fetch("desks.json", { cache: "no-store" }).then(function (res) {
+          if (!res.ok) {
+            throw new Error("desks.json HTTP " + res.status);
+          }
+          return res.json();
+        });
+      }
+
+      function loadManifestWithFallback() {
+        return fetchManifest().catch(function () {
+          if (window.PORTAL_MANIFEST) {
+            return Promise.resolve(window.PORTAL_MANIFEST);
+          }
+          return loadScript("manifest.js").then(function () {
+            if (!window.PORTAL_MANIFEST) {
+              throw new Error("PORTAL_MANIFEST missing after manifest.js");
+            }
+            return window.PORTAL_MANIFEST;
+          });
+        });
+      }
+
+      function validateManifest(data) {
+        if (!data || typeof data !== "object") {
+          return "マニフェストの形式が不正です。";
+        }
+        if (!Array.isArray(data.desks)) {
+          return "desks が配列ではありません。";
+        }
+        for (var i = 0; i < data.desks.length; i++) {
+          var d = data.desks[i];
+          if (!d || typeof d.id !== "string" || !d.id.trim()) {
+            return "デスク " + i + " の id が不正です。";
+          }
+          if (typeof d.name !== "string") {
+            return "デスク " + i + " の name が不正です。";
+          }
+          if (!Array.isArray(d.tools)) {
+            return "デスク " + i + " の tools が配列ではありません。";
+          }
+          for (var j = 0; j < d.tools.length; j++) {
+            var t = d.tools[j];
+            if (!t || typeof t.href !== "string" || !t.href.trim()) {
+              return "ツール (" + i + "," + j + ") の href が不正です。";
+            }
+            if (typeof t.title !== "string") {
+              return "ツール (" + i + "," + j + ") の title が不正です。";
+            }
+          }
+        }
+        return null;
+      }
+
+      function setFooterMeta(data) {
+        if (!footerMeta) {
+          return;
+        }
+        var v = data.version != null ? String(data.version) : "—";
+        var u = data.updated != null ? String(data.updated) : "—";
+        footerMeta.textContent = "マニフェスト: 版 " + v + "（更新日: " + u + "）";
+      }
+
+      function renderError(message) {
+        mainEl.innerHTML = "";
+        var box = document.createElement("div");
+        box.className = "portal-error";
+        box.setAttribute("role", "alert");
+        var h = document.createElement("p");
+        h.className = "portal-error__title";
+        h.textContent = "一覧を読み込めませんでした";
+        var p = document.createElement("p");
+        p.className = "portal-error__body";
+        p.textContent = message;
+        box.appendChild(h);
+        box.appendChild(p);
+        mainEl.appendChild(box);
+      }
+
+      function renderDesks(data) {
+        mainEl.innerHTML = "";
+        data.desks.forEach(function (desk) {
+          var section = document.createElement("section");
+          section.className = "desk";
+          section.setAttribute("aria-labelledby", desk.id);
+
+          var h2 = document.createElement("h2");
+          h2.id = desk.id;
+          h2.className = "desk-title";
+          var role = document.createElement("span");
+          role.className = "role";
+          role.textContent = desk.roleLabel || "クリニカルデスク";
+          var name = document.createElement("span");
+          name.className = "name";
+          name.textContent = desk.name;
+          h2.appendChild(role);
+          h2.appendChild(name);
+
+          var lede = document.createElement("p");
+          lede.className = "desk-lede";
+          lede.textContent = desk.lede || "";
+
+          var panel = document.createElement("div");
+          panel.className = "tool-panel";
+          var ul = document.createElement("ul");
+          ul.className = "tool-list";
+
+          (desk.tools || []).forEach(function (tool) {
+            var li = document.createElement("li");
+            var a = document.createElement("a");
+            a.className = "tool-link";
+            a.href = tool.href;
+
+            var body = document.createElement("div");
+            body.className = "tool-link__body";
+            var pt = document.createElement("p");
+            pt.className = "tool-link__title";
+            pt.textContent = tool.title;
+            var pd = document.createElement("p");
+            pd.className = "tool-link__desc";
+            pd.textContent = tool.desc || "";
+            body.appendChild(pt);
+            body.appendChild(pd);
+
+            var mark = document.createElement("span");
+            mark.className = "tool-link__mark";
+            mark.setAttribute("aria-hidden", "true");
+            mark.textContent = "→";
+
+            a.appendChild(body);
+            a.appendChild(mark);
+            li.appendChild(a);
+            ul.appendChild(li);
+          });
+
+          panel.appendChild(ul);
+          section.appendChild(h2);
+          section.appendChild(lede);
+          section.appendChild(panel);
+          mainEl.appendChild(section);
+        });
+      }
+
+      loadManifestWithFallback()
+        .then(function (data) {
+          var err = validateManifest(data);
+          if (err) {
+            renderError(err);
+            return;
+          }
+          setFooterMeta(data);
+          renderDesks(data);
+        })
+        .catch(function () {
+          renderError(
+            "desks.json の取得に失敗し、manifest.js も読み込めませんでした。portal フォルダに desks.json と manifest.js があるか確認してください。"
+          );
+        });
+    })();
+  </script>
 </body>
 </html>
