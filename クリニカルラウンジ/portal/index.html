@@ -100,17 +100,92 @@
     .site-header__headline {
       display: flex;
       flex-wrap: wrap;
-      align-items: baseline;
+      align-items: flex-end;
       gap: 0.5rem 0.85rem;
       margin: 0 0 0.75rem;
     }
+    /* タイトル：シャープな幾何＋強調（このブロックのみ演出） */
     h1.site-header__title {
       margin: 0;
-      font-size: clamp(1.5rem, 4.2vw, 2rem);
+      position: relative;
+      display: inline-flex;
+      align-items: stretch;
+      gap: 0;
+      font-size: clamp(1.65rem, 4.8vw, 2.35rem);
       font-weight: 800;
-      letter-spacing: 0.04em;
-      line-height: 1.15;
+      line-height: 1.05;
+      letter-spacing: 0.02em;
       color: var(--color-dark);
+      isolation: isolate;
+    }
+    h1.site-header__title::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.12em;
+      bottom: 0.12em;
+      width: 4px;
+      background: linear-gradient(
+        180deg,
+        var(--color-accent6) 0%,
+        var(--color-accent4) 45%,
+        var(--color-accent2) 100%
+      );
+      clip-path: polygon(0 0, 100% 6%, 100% 94%, 0 100%);
+      transform: skewY(-8deg);
+      transform-origin: center left;
+      z-index: -1;
+      box-shadow: 2px 0 0 color-mix(in srgb, var(--color-dark) 88%, transparent);
+    }
+    .site-header__title-core {
+      display: inline-flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.15em 0.45em;
+      padding: 0.2em 0 0.22em 0.85rem;
+      background-image: linear-gradient(
+        90deg,
+        var(--color-dark) 0%,
+        color-mix(in srgb, var(--color-dark) 50%, var(--color-accent4)) 52%,
+        color-mix(in srgb, var(--color-dark) 18%, var(--color-accent6)) 100%
+      );
+      background-size: 100% 2px;
+      background-position: 0 100%;
+      background-repeat: no-repeat;
+    }
+    .site-header__title-core em.site-header__title-wa {
+      margin: 0;
+      font-style: normal;
+      font-weight: 700;
+      font-size: 0.52em;
+      letter-spacing: 0.28em;
+      text-transform: none;
+      color: color-mix(in srgb, var(--color-dark) 78%, var(--color-bg));
+      line-height: 1;
+      border-bottom: 1px solid color-mix(in srgb, var(--color-dark) 35%, transparent);
+      padding-bottom: 0.15em;
+    }
+    .site-header__title-core strong.site-header__title-wb {
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      background: linear-gradient(
+        118deg,
+        var(--color-dark) 0%,
+        var(--color-dark) 38%,
+        var(--color-accent3) 72%,
+        var(--color-accent6) 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+    }
+    @supports not (background-clip: text) {
+      .site-header__title-core strong.site-header__title-wb {
+        color: var(--color-dark);
+        -webkit-text-fill-color: unset;
+        background: none;
+      }
     }
     .site-header__tag {
       display: inline-block;
@@ -286,7 +361,12 @@
     <header class="site-header">
       <p class="site-header__eyebrow">臨床補助ツールの入口</p>
       <div class="site-header__headline">
-        <h1 class="site-header__title">クリニカルラウンジ</h1>
+        <h1 class="site-header__title" aria-label="クリニカルラウンジ">
+          <span class="site-header__title-core">
+            <em class="site-header__title-wa">クリニカル</em>
+            <strong class="site-header__title-wb">ラウンジ</strong>
+          </span>
+        </h1>
         <span class="site-header__tag">ツール窓口</span>
       </div>
       <p class="lede">役割・分野ごとの<strong>クリニカルデスク</strong>からツールを選びます。</p>
