@@ -1,8 +1,21 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "updated": "2026-05-05",
-  "changelogNote": "ポータルを desks.json 駆動に変更（フェーズ2）",
+  "changelogNote": "肝硬変周術期（ACG 要点）ツールを追加",
   "desks": [
+    {
+      "id": "desk-gi-periop",
+      "roleLabel": "Clinical desk",
+      "name": "消化器・周術期（肝硬変）",
+      "lede": "ACG ガイドライン要点に沿った周術期リスク評価の補助（CSPH ルール・TPO・チェックリスト）。",
+      "tools": [
+        {
+          "href": "../周術期肝硬変_ACG/index.html",
+          "title": "肝硬変 周術期リスク補助ツール（ACG 要点）",
+          "desc": "共通検査値・MELD/CTP/FIB-4・VOCAL公式％転記→次アクション・GRADE 参考"
+        }
+      ]
+    },
     {
       "id": "desk-pharma",
       "roleLabel": "Clinical desk",
