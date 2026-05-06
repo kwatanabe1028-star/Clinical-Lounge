@@ -457,12 +457,6 @@
       </p>
     </header>
 
-    <p class="disclaimer" role="note">
-      <strong>免責</strong>：補助・教育目的であり診療判断の代替ではありません。<strong>VOCAL-Penn</strong>は
-      <a href="https://www.vocalpennscore.com/" rel="noopener noreferrer" target="_blank">公式計算機</a>
-      で算出した％を転記してください（本ページでは再計算しません）。MELD は一般式を実装しています。薬剤は添付文書・施設プロトコルに従ってください。
-    </p>
-
     <nav class="toc" aria-label="ページ内リンク">
       <a href="#actions">次のアクション</a>
       <a href="#input">入力</a>
@@ -490,12 +484,34 @@
 
         <div class="calc-section" id="csph-lsm-plt" style="margin-top:0;margin-bottom:1rem">
           <h3>CSPH（臨床的有意門脈圧亢進）の目安：LSM ＋ 血小板（代償性 cACLD）</h3>
-          <p style="margin:0;font-size:0.8125rem;line-height:1.6;color:var(--color-dark)">
-            <strong>Rule in</strong>：LSM ≥25 kPa（血小板値に関わらず）。<br />
-            <strong>高確率</strong>：LSM 20–24.9 kPa かつ血小板 &lt;150（×10³/µL）、または LSM 15–19.9 kPa かつ血小板 &lt;110。<br />
-            <strong>Rule out</strong>：LSM &lt;15 kPa かつ血小板 ≥150。<br />
-            <strong>それ以外</strong>：境界域（CT/MRI・HVPG 測定などの追加評価を検討）。
-          </p>
+          <div style="overflow-x:auto;margin:0">
+            <table class="simple" aria-label="CSPH（LSM＋血小板）ルール">
+              <thead>
+                <tr>
+                  <th>区分</th>
+                  <th>条件</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Rule in</strong></td>
+                  <td>LSM ≥25 kPa（血小板値に関わらず）</td>
+                </tr>
+                <tr>
+                  <td><strong>高確率</strong></td>
+                  <td>LSM 20–24.9 kPa かつ血小板 &lt;150（×10³/µL）<br />または LSM 15–19.9 kPa かつ血小板 &lt;110</td>
+                </tr>
+                <tr>
+                  <td><strong>Rule out</strong></td>
+                  <td>LSM &lt;15 kPa かつ血小板 ≥150</td>
+                </tr>
+                <tr>
+                  <td><strong>それ以外</strong></td>
+                  <td>境界域（CT/MRI・HVPG 測定などの追加評価を検討）</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
           <p class="field-hint" style="margin:0.55rem 0 0">
             下の<strong>LSM</strong>と<strong>共通検査値の血小板</strong>を入力すると、このルールに沿った CSPH 推定が「次のアクション」に反映されます。
           </p>
