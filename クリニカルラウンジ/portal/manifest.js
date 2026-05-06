@@ -11,7 +11,7 @@ window.PORTAL_MANIFEST = {
       "lede": "ACG ガイドライン要点に沿った周術期リスク評価の補助（CSPH ルール・TPO・チェックリスト）。",
       "tools": [
         {
-          "href": "../周術期肝硬変_ACG/index.html",
+          "href": "../周術期肝硬変_ACG/周術期肝硬変_ACG_周術期リスク補助ツール.html",
           "title": "肝硬変 周術期リスク補助ツール（ACG 要点）",
           "desc": "共通検査値・MELD/CTP/FIB-4・VOCAL公式％転記→次アクション・GRADE 参考"
         }
