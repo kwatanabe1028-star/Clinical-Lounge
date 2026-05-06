@@ -476,7 +476,7 @@
       <p class="actions-panel__sub">
         上から優先して確認してください。<span class="action-legend">赤＝緊急度高／黄＝要検討・多職種／緑系＝ルーティン・記録推奨。</span><br />
         <span style="font-size:0.72rem;color:var(--text-muted)"
-          >文末の〔ACG〕〔GRADE〕〔KC〕〔任意〕〔要点〕〔文献〕は<a href="#ref-cite">参考の参照一覧</a>と対応します。</span>
+          >文末の〔ACG〕〔GRADE〕〔KC〕〔任意〕〔文献〕は<a href="#ref-cite">参考の参照一覧</a>と対応します。</span>
       </p>
       <ol class="action-list" id="action-list" aria-live="polite"></ol>
       <p class="sync-hint">項目を変更すると即時に再計算されます。</p>
@@ -492,8 +492,8 @@
         <div class="calc-section" id="csph-lsm-plt" style="margin-top:0;margin-bottom:1rem">
           <h3>CSPH（臨床的有意門脈圧亢進）の目安：LSM ＋ 血小板（代償性 cACLD）</h3>
           <p style="margin:0;font-size:0.8125rem;line-height:1.6;color:var(--color-dark)">
-            <strong>Rule in</strong>：LSM ≥25 kPa。<br />
-            <strong>高確率</strong>：LSM 20–25 kPa かつ血小板 &lt;150（×10³/µL）、または LSM 15–20 kPa かつ血小板 &lt;110。<br />
+            <strong>Rule in</strong>：LSM ≥25 kPa（血小板値に関わらず）。<br />
+            <strong>高確率</strong>：LSM 20–24.9 kPa かつ血小板 &lt;150（×10³/µL）、または LSM 15–19.9 kPa かつ血小板 &lt;110。<br />
             <strong>Rule out</strong>：LSM &lt;15 kPa かつ血小板 ≥150。<br />
             <strong>それ以外</strong>：境界域（CT/MRI・HVPG 測定などの追加評価を検討）。
           </p>
@@ -569,7 +569,7 @@
               <input id="patient-height" type="number" step="0.1" min="80" max="220" placeholder="例: 165" />
             </div>
             <div class="field">
-              <label for="patient-weight">体重（kg・dry weight 推奨）</label>
+              <label for="patient-weight">体重（kg・dry weight 推奨）<span style="font-weight:normal;font-size:0.85em;color:var(--text-light)"> ※スコア計算には使用しません（栄養目標表示のみ）</span></label>
               <input id="patient-weight" type="number" step="0.1" min="20" max="200" placeholder="例: 58" />
             </div>
             <div class="field">
@@ -832,14 +832,14 @@
             </ul>
           </details>
 
-          <p class="vocal-doc"><strong>手順</strong>：① 上記を公式サイトに入力 → ② 表示された<strong>90-day mortality（％）</strong>を下に転記（サイトは 30 日・180 日・失代償なども表示しますが、〔要点〕として本ツールの連動は<strong>90 日死亡</strong>を優先）。</p>
+          <p class="vocal-doc"><strong>手順</strong>：① 上記を公式サイトに入力 → ② 表示された<strong>90-day mortality（％）</strong>を下に転記（サイトは 30 日・180 日・失代償なども表示しますが、本ツールでは入力値として<strong>90 日死亡</strong>を優先して使用します〔KC〕）。</p>
 
           <div class="form-grid">
             <div class="field field-span-2">
               <label for="vocal-pct">公式サイトの <strong>90 日死亡リスク（％）</strong></label>
               <input id="vocal-pct" type="number" step="0.1" min="0" max="100" placeholder="例: 12.5（公式の数値をそのまま）" />
               <p class="field-hint">
-                ここが入力されていれば「次のアクション」の VOCAL 関連判定に使われます（≥15% で移植評価を考慮する目安など〔KC〕）。
+                ここが入力されていれば「次のアクション」の VOCAL 関連判定に使われます（>15% で移植評価を考慮する目安など〔KC〕）。
               </p>
             </div>
             <div class="field field-span-2">
@@ -880,72 +880,56 @@
             <dt>〔GRADE〕</dt>
             <dd>GRADE により推奨の強さが示された項目。下の<strong>GRADE 推奨 4 項目（要約）</strong>と対応。</dd>
             <dt>〔KC〕</dt>
-            <dd>Key Concepts。番号の記載があるもの（例：栄養・フレイルは KC16・17）は折りたたみ参照。</dd>
+            <dd>Key Concepts。ガイドラインの「Key concepts」の記載に基づく要点（必要に応じて KC 番号を併記）。</dd>
             <dt>〔任意〕</dt>
             <dd>ガイドラインが<strong>追加評価の選択肢</strong>として言及するオプション（例：HVPG）。必須手順ではない。</dd>
-            <dt>〔要点〕</dt>
-            <dd>当ページ／Vault QR がガイドラインから整理した<strong>実務用メモ</strong>。原著全文・個別症例の代替ではない。</dd>
             <dt>〔文献〕</dt>
             <dd>ガイドラインが引用する研究・レビューに即した数値・レンジの記述（単独の ACG 条文というよりエビデンス報告側）。</dd>
           </dl>
         </div>
 
-        <details class="ref-details">
-          <summary>CSPH の LSM ＋ PLT ルール（代償性）</summary>
-          <p style="margin:0.5rem 0;font-size:0.75rem;color:var(--text-muted);line-height:1.5">
-            ルールの全文・入力との対応は、ページ上部の<strong><a href="#input">臨床情報の入力</a></strong>内「CSPH（臨床的有意門脈圧亢進）の目安」を参照してください。
-          </p>
-        </details>
-        <details class="ref-details">
-          <summary>GRADE 推奨 4 項目（要約）</summary>
-          <div style="overflow-x:auto;margin-top:0.5rem">
-            <table class="simple">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>内容</th>
-                  <th>強さ</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>代償性で CSPH 不明瞭 → LSM＋PLT ＋ CT/MRI</td>
-                  <td>条件付き</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>PLT &lt;50K → TPO 受容体作動薬（用量は添付文書）</td>
-                  <td>強い</td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td>CSPH＋腹／胸大手術で TIPS の別適応があれば術前 TIPS を検討</td>
-                  <td>条件付き</td>
-                </tr>
-                <tr>
-                  <td>4</td>
-                  <td>主要肝手術 → 高容量肝外科／移植センターへ</td>
-                  <td>条件付き</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </details>
-        <details class="ref-details">
-          <summary>術前 TIPS・外部リンク</summary>
-          <p style="margin:0.5rem 0;font-size:0.8125rem;line-height:1.55">
-            CSPH のみを目的とした TIPS は推奨されない。難治性腹水・静脈瘤出血歴など TIPS の既存適応がある場合に、腹／胸大手術前に多職種検討。禁忌例：難治性 HE、重症心不全など。<br /><br />
-            <strong>VOCAL-Penn</strong>：
-            <a href="https://www.vocalpennscore.com/" rel="noopener noreferrer" target="_blank">VOCAL-Penn Score（web calculator）</a>
-          </p>
-        </details>
-        <details class="ref-details">
-          <summary>栄養・フレイル（Key Concepts 16・17）</summary>
-          <p style="margin:0.5rem 0;font-size:0.8125rem;line-height:1.6">
-            目標 30–35 kcal/kg/日・蛋白 1.25–1.5 g/kg/日（IBW 換算）。術前 ≥2 週から開始。HE があっても蛋白制限はしない。就寝前補食（LES）。経口困難なら経鼻腸管（非出血性食道静脈瘤では禁忌でない）。サルコペニア／フレイルにはプレハビリテーション（運動＋栄養）。
-          </p>
-        </details>
+        <h3 style="margin:0.85rem 0 0.25rem;font-size:0.95rem">GRADE 推奨（ACG ガイドライン）</h3>
+        <p style="margin:0 0 0.5rem;font-size:0.75rem;color:var(--text-muted);line-height:1.5">
+          本ガイドラインの GRADE による推奨は、要約表（Table 2）で <strong>4 項目</strong>が提示されています。
+        </p>
+        <div style="overflow-x:auto;margin-top:0.5rem">
+          <table class="simple">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>推奨（要約）</th>
+                <th>強さ</th>
+                <th>エビデンス</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>代償性で CSPH 不明瞭 → LSM＋PLT ＋ CT/MRI</td>
+                <td>条件付き</td>
+                <td>非常に低い</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>PLT &lt;50K → TPO 受容体作動薬（用量は添付文書）</td>
+                <td>強い</td>
+                <td>中等度</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>CSPH＋大手術で TIPS の別適応があれば術前 TIPS を検討</td>
+                <td>条件付き</td>
+                <td>非常に低い</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>主要肝手術 → 高容量肝外科／移植センターへ</td>
+                <td>条件付き</td>
+                <td>非常に低い</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
 
@@ -1233,7 +1217,7 @@
       function vocalOutcome() {
         var pctManual = parseOptFloat("vocal-pct");
         if (pctManual != null) {
-          if (pctManual >= 15) return "gte15";
+          if (pctManual > 15) return "gte15";
           return "lt15";
         }
         return val("vocal-band");
@@ -1252,7 +1236,7 @@
       }
 
       function ctpIsMild(ctp) {
-        return ctp === "A" || ctp === "B";
+        return ctp === "A"; /* KC-3: CTP 5–6 点（Class A のみ）が対象 */
       }
 
       function collectActions() {
@@ -1318,13 +1302,16 @@
           }
         }
 
-        /* --- 肥満手術：代償性のみ --- */
+        /* --- 肥満手術：肝疾患ステージ別 --- */
         if (surgery === "bariatric") {
-          if (liver !== "compensated") {
-            add(PRIO.HIGH, "肥満手術は代償性肝硬変に限定するコンセンサスがあります〔ACG〕。非代償性・高 MELD では死亡率が著増とされる報告があります〔文献〕。適応を再検討してください。");
-          } else {
-            add(PRIO.MED, "代償性であれば LSG が好まれるとの記載があります〔ACG〕（専門家コンセンサス）。RYGB は内視鏡アクセス・吸収不良に注意。移植候補では術式・時期を移植センターと相談。");
+          if (liver === "decompensated") {
+            add(PRIO.HIGH, "非代償性肝硬変では肥満手術の術後死亡率が著増します（文献：代償性 0.9% vs 非代償性 18.2%〔文献〕）。適応を多職種で再検討してください。");
+          } else if (liver === "compensated") {
+            add(PRIO.MED, "代償性肝硬変であれば、選択症例での肥満手術は安全に行いうるとされます〔ACG〕。術式は LSG が第一選択（内視鏡アクセス維持・吸収不良回避）。RYGB は吸収不良・内視鏡アクセス喪失に注意。移植候補では術式・時期を移植センターと相談〔KC〕。");
+          } else if (liver === "unknown") {
+            add(PRIO.MED, "肝硬変の有無が未確立です。肥満手術は代償性肝硬変に限り安全とされるため、線維化評価（FIB-4・LSM 等）で肝硬変の有無を確認してから適応を決定してください〔ACG〕。");
           }
+          /* liver === "no_advanced" → 肝硬変ガイドラインの適用外のため追加警告なし */
         }
 
         /* --- 主要肝切除 --- */
@@ -1378,7 +1365,15 @@
         ) {
           add(
             PRIO.MED,
-            "CSPH が疑われ、大手術が予定されています。難治性腹水・静脈瘤出血歴など **TIPS の既存適応**がある場合に限り、術前 TIPS を多職種で検討〔ACG〕（CSPH のみを目的にした TIPS は推奨されません）。"
+            "CSPH が疑われ、大手術が予定されています。難治性腹水・静脈瘤出血歴など <strong>TIPS の既存適応</strong>がある場合に限り、術前 TIPS を多職種で検討〔GRADE〕（CSPH のみを目的にした TIPS は推奨されません。条件付き推奨・エビデンス非常に低い）。"
+          );
+        }
+
+        /* --- 術前 TIPS の示唆（非代償性肝硬変 + 大手術） --- */
+        if (liver === "decompensated" && isMajorAbdoThoracic(surgery)) {
+          add(
+            PRIO.MED,
+            "非代償性肝硬変＋大手術：難治性腹水・静脈瘤出血歴など <strong>TIPS の既存適応</strong>がある場合は、術前 TIPS を多職種で検討してください〔GRADE〕（条件付き推奨・エビデンス非常に低い）。禁忌（難治性肝性脳症・重度三尖弁逆流・心不全・多発性肝嚢胞）がないことを確認。"
           );
         }
 
@@ -1388,13 +1383,13 @@
         } else if (surgery === "hernia" && ascites === "no" && liver !== "no_advanced") {
           add(
             PRIO.LOW,
-            "ヘルニア修復は待機手術が可能なら積極検討の記載があります〔ACG〕（緊急と比較して予後差大）。MELD ≤21 での待機修復の QALY 優位などの記載も参照〔ACG〕。"
+            "ヘルニア修復は待機手術が可能なら検討の記載があります〔ACG〕（緊急と比較して予後差大）。MELD ≤21 での待機修復の QALY 優位などの記載も参照〔ACG〕。"
           );
         }
 
         /* --- 胆嚢・ERCP 注意 --- */
         if (surgery === "chole" && meld != null && meld >= 15) {
-          add(PRIO.MED, "MELD ≥15 では ERCP 後の急性 decompensation リスク増との記載があります〔ACG〕。総胆管結石連携では内視鏡的治療のタイミング・体液管理を慎重に。");
+          add(PRIO.MED, "MELD ≥15 では、総胆管結石など<strong>ERCP を併施する場合</strong>の急性 decompensation リスク増との記載があります〔ACG〕。ERCP 単独・胆嚢摘出のみの場合は適用されません。ERCP 併施時は内視鏡的治療のタイミング・体液管理を慎重に。");
         }
         if (surgery === "chole" && ctp === "C") {
           add(PRIO.HIGH, "CTP C では腹腔鏡胆嚢摘出のリスクが高い場合があります。抗菌薬・ドレナージ等の代替経路を移植／肝専門と検討。");
@@ -1406,7 +1401,8 @@
             add(PRIO.HIGH, "心臓手術＋CTP B：文献では術後死亡率 18–50% 程度のレンジとされる報告があります〔文献〕。EuroSCORE 単独では不十分な場合があるため、肝・麻酔・心臓外科で統合評価。");
           } else if (ctp === "C") {
             add(PRIO.HIGH, "心臓手術＋CTP C：極めて高リスク域の報告があります〔文献〕。代替治療・移植評価を含めた共有意思決定を。");
-          } else if (ascites === "yes") {
+          }
+          if (ascites === "yes") {
             add(PRIO.HIGH, "心臓手術＋腹水：輸血・AKI・ICU 関連合併症・30 日死亡リスクが高いとのデータがあります〔文献〕。");
           }
         }
@@ -1497,9 +1493,9 @@
           var dose = plt < 40 ? "60 mg/日" : "40 mg/日";
           add(
             PRIO.MED,
-            "PLT &lt;50×10³/µL：〔GRADE〕に基づき TPO 受容体作動薬を検討。avatrombopag の目安は " +
+            "PLT &lt;50×10³/µL：TPO 受容体作動薬を検討（GRADE：強推奨・中等度エビデンス〔ACG〕）。avatrombopag の目安は " +
               dose +
-              "・5 日間（eltrombopag は門脈血栓に注意）。**実際の処方は添付文書・腎機能・スケジュールに従う**こと。"
+              "・5 日間（eltrombopag は門脈血栓に注意）。<strong>実際の処方は添付文書・腎機能・スケジュールに従う</strong>こと。"
           );
         }
 
@@ -1507,7 +1503,7 @@
         if (liver === "compensated" || liver === "decompensated") {
           add(
             PRIO.LOW,
-            "凝固：INR 上昇のみを理由にビタミン K・FFP でのルーチン補正は推奨されません。利用可能なら TEG/ROTEM を参考に不必要な輸血を避ける〔要点〕。"
+            "凝固：INR 上昇のみを理由にビタミン K・FFP でのルーチン補正は推奨されません。利用可能なら TEG/ROTEM を参考に不必要な輸血を避ける〔KC〕。"
           );
         }
 
@@ -1515,7 +1511,7 @@
         if (liver === "compensated" || liver === "decompensated") {
           add(
             PRIO.LOW,
-            "ルーティン管理：HCC サーベイランス、静脈瘤評価、NSBB（BP 許容下）、HE・腹水のコントロールを術前に確認〔要点〕。"
+            "ルーティン管理：HCC サーベイランス、静脈瘤評価、NSBB（BP 許容下）、HE・腹水のコントロールを術前に確認〔KC〕。"
           );
         }
 
