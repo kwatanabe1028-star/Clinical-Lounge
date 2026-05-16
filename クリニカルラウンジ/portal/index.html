@@ -6,22 +6,22 @@
   <title>Clinical Lounge</title>
   <style>
     :root {
-      --color-bg:      #E2DFCC;
-      --color-dark:    #455F51;
-      --color-accent1: #99CB38;
-      --color-accent2: #63A537;
-      --color-accent3: #37A76F;
-      --color-accent4: #44C1A3;
-      --color-accent5: #4EB3CF;
-      --color-accent6: #51C3F9;
-      --color-warning: #EE7B08;
+      --color-bg:      #D6D1C2;
+      --color-dark:    #1C3530;
+      --color-accent1: #4E7868;
+      --color-accent2: #3A6E5E;
+      --color-accent3: #286858;
+      --color-accent4: #1E6068;
+      --color-accent5: #1C5A72;
+      --color-accent6: #196E96;
+      --color-warning: #B86018;
       --color-white:   #FFFFFF;
     }
     html {
-      --border-ui: color-mix(in srgb, var(--color-dark) 16%, var(--color-white));
-      --text-muted: color-mix(in srgb, var(--color-dark) 72%, var(--color-bg));
-      --text-subtle: color-mix(in srgb, var(--color-dark) 55%, var(--color-bg));
-      --shadow-paper: 0 10px 24px color-mix(in srgb, var(--color-dark) 16%, transparent);
+      --border-ui: color-mix(in srgb, var(--color-dark) 18%, var(--color-white));
+      --text-muted: color-mix(in srgb, var(--color-dark) 75%, var(--color-bg));
+      --text-subtle: color-mix(in srgb, var(--color-dark) 58%, var(--color-bg));
+      --shadow-paper: 0 10px 28px color-mix(in srgb, var(--color-dark) 22%, transparent);
     }
     * {
       box-sizing: border-box;
@@ -56,7 +56,7 @@
       height: 46vh;
       top: -8%;
       left: -22%;
-      background: color-mix(in srgb, var(--color-accent1) 38%, var(--color-white));
+      background: color-mix(in srgb, var(--color-accent1) 24%, var(--color-bg));
       transform: rotate(-4deg);
     }
     .scene__plane--green {
@@ -66,7 +66,7 @@
       height: min(72vh, 28rem);
       bottom: -14%;
       right: -18%;
-      background: color-mix(in srgb, var(--color-accent3) 22%, var(--color-white));
+      background: color-mix(in srgb, var(--color-dark) 14%, var(--color-bg));
       transform: rotate(5deg);
       border-radius: 0 0 0 18%;
     }
@@ -333,8 +333,8 @@
       transition: background-color 0.12s ease, border-left-color 0.12s ease;
     }
     a.tool-link:hover {
-      background: color-mix(in srgb, var(--color-accent1) 12%, var(--color-white));
-      border-left-color: var(--color-accent2);
+      background: color-mix(in srgb, var(--color-accent1) 10%, var(--color-white));
+      border-left-color: var(--color-accent1);
     }
     .tool-link__body {
       min-width: 0;
