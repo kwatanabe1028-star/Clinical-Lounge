@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ベンゾジアゼピン系薬剤 ジアゼパム換算計算ツール</title>
+  <style>
+    :root {
+      --color-bg:      #D6D1C2;
+      --color-dark:    #1C3530;
+      --color-accent1: #4E7868;
+      --color-accent2: #3A6E5E;
+      --color-accent3: #286858;
+      --color-accent4: #1E6068;
+      --color-accent5: #1C5A72;
+      --color-accent6: #196E96;
+      --color-warning: #B86018;
+      --color-white:   #FFFFFF;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    *:focus-visible {
+      outline: 2px solid var(--color-accent6);
+      outline-offset: 2px;
+    }
+
+    body {
+      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      background: var(--color-bg);
+      color: var(--color-dark);
+      font-size: 14px;
+      line-height: 1.6;
+      position: relative;
+    }
+
+    .page-planes {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .page-planes .pp-a {
+      position: absolute;
+      width: min(130vw, 900px);
+      height: 44vh;
+      top: -6%;
+      left: -20%;
+      background: color-mix(in srgb, var(--color-accent1) 24%, var(--color-bg));
+      transform: rotate(-4deg);
+    }
+    .page-planes .pp-b {
+      position: absolute;
+      width: 52vw;
+      max-width: 24rem;
+      height: min(68vh, 480px);
+      bottom: -12%;
+      right: -16%;
+      background: color-mix(in srgb, var(--color-dark) 14%, var(--color-bg));
+      transform: rotate(4deg);
+      border-radius: 0 0 0 16%;
+    }
+    .page-planes .pp-band {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--color-accent6);
+    }
+
+    header {
+      background: var(--color-dark);
+      color: var(--color-white);
+      padding: 20px 24px;
+      box-shadow: 0 10px 24px color-mix(in srgb, var(--color-dark) 16%, transparent);
+    }
+    header h1 { font-size: 20px; font-weight: bold; margin-bottom: 4px; }
+    header p { font-size: 12px; opacity: 0.85; }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 700px) {
+      .container { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--color-white);
+      border-radius: 10px;
+      box-shadow: 0 10px 24px color-mix(in srgb, var(--color-dark) 16%, transparent);
+      overflow: hidden;
+    }
+
+    .card-header {
+      background: var(--color-dark);
+      color: var(--color-white);
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .card-body { padding: 16px; }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    label {
+      font-size: 12px;
+      color: color-mix(in srgb, var(--color-dark) 65%, var(--color-bg));
+      margin-bottom: 2px;
+      display: block;
+    }
+
+    select, input[type="number"] {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid color-mix(in srgb, var(--color-dark) 16%, var(--color-white));
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--color-dark);
+      background: var(--color-white);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    select:focus, input[type="number"]:focus {
+      border-color: color-mix(in srgb, var(--color-accent2) 55%, var(--color-dark));
+    }
+
+    .dose-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .drug-info-box {
+      background: color-mix(in srgb, var(--color-accent6) 14%, var(--color-white));
+      border-left: 3px solid var(--color-accent5);
+      border-radius: 4px;
+      padding: 8px 10px;
+      font-size: 12px;
+      color: var(--color-dark);
+      margin-bottom: 10px;
+      min-height: 36px;
+    }
+    .drug-info-box span { display: block; }
+
+    button.add-btn {
+      width: 100%;
+      background: var(--color-accent3);
+      color: var(--color-white);
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button.add-btn:hover { background: var(--color-accent4); }
+
+    .drug-list {
+      margin-top: 14px;
+    }
+
+    .drug-list-header {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr auto;
+      gap: 6px;
+      font-size: 11px;
+      color: color-mix(in srgb, var(--color-dark) 60%, var(--color-bg));
+      padding: 4px 0;
+      border-bottom: 1px solid color-mix(in srgb, var(--color-dark) 15%, var(--color-white));
+      margin-bottom: 6px;
+    }
+
+    .drug-list-item {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr auto;
+      gap: 6px;
+      align-items: center;
+      padding: 7px 4px;
+      border-bottom: 1px dashed color-mix(in srgb, var(--color-dark) 12%, var(--color-white));
+      font-size: 13px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+    .drug-list-item .name { font-weight: bold; }
+    .drug-list-item .dose {
+      color: color-mix(in srgb, var(--color-dark) 60%, var(--color-bg));
+      font-size: 12px;
+    }
+    .drug-list-item .eq { color: var(--color-accent3); font-weight: bold; }
+
+    button.remove-btn {
+      background: none;
+      border: none;
+      color: var(--color-warning);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+    button.remove-btn:hover {
+      background: color-mix(in srgb, var(--color-warning) 14%, var(--color-white));
+    }
+
+    .total-box {
+      margin-top: 14px;
+      border-radius: 8px;
+      padding: 14px 16px;
+      text-align: center;
+    }
+
+    .total-box .label { font-size: 12px; margin-bottom: 4px; }
+    .total-box .value { font-size: 32px; font-weight: bold; }
+    .total-box .unit { font-size: 14px; }
+    .total-box .interp { font-size: 12px; margin-top: 6px; font-weight: bold; }
+
+    .level-low {
+      background: color-mix(in srgb, var(--color-accent4) 18%, var(--color-white));
+      color: var(--color-accent2);
+      border: 2px solid var(--color-accent3);
+    }
+    .level-mid {
+      background: color-mix(in srgb, var(--color-warning) 12%, var(--color-white));
+      color: color-mix(in srgb, var(--color-warning) 40%, var(--color-dark));
+      border: 2px solid color-mix(in srgb, var(--color-warning) 50%, var(--color-bg));
+    }
+    .level-high {
+      background: color-mix(in srgb, var(--color-warning) 22%, var(--color-white));
+      color: color-mix(in srgb, var(--color-warning) 25%, var(--color-dark));
+      border: 2px solid var(--color-warning);
+    }
+    .level-none {
+      background: color-mix(in srgb, var(--color-bg) 65%, var(--color-white));
+      color: color-mix(in srgb, var(--color-dark) 55%, var(--color-bg));
+      border: 2px solid color-mix(in srgb, var(--color-dark) 15%, var(--color-white));
+    }
+
+    button.clear-btn {
+      margin-top: 10px;
+      width: 100%;
+      background: var(--color-white);
+      color: var(--color-warning);
+      border: 1px solid color-mix(in srgb, var(--color-warning) 45%, var(--color-dark));
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button.clear-btn:hover {
+      background: color-mix(in srgb, var(--color-warning) 10%, var(--color-white));
+    }
+
+    .ref-col { grid-column: 1 / -1; }
+
+    .tab-buttons {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 5px 14px;
+      border-radius: 6px;
+      border: 1px solid color-mix(in srgb, var(--color-dark) 16%, var(--color-white));
+      background: var(--color-white);
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.15s;
+    }
+    .tab-btn.active {
+      background: var(--color-dark);
+      color: var(--color-white);
+      border-color: var(--color-dark);
+    }
+    .tab-btn:hover:not(.active) {
+      background: color-mix(in srgb, var(--color-accent6) 12%, var(--color-white));
+    }
+
+    .ref-table-wrapper { overflow-x: auto; }
+
+    table.ref-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    table.ref-table th {
+      background: var(--color-dark);
+      color: var(--color-white);
+      padding: 8px 10px;
+      text-align: left;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    table.ref-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid color-mix(in srgb, var(--color-dark) 8%, var(--color-white));
+      vertical-align: top;
+    }
+
+    table.ref-table tr:last-child td { border-bottom: none; }
+    table.ref-table tr:hover td {
+      background: color-mix(in srgb, var(--color-accent6) 10%, var(--color-white));
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .badge-ultra {
+      background: color-mix(in srgb, var(--color-warning) 18%, var(--color-white));
+      color: color-mix(in srgb, var(--color-warning) 35%, var(--color-dark));
+    }
+    .badge-short {
+      background: color-mix(in srgb, var(--color-accent1) 22%, var(--color-white));
+      color: var(--color-accent2);
+    }
+    .badge-mid {
+      background: color-mix(in srgb, var(--color-accent4) 16%, var(--color-white));
+      color: var(--color-dark);
+    }
+    .badge-long {
+      background: color-mix(in srgb, var(--color-accent6) 16%, var(--color-white));
+      color: var(--color-dark);
+    }
+
+    .eq-cell { font-weight: bold; color: var(--color-accent3); }
+
+    .footnote {
+      font-size: 11px;
+      color: color-mix(in srgb, var(--color-dark) 65%, var(--color-bg));
+      padding: 12px 16px;
+      border-top: 1px solid color-mix(in srgb, var(--color-dark) 15%, var(--color-white));
+      line-height: 1.8;
+    }
+    .footnote b { color: var(--color-dark); }
+
+    @media print {
+      header {
+        background: var(--color-dark) !important;
+        color: var(--color-white) !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .card { break-inside: avoid; }
+      button { display: none; }
+    }
+
+    .empty-state {
+      text-align: center;
+      color: color-mix(in srgb, var(--color-dark) 55%, var(--color-bg));
+      font-size: 13px;
+      padding: 20px 0;
+    }
+  </style>
+</head>
+<body>
+<div class="page-planes" aria-hidden="true">
+  <div class="pp-a"></div>
+  <div class="pp-b"></div>
+  <div class="pp-band"></div>
+</div>
+
+<header>
+  <h1>ベンゾジアゼピン系薬剤　ジアゼパム換算計算ツール</h1>
+  <p>薬剤依存症患者の薬剤整理用　／　ジアゼパム 5mg を基準とした換算</p>
+</header>
+
+<div class="container">
+
+  <!-- ===== 左: 入力パネル ===== -->
+  <div class="card">
+    <div class="card-header">内服薬剤を入力</div>
+    <div class="card-body">
+
+      <div class="input-group">
+        <div>
+          <label>薬剤名</label>
+          <select id="drugSelect" onchange="onDrugChange()">
+            <option value="">-- 薬剤を選択 --</option>
+          </select>
+        </div>
+        <div id="drugInfoBox" class="drug-info-box" style="display:none;"></div>
+        <div class="dose-row">
+          <div>
+            <label>1回量 (mg)</label>
+            <input type="number" id="doseInput" min="0" step="0.25" placeholder="例: 5">
+          </div>
+          <div>
+            <label>1日回数</label>
+            <input type="number" id="freqInput" min="1" max="10" value="1" step="1">
+          </div>
+        </div>
+      </div>
+
+      <button class="add-btn" onclick="addDrug()">＋ 追加する</button>
+
+      <!-- 追加済みリスト -->
+      <div class="drug-list">
+        <div class="drug-list-header">
+          <span>薬剤名</span>
+          <span>1日量</span>
+          <span>DZP換算</span>
+          <span></span>
+        </div>
+        <div id="drugListBody">
+          <div class="empty-state">まだ薬剤が追加されていません</div>
+        </div>
+      </div>
+
+      <!-- 合計 -->
+      <div id="totalBox" class="total-box level-none">
+        <div class="label">ジアゼパム換算　1日総量</div>
+        <div class="value" id="totalValue">0</div>
+        <div class="unit">mg / 日</div>
+        <div class="interp" id="totalInterp">薬剤を追加してください</div>
+      </div>
+
+      <button class="clear-btn" onclick="clearAll()">クリア</button>
+    </div>
+  </div>
+
+  <!-- ===== 右: 個別換算メモ ===== -->
+  <div class="card">
+    <div class="card-header">クイック換算チェック</div>
+    <div class="card-body">
+      <p style="font-size:12px; color:color-mix(in srgb, var(--color-dark) 65%, var(--color-bg)); margin-bottom:12px;">
+        選択した薬剤の各規格とジアゼパム換算量の対応表
+      </p>
+      <div id="quickTable">
+        <div class="empty-state">左で薬剤を選択すると換算値を表示します</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 下段全幅: 換算表 ===== -->
+  <div class="card ref-col">
+    <div class="card-header">ベンゾジアゼピン系薬剤　ジアゼパム換算一覧表</div>
+    <div class="card-body">
+
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="showTab('all', this)">すべて</button>
+        <button class="tab-btn" onclick="showTab('anxio', this)">抗不安薬</button>
+        <button class="tab-btn" onclick="showTab('hypno', this)">睡眠薬</button>
+        <button class="tab-btn" onclick="showTab('zdrug', this)">Z薬（参考）</button>
+      </div>
+
+      <div class="ref-table-wrapper">
+        <table class="ref-table" id="refTable">
+          <thead>
+            <tr>
+              <th>一般名</th>
+              <th>主な商品名</th>
+              <th>種別</th>
+              <th>作用時間</th>
+              <th>消失半減期</th>
+              <th>ジアゼパム 5mg 相当量</th>
+              <th>換算係数<br><small>(per 1mg)</small></th>
+            </tr>
+          </thead>
+          <tbody id="refTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="footnote">
+      <b>注意事項：</b>
+      本換算表はあくまで目安であり、個人差・耐性・身体依存の程度により実際の等価量は異なります。<br>
+      換算値は Ashton Manual (2002/2011)、各種国内文献を参考に作成。文献により値が異なるものは保守的な値を採用しています。<br>
+      <b>エチゾラム・ブロチゾラム</b>はチエノジアゼピン系ですが、臨床的にベンゾジアゼピンと同様に扱われます。<br>
+      <b>Z薬</b>（ゾルピデム等）は化学構造は異なりますが同じ受容体に作用し、交差依存を生じます。<br>
+      <b>減薬計画は必ず専門医と相談の上、個別に判断してください。</b>
+    </div>
+  </div>
+</div>
+
+<script>
+// =====================================================
+// データ定義
+// =====================================================
+const DRUGS = [
+  // ===== 抗不安薬 =====
+  {
+    id: 'diazepam',
+    generic: 'ジアゼパム',
+    brand: 'セルシン / ホリゾン',
+    cat: 'anxio',
+    catLabel: '抗不安薬',
+    duration: 'long',
+    halflife: '20〜100時間',
+    eq5mg: 5,          // この薬 X mg ≒ ジアゼパム 5mg
+    availableStrengths: [2, 5],
+    note: '基準薬'
+  },
+  {
+    id: 'chlordiazepoxide',
+    generic: 'クロルジアゼポキシド',
+    brand: 'コントール / バランス',
+    cat: 'anxio', catLabel: '抗不安薬',
+    duration: 'long', halflife: '5〜30時間（活性代謝物 36〜200h）',
+    eq5mg: 12.5, availableStrengths: [5, 10]
+  },
+  {
+    id: 'clorazepate',
+    generic: 'クロラゼプ酸二カリウム',
+    brand: 'メンドン',
+    cat: 'anxio', catLabel: '抗不安薬',
+    duration: 'long', halflife: '30〜100時間',
+    eq5mg: 7.5, availableStrengths: [3.75, 7.5, 15]
+  },
+  {
+    id: 'bromazepam',
+    generic: 'ブロマゼパム',
+    brand: 'レキソタン / セニラン',
+    cat: 'anxio', catLabel: '抗不安薬',
+    duration: 'mid', halflife: '10〜20時間',
+    eq5mg: 2.5, availableStrengths: [1, 2, 3, 5]
+  },
+  {
+    id: 'lorazepam',
+    generic: 'ロラゼパム',
+    brand: 'ワイパックス',
+    cat: 'anxio', catLabel: '抗不安薬',
+    duration: 'mid', halflife: '10〜20時間',
+    eq5mg: 1, availableStrengths: [0.5, 1]
+  },
+  {
+    id: 'oxazepam',
+    generic: 'オキサゼパム',
+    brand: 'セレナール',
+    cat: 'anxio', catLabel: '抗不安薬',
+    duration: 'short', halflife: '5〜15時間',
+    eq5mg: 15, availableStrengths: [5, 10, 15]
+  },
+  {
+    id: 'alprazolam',
+    generic: 'アルプラゾラム',
+    brand: 'コンスタン / ソラナックス',
+    cat: 'anxio', catLabel: '抗不安薬',
+    duration: 'mid', halflife: '6〜12時間',
+    eq5mg: 0.5, availableStrengths: [0.25, 0.4, 0.5, 0.8]
+  },
+  {
+    id: 'etizolam',
+    generic: 'エチゾラム',
+    brand: 'デパス',
+    cat: 'anxio', catLabel: '抗不安薬（チエノジアゼピン系）',
+    duration: 'short', halflife: '約6時間',
+    eq5mg: 1.5, availableStrengths: [0.25, 0.5, 1],
+    note: 'チエノジアゼピン系'
+  },
+  {
+    id: 'cloxazolam',
+    generic: 'クロキサゾラム',
+    brand: 'セパゾン',
+    cat: 'anxio', catLabel: '抗不安薬',
+    duration: 'long', halflife: '65〜80時間',
+    eq5mg: 2, availableStrengths: [0.5, 1, 2]
+  },
+  {
+    id: 'fludiazepam',
+    generic: 'フルジアゼパム',
+    brand: 'エリスパン',
+    cat: 'anxio', catLabel: '抗不安薬',
+    duration: 'long', halflife: '20時間（活性代謝物あり）',
+    eq5mg: 0.25, availableStrengths: [0.25]
+  },
+  {
+    id: 'medazepam',
+    generic: 'メダゼパム',
+    brand: 'レスミット',
+    cat: 'anxio', catLabel: '抗不安薬',
+    duration: 'long', halflife: '36〜200時間',
+    eq5mg: 10, availableStrengths: [2, 4]
+  },
+  {
+    id: 'prazepam',
+    generic: 'プラゼパム',
+    brand: 'セントレア',
+    cat: 'anxio', catLabel: '抗不安薬',
+    duration: 'long', halflife: '36〜200時間',
+    eq5mg: 10, availableStrengths: [5, 10]
+  },
+  {
+    id: 'clonazepam',
+    generic: 'クロナゼパム',
+    brand: 'リボトリール / ランドセン',
+    cat: 'anxio', catLabel: '抗不安薬・抗てんかん薬',
+    duration: 'long', halflife: '18〜50時間',
+    eq5mg: 0.5, availableStrengths: [0.5, 1, 2],
+    note: '抗てんかん薬としても使用'
+  },
+  {
+    id: 'clobazam',
+    generic: 'クロバザム',
+    brand: 'マイスタン',
+    cat: 'anxio', catLabel: '抗不安薬・抗てんかん薬',
+    duration: 'long', halflife: '12〜60時間（活性代謝物含む）',
+    eq5mg: 10, availableStrengths: [5, 10],
+    note: '主に抗てんかん薬として使用'
+  },
+  {
+    id: 'flutazolam',
+    generic: 'フルタゾラム',
+    brand: 'コレミナール',
+    cat: 'anxio', catLabel: '抗不安薬',
+    duration: 'mid', halflife: '6〜12時間',
+    eq5mg: 2, availableStrengths: [2]
+  },
+  {
+    id: 'mexazolam',
+    generic: 'メキサゾラム',
+    brand: 'メレックス',
+    cat: 'anxio', catLabel: '抗不安薬',
+    duration: 'long', halflife: '65〜85時間',
+    eq5mg: 1, availableStrengths: [0.5, 1]
+  },
+  {
+    id: 'tofisopam',
+    generic: 'トフィソパム',
+    brand: 'グランダキシン',
+    cat: 'anxio', catLabel: '抗不安薬（2,3-BZD系）',
+    duration: 'short', halflife: '4〜8時間',
+    eq5mg: 50, availableStrengths: [50],
+    note: '2,3-ベンゾジアゼピン系。筋弛緩・鎮静作用は弱い'
+  },
+
+  // ===== 睡眠薬 =====
+  {
+    id: 'nitrazepam',
+    generic: 'ニトラゼパム',
+    brand: 'ベンザリン / ネルボン',
+    cat: 'hypno', catLabel: '睡眠薬',
+    duration: 'mid', halflife: '18〜38時間',
+    eq5mg: 5, availableStrengths: [2, 5]
+  },
+  {
+    id: 'flunitrazepam',
+    generic: 'フルニトラゼパム',
+    brand: 'サイレース / ロヒプノール',
+    cat: 'hypno', catLabel: '睡眠薬',
+    duration: 'mid', halflife: '16〜35時間',
+    eq5mg: 1, availableStrengths: [1, 2]
+  },
+  {
+    id: 'nimetazepam',
+    generic: 'ニメタゼパム',
+    brand: 'エリミン',
+    cat: 'hypno', catLabel: '睡眠薬',
+    duration: 'mid', halflife: '21〜25時間',
+    eq5mg: 5, availableStrengths: [3, 5]
+  },
+  {
+    id: 'estazolam',
+    generic: 'エスタゾラム',
+    brand: 'ユーロジン',
+    cat: 'hypno', catLabel: '睡眠薬',
+    duration: 'mid', halflife: '10〜24時間',
+    eq5mg: 2, availableStrengths: [1, 2]
+  },
+  {
+    id: 'triazolam',
+    generic: 'トリアゾラム',
+    brand: 'ハルシオン',
+    cat: 'hypno', catLabel: '睡眠薬',
+    duration: 'ultra', halflife: '2〜4時間',
+    eq5mg: 0.25, availableStrengths: [0.125, 0.25]
+  },
+  {
+    id: 'brotizolam',
+    generic: 'ブロチゾラム',
+    brand: 'レンドルミン',
+    cat: 'hypno', catLabel: '睡眠薬（チエノジアゼピン系）',
+    duration: 'short', halflife: '約7時間',
+    eq5mg: 0.25, availableStrengths: [0.125, 0.25],
+    note: 'チエノジアゼピン系'
+  },
+  {
+    id: 'lormetazepam',
+    generic: 'ロルメタゼパム',
+    brand: 'エバミール / ロラメット',
+    cat: 'hypno', catLabel: '睡眠薬',
+    duration: 'mid', halflife: '10〜12時間',
+    eq5mg: 1, availableStrengths: [0.5, 1]
+  },
+  {
+    id: 'flurazepam',
+    generic: 'フルラゼパム',
+    brand: 'ダルメート',
+    cat: 'hypno', catLabel: '睡眠薬',
+    duration: 'long', halflife: '40〜250時間',
+    eq5mg: 15, availableStrengths: [15]
+  },
+  {
+    id: 'quazepam',
+    generic: 'クアゼパム',
+    brand: 'ドラール',
+    cat: 'hypno', catLabel: '睡眠薬',
+    duration: 'long', halflife: '39〜73時間',
+    eq5mg: 15, availableStrengths: [15, 20]
+  },
+  {
+    id: 'haloxazolam',
+    generic: 'ハロキサゾラム',
+    brand: 'ソメリン',
+    cat: 'hypno', catLabel: '睡眠薬',
+    duration: 'long', halflife: '40〜100時間',
+    eq5mg: 5, availableStrengths: [5]
+  },
+  {
+    id: 'rilmazafone',
+    generic: 'リルマザフォン塩酸塩水和物',
+    brand: 'リスミー',
+    cat: 'hypno', catLabel: '睡眠薬（プロドラッグ型BZD）',
+    duration: 'mid', halflife: '10〜12時間',
+    eq5mg: 2, availableStrengths: [1, 2],
+    note: '体内でBZDに変換されるプロドラッグ'
+  },
+
+  // ===== Z薬（参考） =====
+  {
+    id: 'zolpidem',
+    generic: 'ゾルピデム酒石酸塩',
+    brand: 'マイスリー',
+    cat: 'zdrug', catLabel: 'Z薬（BZ受容体作動薬）',
+    duration: 'ultra', halflife: '約2時間',
+    eq5mg: 10, availableStrengths: [5, 10],
+    note: '非BZD系だが同受容体に作用。交差依存あり'
+  },
+  {
+    id: 'zopiclone',
+    generic: 'ゾピクロン',
+    brand: 'アモバン',
+    cat: 'zdrug', catLabel: 'Z薬（BZ受容体作動薬）',
+    duration: 'short', halflife: '約5時間',
+    eq5mg: 7.5, availableStrengths: [7.5],
+    note: '非BZD系だが同受容体に作用。交差依存あり'
+  },
+  {
+    id: 'eszopiclone',
+    generic: 'エスゾピクロン',
+    brand: 'ルネスタ',
+    cat: 'zdrug', catLabel: 'Z薬（BZ受容体作動薬）',
+    duration: 'short', halflife: '約5時間',
+    eq5mg: 2.5, availableStrengths: [1, 2, 3],
+    note: '非BZD系だが同受容体に作用。交差依存あり'
+  },
+];
+
+const DURATION_LABELS = {
+  ultra: '超短時間型',
+  short: '短時間型',
+  mid:   '中時間型',
+  long:  '長時間型',
+};
+
+const DURATION_BADGES = {
+  ultra: 'badge-ultra',
+  short: 'badge-short',
+  mid:   'badge-mid',
+  long:  'badge-long',
+};
+
+// =====================================================
+// 初期化
+// =====================================================
+let addedDrugs = [];
+
+function init() {
+  // セレクトボックスに薬剤を追加
+  const sel = document.getElementById('drugSelect');
+  const groups = {
+    anxio: '抗不安薬',
+    hypno: '睡眠薬',
+    zdrug: 'Z薬（参考・非BZD系）',
+  };
+  for (const [cat, label] of Object.entries(groups)) {
+    const og = document.createElement('optgroup');
+    og.label = label;
+    DRUGS.filter(d => d.cat === cat).forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d.id;
+      opt.textContent = `${d.generic}（${d.brand}）`;
+      og.appendChild(opt);
+    });
+    sel.appendChild(og);
+  }
+
+  // 換算表を描画
+  renderRefTable('all');
+}
+
+// =====================================================
+// 換算表タブ
+// =====================================================
+function showTab(cat, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderRefTable(cat);
+}
+
+function renderRefTable(cat) {
+  const tbody = document.getElementById('refTableBody');
+  tbody.innerHTML = '';
+  const filtered = cat === 'all' ? DRUGS : DRUGS.filter(d => d.cat === cat);
+  filtered.forEach(d => {
+    const factor = +(5 / d.eq5mg).toFixed(4);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><b>${d.generic}</b>${d.note ? `<br><small style="color:color-mix(in srgb, var(--color-dark) 58%, var(--color-bg))">${d.note}</small>` : ''}</td>
+      <td>${d.brand}</td>
+      <td style="font-size:12px">${d.catLabel}</td>
+      <td><span class="badge ${DURATION_BADGES[d.duration]}">${DURATION_LABELS[d.duration]}</span></td>
+      <td style="white-space:nowrap">${d.halflife}</td>
+      <td class="eq-cell">${d.eq5mg} mg</td>
+      <td class="eq-cell">${factor} <small>mg-DZP/mg</small></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// =====================================================
+// 薬剤選択時
+// =====================================================
+function onDrugChange() {
+  const id = document.getElementById('drugSelect').value;
+  const infoBox = document.getElementById('drugInfoBox');
+  const quickTable = document.getElementById('quickTable');
+
+  if (!id) {
+    infoBox.style.display = 'none';
+    quickTable.innerHTML = '<div class="empty-state">左で薬剤を選択すると換算値を表示します</div>';
+    return;
+  }
+
+  const d = DRUGS.find(x => x.id === id);
+  infoBox.style.display = 'block';
+  infoBox.innerHTML = `
+    <span><b>${d.generic}</b>　${d.brand}</span>
+    <span style="margin-top:3px">作用時間：${DURATION_LABELS[d.duration]}　半減期：${d.halflife}</span>
+    <span>ジアゼパム5mg相当量：<b>${d.eq5mg}mg</b></span>
+  `;
+
+  // クイック換算表
+  let html = `<table style="width:100%; border-collapse:collapse; font-size:13px;">
+    <thead><tr style="background:color-mix(in srgb, var(--color-accent6) 16%, var(--color-white))">
+      <th style="padding:6px 8px; text-align:left; color:var(--color-dark)">用量 (mg)</th>
+      <th style="padding:6px 8px; text-align:right; color:var(--color-dark)">ジアゼパム換算</th>
+    </tr></thead><tbody>`;
+
+  d.availableStrengths.forEach(s => {
+    const multiples = [0.5, 1, 1.5, 2, 3, 4];
+    multiples.forEach(m => {
+      const dose = +(s * m).toFixed(3);
+      if (dose <= 0) return;
+      const eq = +(dose / d.eq5mg * 5).toFixed(2);
+      html += `<tr style="border-bottom:1px solid color-mix(in srgb, var(--color-dark) 10%, var(--color-white))">
+        <td style="padding:5px 8px">${dose} mg</td>
+        <td style="padding:5px 8px; text-align:right; color:var(--color-accent3); font-weight:bold">${eq} mg</td>
+      </tr>`;
+    });
+  });
+  html += `</tbody></table>`;
+  quickTable.innerHTML = html;
+}
+
+// =====================================================
+// 薬剤追加
+// =====================================================
+function addDrug() {
+  const id = document.getElementById('drugSelect').value;
+  const dose = parseFloat(document.getElementById('doseInput').value);
+  const freq = parseInt(document.getElementById('freqInput').value) || 1;
+
+  if (!id) { alert('薬剤を選択してください'); return; }
+  if (isNaN(dose) || dose <= 0) { alert('1回量を入力してください（0より大きい数値）'); return; }
+
+  const d = DRUGS.find(x => x.id === id);
+  const dailyDose = dose * freq;
+  const dzpEq = +(dailyDose / d.eq5mg * 5).toFixed(2);
+
+  addedDrugs.push({ drug: d, dose, freq, dailyDose, dzpEq });
+  renderDrugList();
+  updateTotal();
+}
+
+function removeDrug(idx) {
+  addedDrugs.splice(idx, 1);
+  renderDrugList();
+  updateTotal();
+}
+
+function clearAll() {
+  addedDrugs = [];
+  renderDrugList();
+  updateTotal();
+}
+
+function renderDrugList() {
+  const body = document.getElementById('drugListBody');
+  if (addedDrugs.length === 0) {
+    body.innerHTML = '<div class="empty-state">まだ薬剤が追加されていません</div>';
+    return;
+  }
+  body.innerHTML = addedDrugs.map((item, i) => `
+    <div class="drug-list-item">
+      <div>
+        <div class="name">${item.drug.generic}</div>
+        <div class="dose">${item.drug.brand}</div>
+      </div>
+      <div class="dose">${item.dose}mg × ${item.freq}回<br><small>${item.dailyDose}mg/日</small></div>
+      <div class="eq">= ${item.dzpEq} mg</div>
+      <button class="remove-btn" onclick="removeDrug(${i})" title="削除">×</button>
+    </div>
+  `).join('');
+}
+
+function updateTotal() {
+  const total = addedDrugs.reduce((s, x) => s + x.dzpEq, 0);
+  const totalRounded = +total.toFixed(2);
+
+  document.getElementById('totalValue').textContent = totalRounded;
+
+  const box = document.getElementById('totalBox');
+  const interp = document.getElementById('totalInterp');
+
+  box.className = 'total-box';
+  if (addedDrugs.length === 0) {
+    box.classList.add('level-none');
+    interp.textContent = '薬剤を追加してください';
+  } else if (totalRounded <= 20) {
+    box.classList.add('level-low');
+    interp.textContent = '比較的少量（〜20mg相当）';
+  } else if (totalRounded <= 60) {
+    box.classList.add('level-mid');
+    interp.textContent = '中等量（20〜60mg相当）— 減薬は慎重に段階的に';
+  } else {
+    box.classList.add('level-high');
+    interp.textContent = '大量（60mg超相当）— 専門医による管理が必須';
+  }
+}
+
+init();
+</script>
+</body>
+</html>

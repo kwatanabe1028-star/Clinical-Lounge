@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>周術期肝硬変：周術期リスク補助ツール（ACG）</title>
+  <meta name="title" content="周術期肝硬変：周術期リスク補助ツール（ACG）" />
+  <meta property="og:title" content="周術期肝硬変：周術期リスク補助ツール（ACG）" />
+  <meta name="twitter:title" content="周術期肝硬変：周術期リスク補助ツール（ACG）" />
+  <style>
+    :root {
+      --color-bg: #D6D1C2;
+      --color-dark: #1C3530;
+      --color-accent1: #4E7868;
+      --color-accent2: #3A6E5E;
+      --color-accent3: #286858;
+      --color-accent4: #1E6068;
+      --color-accent5: #1C5A72;
+      --color-accent6: #196E96;
+      --color-warning: #B86018;
+      --color-danger: #c43d3d;
+      --color-white: #ffffff;
+      --border-ui: color-mix(in srgb, var(--color-dark) 16%, var(--color-white));
+      --text-muted: color-mix(in srgb, var(--color-dark) 72%, var(--color-bg));
+      --shadow: 0 10px 24px color-mix(in srgb, var(--color-dark) 14%, transparent);
+    }
+    * {
+      box-sizing: border-box;
+    }
+    *:focus-visible {
+      outline: 2px solid var(--color-accent6);
+      outline-offset: 2px;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--color-dark);
+      background: var(--color-bg);
+      -webkit-font-smoothing: antialiased;
+    }
+    .scene {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .scene__a {
+      position: absolute;
+      width: min(125vw, 52rem);
+      height: 42vh;
+      top: -8%;
+      left: -22%;
+      background: color-mix(in srgb, var(--color-accent1) 24%, var(--color-bg));
+      transform: rotate(-4deg);
+    }
+    .scene__b {
+      position: absolute;
+      width: 56vw;
+      max-width: 26rem;
+      height: min(70vh, 28rem);
+      bottom: -14%;
+      right: -18%;
+      background: color-mix(in srgb, var(--color-dark) 14%, var(--color-bg));
+      transform: rotate(5deg);
+      border-radius: 0 0 0 18%;
+    }
+    .scene__band {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--color-accent6);
+    }
+    .wrap {
+      max-width: 44rem;
+      margin: 0 auto;
+      padding: 1.5rem 1.1rem 3rem;
+    }
+    .back {
+      margin: 0 0 1rem;
+      font-size: 0.8125rem;
+    }
+    .back a {
+      color: var(--color-dark);
+      font-weight: 700;
+    }
+    header.page-head {
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
+      border-bottom: 3px solid var(--color-dark);
+    }
+    .page-head__eyebrow {
+      margin: 0 0 0.35rem;
+      font-size: 0.625rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+    h1 {
+      margin: 0 0 0.5rem;
+      font-size: clamp(1.15rem, 4vw, 1.45rem);
+      font-weight: 900;
+      letter-spacing: 0.02em;
+    }
+    .page-head__sub {
+      margin: 0;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .disclaimer {
+      margin: 0 0 1.25rem;
+      padding: 0.75rem 0.9rem;
+      font-size: 0.75rem;
+      line-height: 1.45;
+      background: color-mix(in srgb, var(--color-warning) 14%, var(--color-white));
+      border: 1px solid var(--border-ui);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+    nav.toc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+    nav.toc a {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.35rem 0.55rem;
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--color-dark);
+      background: var(--color-white);
+      border: 1px solid var(--border-ui);
+    }
+    nav.toc a:hover {
+      background: color-mix(in srgb, var(--color-accent1) 14%, var(--color-white));
+      border-color: var(--color-accent2);
+    }
+    section.block {
+      margin-bottom: 1.35rem;
+      background: var(--color-white);
+      border: 1px solid var(--border-ui);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    section.block h2 {
+      margin: 0;
+      padding: 0.65rem 1rem;
+      font-size: 0.9375rem;
+      font-weight: 800;
+      color: var(--color-white);
+      background: linear-gradient(
+        118deg,
+        color-mix(in srgb, var(--color-dark) 45%, var(--color-accent3)) 0%,
+        color-mix(in srgb, var(--color-accent4) 55%, var(--color-accent5)) 100%
+      );
+    }
+    .block__body {
+      padding: 1rem;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(11.5rem, 1fr));
+      gap: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .field {
+      min-width: 0;
+    }
+    .field label {
+      display: block;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .field input,
+    .field select {
+      width: 100%;
+      padding: 0.45rem 0.5rem;
+      font-size: 0.875rem;
+      border: 1px solid var(--border-ui);
+      border-radius: 6px;
+      font-family: inherit;
+    }
+    .field-hint {
+      margin: 0.2rem 0 0;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+    .calc-section {
+      margin: 0 0 1.15rem;
+      padding: 0.85rem 0.9rem;
+      border: 1px solid var(--border-ui);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--color-bg) 55%, var(--color-white));
+    }
+    .calc-section h3 {
+      margin: 0 0 0.55rem;
+      font-size: 0.8125rem;
+      font-weight: 800;
+      color: var(--color-dark);
+    }
+    .calc-out {
+      margin: 0.65rem 0 0;
+      padding: 0.55rem 0.65rem;
+      font-size: 0.8125rem;
+      line-height: 1.45;
+      border-radius: 6px;
+      border: 1px solid var(--border-ui);
+      background: var(--color-white);
+    }
+    .calc-out strong {
+      color: var(--color-dark);
+    }
+    .row-check {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin: 0 0 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .row-check input {
+      width: auto;
+    }
+    .btn-small {
+      margin-top: 0.35rem;
+      padding: 0.35rem 0.65rem;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      border: 1px solid var(--border-ui);
+      border-radius: 6px;
+      background: var(--color-white);
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--color-dark);
+    }
+    .btn-small:hover {
+      background: color-mix(in srgb, var(--color-accent1) 12%, var(--color-white));
+    }
+    input[readonly] {
+      background: color-mix(in srgb, var(--color-dark) 5%, var(--color-white));
+      color: var(--text-muted);
+    }
+    .field-span-2 {
+      grid-column: span 2;
+    }
+    @media (max-width: 520px) {
+      .field-span-2 {
+        grid-column: span 1;
+      }
+    }
+    .actions-panel {
+      margin: 0 0 1.35rem;
+      padding: 1rem 1rem 1.05rem;
+      background: var(--color-white);
+      border: 2px solid var(--color-dark);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+    }
+    .actions-panel h2 {
+      margin: 0 0 0.65rem;
+      font-size: 1rem;
+      font-weight: 900;
+      color: var(--color-dark);
+    }
+    .actions-panel__sub {
+      margin: 0 0 0.75rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+    ol.action-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: act;
+    }
+    ol.action-list li {
+      counter-increment: act;
+      position: relative;
+      margin: 0 0 0.55rem;
+      padding: 0.55rem 0.65rem 0.55rem 2.35rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-ui);
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      background: color-mix(in srgb, var(--color-bg) 35%, var(--color-white));
+    }
+    ol.action-list li::before {
+      content: counter(act);
+      position: absolute;
+      left: 0.55rem;
+      top: 0.5rem;
+      width: 1.45rem;
+      height: 1.45rem;
+      line-height: 1.45rem;
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 900;
+      border-radius: 50%;
+      color: var(--color-white);
+      background: var(--color-accent2);
+    }
+    ol.action-list li.action--high {
+      border-color: color-mix(in srgb, var(--color-danger) 45%, var(--border-ui));
+      background: color-mix(in srgb, var(--color-danger) 8%, var(--color-white));
+    }
+    ol.action-list li.action--high::before {
+      background: var(--color-danger);
+    }
+    ol.action-list li.action--med {
+      border-color: color-mix(in srgb, var(--color-warning) 50%, var(--border-ui));
+      background: color-mix(in srgb, var(--color-warning) 10%, var(--color-white));
+    }
+    ol.action-list li.action--med::before {
+      background: var(--color-warning);
+    }
+    ol.action-list li.action--low::before {
+      background: var(--color-accent4);
+    }
+    .action-empty {
+      margin: 0;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+    .sync-hint {
+      margin: 0.75rem 0 0;
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+    }
+    table.simple {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+    }
+    table.simple th,
+    table.simple td {
+      border: 1px solid var(--border-ui);
+      padding: 0.45rem 0.5rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    table.simple th {
+      background: color-mix(in srgb, var(--color-dark) 6%, var(--color-white));
+      font-weight: 700;
+    }
+    details.ref-details {
+      margin-top: 0.5rem;
+      font-size: 0.8125rem;
+    }
+    details.ref-details summary {
+      cursor: pointer;
+      font-weight: 800;
+      color: var(--color-dark);
+      padding: 0.35rem 0;
+    }
+    .links a {
+      color: var(--color-dark);
+      font-weight: 700;
+      word-break: break-all;
+    }
+    .vocal-official-row {
+      margin: 0 0 1rem;
+    }
+    a.vocal-official-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.55rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--color-white);
+      background: linear-gradient(
+        118deg,
+        color-mix(in srgb, var(--color-dark) 40%, var(--color-accent3)) 0%,
+        color-mix(in srgb, var(--color-accent4) 55%, var(--color-accent5)) 100%
+      );
+      border-radius: 8px;
+      border: 1px solid var(--border-ui);
+      box-shadow: var(--shadow);
+    }
+    a.vocal-official-btn:hover {
+      filter: brightness(1.04);
+    }
+    .vocal-doc {
+      margin: 0 0 0.65rem;
+      font-size: 0.75rem;
+      line-height: 1.55;
+      color: var(--text-muted);
+    }
+    .vocal-doc ul {
+      margin: 0.35rem 0 0;
+      padding-left: 1.15rem;
+    }
+    .vocal-doc li {
+      margin-bottom: 0.35rem;
+    }
+    .vocal-doc strong {
+      color: var(--color-dark);
+    }
+    footer {
+      margin-top: 2rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border-ui);
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+    }
+    .ref-cite-box {
+      margin: 0 0 1rem;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.8125rem;
+      line-height: 1.55;
+      color: var(--color-dark);
+      background: color-mix(in srgb, var(--color-accent5) 10%, var(--color-white));
+      border: 1px solid var(--border-ui);
+      border-radius: 8px;
+    }
+    .ref-cite-box dt {
+      margin: 0.45rem 0 0;
+      font-weight: 800;
+      font-size: 0.75rem;
+      color: var(--color-dark);
+    }
+    .ref-cite-box dd {
+      margin: 0.12rem 0 0;
+      padding: 0;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="scene" aria-hidden="true">
+    <div class="scene__a"></div>
+    <div class="scene__b"></div>
+    <div class="scene__band"></div>
+  </div>
+  <div class="wrap">
+    <p class="back"><a href="../portal/index.html">← Clinical Lounge 入口</a></p>
+
+    <header class="page-head">
+      <p class="page-head__eyebrow">
+        ACG Clinical Guideline: Perioperative Risk Assessment and Management in Patients With Cirrhosis（Am J Gastroenterol. 2025;120:1968–1984）
+      </p>
+      <h1>周術期肝硬変：周術期リスク補助ツール</h1>
+      <p class="page-head__sub">
+        本ツールは上記 ACG ガイドラインに基づき、<strong>肝硬変患者の周術期意思決定を支援する補助ツール</strong>です。表示は診療の代替ではありません。同期オンで<strong>共通検査値</strong>を MELD・CTP に反映し、<strong>FIB-4</strong>は自動計算、<strong>VOCAL-Penn</strong>は公式計算機の％を転記してください。入力に応じて<strong>次のアクション</strong>が更新されます。
+      </p>
+    </header>
+
+    <nav class="toc" aria-label="ページ内リンク">
+      <a href="#actions">次のアクション</a>
+      <a href="#input">入力</a>
+      <a href="#ref">参考</a>
+      <a href="#ref-cite">参照一覧</a>
+    </nav>
+
+    <div class="actions-panel" id="actions">
+      <h2>次のアクション（推奨フロー）</h2>
+      <p class="actions-panel__sub">
+        上から優先して確認してください。<span class="action-legend">赤＝緊急度高／黄＝要検討・多職種／緑系＝ルーティン・記録推奨。</span><br />
+        <span style="font-size:0.72rem;color:var(--text-muted)"
+          >文末の〔ACG〕〔GRADE〕〔KC〕〔任意〕〔文献〕は<a href="#ref-cite">参考の参照一覧</a>と対応します。</span>
+      </p>
+      <ol class="action-list" id="action-list" aria-live="polite"></ol>
+      <p class="sync-hint">項目を変更すると即時に再計算されます。</p>
+    </div>
+
+    <section class="block" id="input">
+      <h2>臨床情報の入力</h2>
+      <div class="block__body">
+        <p style="margin:0 0 0.85rem;font-size:0.8125rem;line-height:1.55;color:var(--color-dark)">
+          <strong>根拠</strong>：Mahmud N, Fricker ZP, McElroy LM, Qayed E, Wong RJ, Ioannou GN. <cite>ACG Clinical Guideline: Perioperative Risk Assessment and Management in Patients With Cirrhosis</cite>. <i>Am J Gastroenterol</i>. 2025;120:1968–1984. <a href="https://doi.org/10.14309/ajg.0000000000003616" rel="noopener noreferrer" target="_blank">doi:10.14309/ajg.0000000000003616</a>（published online September 3, 2025）。
+        </p>
+
+        <div class="calc-section" id="csph-lsm-plt" style="margin-top:0;margin-bottom:1rem">
+          <h3>CSPH（臨床的有意門脈圧亢進）の目安：LSM ＋ 血小板（代償性 cACLD）</h3>
+          <div style="overflow-x:auto;margin:0">
+            <table class="simple" aria-label="CSPH（LSM＋血小板）ルール">
+              <thead>
+                <tr>
+                  <th>区分</th>
+                  <th>条件</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Rule in</strong></td>
+                  <td>LSM ≥25 kPa（血小板値に関わらず）</td>
+                </tr>
+                <tr>
+                  <td><strong>高確率</strong></td>
+                  <td>LSM 20–24.9 kPa かつ血小板 &lt;150（×10³/µL）<br />または LSM 15–19.9 kPa かつ血小板 &lt;110</td>
+                </tr>
+                <tr>
+                  <td><strong>Rule out</strong></td>
+                  <td>LSM &lt;15 kPa かつ血小板 ≥150</td>
+                </tr>
+                <tr>
+                  <td><strong>それ以外</strong></td>
+                  <td>境界域（CT/MRI・HVPG 測定などの追加評価を検討）</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="field-hint" style="margin:0.55rem 0 0">
+            下の<strong>LSM</strong>と<strong>共通検査値の血小板</strong>を入力すると、このルールに沿った CSPH 推定が「次のアクション」に反映されます。
+          </p>
+        </div>
+
+        <div class="form-grid">
+          <div class="field field-span-2">
+            <label for="liver-status">肝疾患のステージ（確立度）</label>
+            <select id="liver-status">
+              <option value="unknown">線維化／肝硬変が未確立（要スクリーニング）</option>
+              <option value="no_advanced">進行線維化・肝硬変なし（または臨床的に低疑い）</option>
+              <option value="compensated">代償性肝硬変（cACLD）</option>
+              <option value="decompensated">非代償性肝硬変（腹水・HE・静脈瘤出血など）</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="lsm">LSM（kPa・任意）</label>
+            <input id="lsm" type="number" step="0.1" min="0" placeholder="例: 18.5" />
+          </div>
+          <div class="field">
+            <label for="asa">ASA 分類</label>
+            <select id="asa">
+              <option value="I">I</option>
+              <option value="II">II</option>
+              <option value="III" selected>III</option>
+              <option value="IV">IV</option>
+              <option value="V">V</option>
+              <option value="VI">VI</option>
+            </select>
+            <p class="field-hint">公式 VOCAL では 2/3/4 から選択。本ツールの I・II→2、III→3、IV→4、V・VI は対象外（下のセクションに対応表あり）。</p>
+          </div>
+          <div class="field field-span-2">
+            <label for="surgery">予定術式（カテゴリ）</label>
+            <select id="surgery">
+              <option value="superficial">体表・局所（小切除、皮膚等）</option>
+              <option value="hernia">腹壁ヘルニア修復</option>
+              <option value="chole">腹腔鏡下胆嚢摘出など（腹部・中程度）</option>
+              <option value="abdomen">腹部手術（その他・中〜大）</option>
+              <option value="abdomen_major">腹部大手術（高度侵襲）</option>
+              <option value="thoracic_major">胸部大手術</option>
+              <option value="cardiac">心臓手術</option>
+              <option value="major_orthopedic">整形外科（人工関節・大腿骨頸部骨折 ORIF・大腿／下腿切断 など）</option>
+              <option value="bariatric">肥満手術（バリアトリック）</option>
+              <option value="hepatectomy">主要肝切除・肝門部など</option>
+              <option value="other">その他・不明</option>
+            </select>
+            <p class="field-hint">
+              整形外科は ACG 推奨が術式起因で分岐しないため、本ツールから術式特異の追加メッセージは出ません。リスク％は公式 VOCAL で
+              <strong>Major orthopedic</strong> を選び、下の VOCAL セクションに 90 日死亡% を転記してください。
+            </p>
+          </div>
+          <div class="field">
+            <label for="ascites">腹水（周術期リスク・ヘルニア文脈）</label>
+            <select id="ascites">
+              <option value="no" selected>なし／軽度でコントロール良好</option>
+              <option value="yes">あり（活動性・中〜高度）</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="calc-section" id="nutrition-calc">
+          <h3>栄養・フレイル（ACG Key Concepts 16・17）</h3>
+          <p class="field-hint" style="margin:0 0 0.55rem">
+            目標は<strong>理想体重（IBW）</strong>換算：30–35 kcal/kg/日、蛋白 1.25–1.5 g/kg/日。腹水・浮腫があれば実体重ではなく
+            <strong>dry weight</strong> を入力してください。
+          </p>
+          <div class="form-grid">
+            <div class="field">
+              <label for="patient-height">身長（cm）</label>
+              <input id="patient-height" type="number" step="0.1" min="80" max="220" placeholder="例: 165" />
+            </div>
+            <div class="field">
+              <label for="patient-weight">体重（kg・dry weight 推奨）<span style="font-weight:normal;font-size:0.85em;color:var(--text-light)"> ※スコア計算には使用しません（栄養目標表示のみ）</span></label>
+              <input id="patient-weight" type="number" step="0.1" min="20" max="200" placeholder="例: 58" />
+            </div>
+            <div class="field">
+              <label for="frailty">フレイル／サルコペニア</label>
+              <select id="frailty">
+                <option value="unknown" selected>未評価／不明</option>
+                <option value="no">明らかになし</option>
+                <option value="suspect">疑い（握力低下・歩行緩慢・体重減少 など）</option>
+                <option value="yes">確実（評価ツールや所見で陽性）</option>
+              </select>
+            </div>
+          </div>
+          <div class="calc-out" id="nutrition-out" aria-live="polite">身長・体重を入力すると IBW と栄養目標が表示されます。</div>
+        </div>
+
+        <div class="calc-section" id="common-labs">
+          <h3>共通検査値（各スコアへ反映）</h3>
+          <label class="row-check"
+            ><input type="checkbox" id="lab-sync" checked /> 総ビリ・Alb・INR・Cr を MELD・CTP に自動コピー（オフにすると各欄を個別編集可）</label
+          >
+          <div class="form-grid">
+            <div class="field">
+              <label for="patient-age">年齢（歳）</label>
+              <input id="patient-age" type="number" step="1" min="1" max="120" placeholder="例: 68" />
+            </div>
+            <div class="field">
+              <label for="plt">血小板（×10³/µL）</label>
+              <input id="plt" type="number" step="1" min="0" placeholder="例: 95" />
+            </div>
+            <div class="field">
+              <label for="lab-ast">AST（U/L）</label>
+              <input id="lab-ast" type="number" step="1" min="0" placeholder="FIB-4 用" />
+            </div>
+            <div class="field">
+              <label for="lab-alt">ALT（U/L）</label>
+              <input id="lab-alt" type="number" step="1" min="0" placeholder="FIB-4 用" />
+            </div>
+            <div class="field">
+              <label for="lab-tbili">総ビリルビン（mg/dL）</label>
+              <input id="lab-tbili" type="number" step="0.01" min="0" placeholder="例: 1.2" />
+            </div>
+            <div class="field">
+              <label for="lab-alb">アルブミン（g/dL）</label>
+              <input id="lab-alb" type="number" step="0.01" min="0" placeholder="例: 3.4" />
+            </div>
+            <div class="field">
+              <label for="lab-inr">INR</label>
+              <input id="lab-inr" type="number" step="0.01" min="0" placeholder="例: 1.3" />
+            </div>
+            <div class="field">
+              <label for="lab-cr">クレアチニン（mg/dL）</label>
+              <input id="lab-cr" type="number" step="0.01" min="0" placeholder="例: 0.9" />
+            </div>
+          </div>
+          <p class="field-hint" style="margin:0.35rem 0 0">
+            血小板は ×10³/µL（10⁹/L と数値同じ）。同期オン時、MELD・CTP の検査値欄は読み取り専用になります（Na・透析・CTP の腹水/脳症は各ブロックで入力）。VOCAL-Penn は下記ブロックで公式サイトへ誘導し、結果のみ手入力します。
+          </p>
+        </div>
+
+        <div class="calc-section" id="fib4-calc">
+          <h3>FIB-4（自動計算）</h3>
+          <p style="margin:0 0 0.5rem;font-size:0.75rem;color:var(--text-muted);line-height:1.45">
+            <strong>式</strong>：（年齢 × AST）/（血小板 [×10³/µL] × √ALT）。上の共通検査値を使用します。
+          </p>
+          <div class="calc-out" id="fib4-out" aria-live="polite">年齢・AST・ALT・血小板を入力すると FIB-4 が表示されます。</div>
+        </div>
+
+        <div class="calc-section" id="meld-calc">
+          <h3>MELD / MELD-Na（検査値から算出）</h3>
+          <label class="row-check"><input type="checkbox" id="meld-auto" checked /> クレアチニン・ビリルビン・INR から MELD を自動計算する</label>
+          <div class="form-grid">
+            <div class="field">
+              <label for="meld-cr">クレアチニン（mg/dL）</label>
+              <input id="meld-cr" type="number" step="0.01" min="0" placeholder="例: 1.1" />
+            </div>
+            <div class="field">
+              <label for="meld-bili">総ビリルビン（mg/dL）</label>
+              <input id="meld-bili" type="number" step="0.01" min="0" placeholder="例: 1.5" />
+            </div>
+            <div class="field">
+              <label for="meld-inr">INR</label>
+              <input id="meld-inr" type="number" step="0.01" min="0" placeholder="例: 1.3" />
+            </div>
+            <div class="field">
+              <label for="meld-na">Na（mEq/L・任意・MELD-Na）</label>
+              <input id="meld-na" type="number" step="1" min="100" max="160" placeholder="空欄可" />
+            </div>
+            <div class="field field-span-2">
+              <label class="row-check" style="margin:0"
+                ><input type="checkbox" id="meld-dialysis" /> 透析：週 2 回以上（または 24h CVVHD）→ Cr を 4.0 として計算</label
+              >
+            </div>
+            <div class="field field-span-2" id="meld-manual-wrap" hidden>
+              <label for="meld-manual">MELD（手入力）</label>
+              <input id="meld-manual" type="number" step="1" min="1" max="60" placeholder="自動計算オフのとき" />
+            </div>
+          </div>
+          <div class="calc-out" id="meld-out" aria-live="polite">検査値を入力すると MELD が表示されます。</div>
+        </div>
+
+        <div class="calc-section" id="ctp-calc">
+          <h3>Child–Turcotte–Pugh（各項目から点数・分類）</h3>
+          <label class="row-check"><input type="checkbox" id="ctp-auto" checked /> 以下の 5 項目から CTP を自動計算する</label>
+          <div class="form-grid">
+            <div class="field">
+              <label for="ctp-bili">総ビリルビン（mg/dL）</label>
+              <input id="ctp-bili" type="number" step="0.01" min="0" placeholder="例: 1.8" />
+            </div>
+            <div class="field">
+              <label for="ctp-alb">アルブミン（g/dL）</label>
+              <input id="ctp-alb" type="number" step="0.01" min="0" placeholder="例: 3.2" />
+            </div>
+            <div class="field">
+              <label for="ctp-inr">INR</label>
+              <input id="ctp-inr" type="number" step="0.01" min="0" placeholder="例: 1.5" />
+            </div>
+            <div class="field">
+              <label for="ctp-ascites">腹水（CTP 用）</label>
+              <select id="ctp-ascites">
+                <option value="none">なし</option>
+                <option value="slight">軽度（薬剤でコントロール）</option>
+                <option value="moderate">中〜高度（難治性に近い）</option>
+              </select>
+            </div>
+            <div class="field field-span-2">
+              <label for="ctp-he">肝性脳症</label>
+              <select id="ctp-he">
+                <option value="none">なし</option>
+                <option value="mild">Grade 1–2</option>
+                <option value="severe">Grade 3–4</option>
+              </select>
+            </div>
+            <div class="field field-span-2" id="ctp-manual-wrap" hidden>
+              <label for="ctp-manual">CTP 分類（手入力）</label>
+              <select id="ctp-manual">
+                <option value="">未入力</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+              </select>
+            </div>
+          </div>
+          <div class="calc-out" id="ctp-out" aria-live="polite">5 項目を入力すると合計点・A/B/C が表示されます。</div>
+        </div>
+
+        <div class="calc-section" id="vocal-calc">
+          <h3>VOCAL-Penn（公式計算機 → 結果の手入力）</h3>
+          <p class="vocal-doc" style="margin-top:0">
+            <strong>考え方</strong>：VOCAL-Penn は肝硬変患者の<strong>術式カテゴリ・緊急度・全身状態（ASA）・検査値</strong>などを組み合わせ、<strong>術後死亡や失代償のリスクを確率で提示</strong>するツールです。MELD / CTP 単独では捉えにくい「その手術でのリスク」を整理するために〔ACG〕でも参照されます。予測は<strong>臨床判断の補助</strong>であり、決定の唯一の根拠にはしません。
+          </p>
+          <p class="vocal-official-row">
+            <a
+              class="vocal-official-btn"
+              href="https://www.vocalpennscore.com/"
+              rel="noopener noreferrer"
+              target="_blank"
+              >VOCAL-Penn 公式計算機を開く →</a
+            >
+          </p>
+
+          <p class="vocal-doc"><strong>公式サイトで入力・選択する項目（要点）</strong></p>
+          <ul class="vocal-doc" style="margin:0 0 0.75rem;padding-left:1.15rem">
+            <li><strong>年齢</strong>（歳）</li>
+            <li><strong>アルブミン・総ビリルビン・血小板</strong>（サイトの単位切替 SI / 従来に注意。日本の常用と異なる場合は換算）</li>
+            <li><strong>BMI ≥ 30</strong> の有無</li>
+            <li><strong>MASLD</strong>（代謝機能障害関連脂肪性肝疾患としての肝硬変）の有無</li>
+            <li><strong>ASA スコア</strong>：サイトでは主に <strong>2 / 3 / 4</strong> が選択対象（原著でも ASA 1・5・6 は検証対象外との記載があります）。本ツール上部の ASA（I–VI）とは別なので、麻酔記録に合わせてサイト側で選び直してください。</li>
+          </ul>
+          <div style="overflow-x:auto;margin:0 0 0.85rem">
+            <table class="simple" aria-label="本ツール ASA と公式 VOCAL の ASA 対応">
+              <thead>
+                <tr>
+                  <th>本ツール（上部の ASA）</th>
+                  <th>公式 VOCAL で選ぶ ASA</th>
+                  <th>メモ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>I・II</td>
+                  <td><strong>2</strong></td>
+                  <td>軽度〜中等度の全身性疾患</td>
+                </tr>
+                <tr>
+                  <td>III</td>
+                  <td><strong>3</strong></td>
+                  <td>重度の全身性疾患</td>
+                </tr>
+                <tr>
+                  <td>IV</td>
+                  <td><strong>4</strong></td>
+                  <td>生命を脅かす重度の全身性疾患</td>
+                </tr>
+                <tr>
+                  <td>V・VI</td>
+                  <td>—</td>
+                  <td>原著では検証対象外。VOCAL 適用の妥当性を多職種で検討。無理に当てはめる場合は<strong>4</strong>に近いが、予測％は参考に留めるか公式結果を用いない判断も可。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <ul class="vocal-doc" style="margin:0 0 0.75rem;padding-left:1.15rem">
+            <li><strong>緊急手術</strong>の有無（その症例が緊急適応か）</li>
+            <li><strong>術式タイプ</strong>（次の 6 カテゴリから<strong>1つ</strong>。実際の術式が複数にまたがるときは、チームで最も近いカテゴリを決める）</li>
+          </ul>
+
+          <details class="ref-details" style="margin:0 0 0.65rem">
+            <summary>術式カテゴリ（公式 6 分類）の内容・例</summary>
+            <div style="overflow-x:auto;margin-top:0.45rem">
+              <table class="simple">
+                <thead>
+                  <tr>
+                    <th>カテゴリ</th>
+                    <th>例（サイト記載の代表例）</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Abdominal（腹腔鏡）</td>
+                    <td>胆嚢摘出、虫垂切除、腹腔鏡下探査・洗浄など</td>
+                  </tr>
+                  <tr>
+                    <td>Abdominal（開腹）</td>
+                    <td>開腹による腹部大手術</td>
+                  </tr>
+                  <tr>
+                    <td>Abdominal wall</td>
+                    <td>鼠径ヘルニア・臍ヘルニア・切開ヘルニア修復など</td>
+                  </tr>
+                  <tr>
+                    <td>Vascular</td>
+                    <td>大動脈瘤、バイパス、頸動脈内膜切除など</td>
+                  </tr>
+                  <tr>
+                    <td>Major orthopedic</td>
+                    <td>人工膝関節全置換術（TKA）、人工股関節全置換術（THA）、大腿切断、下腿（脛骨／腓骨）切断、大腿骨頸部骨折の観血的整復内固定 など</td>
+                  </tr>
+                  <tr>
+                    <td>Chest / Cardiac</td>
+                    <td>肺葉切除、弁置換、CABG など（サイトに除外術式の記載あり）</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="vocal-doc" style="margin-top:0.45rem">
+              <strong>除外の例</strong>：部分肝切除など<strong>肝特有の手術</strong>、一部経カテーテル的大動脈弁などはモデル対象外の記載があります。該当時はサイトの説明と禁忌・脚注を確認してください。
+            </p>
+          </details>
+
+          <details class="ref-details" style="margin:0 0 0.85rem">
+            <summary>本ツールの「予定術式」と公式カテゴリの対応（入力時のメモ）</summary>
+            <ul class="vocal-doc" style="padding-left:1.15rem;margin:0.45rem 0 0">
+              <li>腹壁ヘルニア → <strong>Abdominal wall</strong></li>
+              <li>腹腔鏡胆嚢・腹部（中程度・腹腔鏡想定）→ 多くは <strong>Abdominal（腹腔鏡）</strong></li>
+              <li>腹部大手術 → <strong>Abdominal（開腹）</strong>が近いことが多い</li>
+              <li>胸部大手術・心臓手術 → <strong>Chest / Cardiac</strong></li>
+              <li>整形（人工関節・大腿／下腿切断・大腿骨頸部骨折 ORIF など）→ <strong>Major orthopedic</strong></li>
+              <li>血管 → <strong>Vascular</strong></li>
+              <li>主要肝切除 → サイト上<strong>対象外の可能性</strong>を確認</li>
+            </ul>
+          </details>
+
+          <p class="vocal-doc"><strong>手順</strong>：① 上記を公式サイトに入力 → ② 表示された<strong>90-day mortality（％）</strong>を下に転記（サイトは 30 日・180 日・失代償なども表示しますが、本ツールでは入力値として<strong>90 日死亡</strong>を優先して使用します〔KC〕）。</p>
+
+          <div class="form-grid">
+            <div class="field field-span-2">
+              <label for="vocal-pct">公式サイトの <strong>90 日死亡リスク（％）</strong></label>
+              <input id="vocal-pct" type="number" step="0.1" min="0" max="100" placeholder="例: 12.5（公式の数値をそのまま）" />
+              <p class="field-hint">
+                ここが入力されていれば「次のアクション」の VOCAL 関連判定に使われます（>15% で移植評価を考慮する目安など〔KC〕）。
+              </p>
+            </div>
+            <div class="field field-span-2">
+              <label for="vocal-band">％の転記ができないときのみ（区分だけ分かる場合）</label>
+              <select id="vocal-band">
+                <option value="unknown" selected>％を上に入力（推奨）</option>
+                <option value="lt15">公式で 90 日死亡が 15% 未満と分かるのみ</option>
+                <option value="gte15">公式で 90 日死亡が 15% 以上と分かるのみ</option>
+              </select>
+              <p class="field-hint">上に％があるときは区分は無視されます。</p>
+            </div>
+          </div>
+          <div class="calc-out" id="vocal-out" aria-live="polite">公式計算機で 90 日死亡（%）を確認し、上欄に入力してください。</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="ref">
+      <h2>参考（折りたたみ）</h2>
+      <div class="block__body">
+        <div id="ref-cite" class="ref-cite-box">
+          <strong>参考文献・参照一覧</strong>
+          <p style="margin:0.35rem 0 0;font-size:0.75rem;color:var(--text-muted)">
+            「次のアクション」やページ内の<strong>角括弧〔 〕</strong>は、いずれも次の区分です。原著は
+            Mahmud N, Fricker ZP, McElroy LM, Qayed E, Wong RJ, Ioannou GN. <cite>ACG Clinical Guideline: Perioperative Risk Assessment and Management in Patients With Cirrhosis</cite>. <i>Am J Gastroenterol</i>. 2025;120:1968–1984. <a href="https://doi.org/10.14309/ajg.0000000000003616" rel="noopener noreferrer" target="_blank">doi:10.14309/ajg.0000000000003616</a>。
+          </p>
+          <ol style="margin:0.55rem 0 0;padding-left:1.1rem;font-size:0.75rem;color:var(--text-muted);line-height:1.5">
+            <li>
+              Mahmud N, Fricker ZP, McElroy LM, Qayed E, Wong RJ, Ioannou GN. <cite>ACG Clinical Guideline: Perioperative Risk Assessment and Management in Patients With Cirrhosis</cite>. <i>Am J Gastroenterol</i>. 2025;120:1968–1984. <a href="https://doi.org/10.14309/ajg.0000000000003616" rel="noopener noreferrer" target="_blank">doi:10.14309/ajg.0000000000003616</a>.
+            </li>
+            <li>
+              VOCAL-Penn Score（web calculator）. <a href="https://www.vocalpennscore.com/" rel="noopener noreferrer" target="_blank">https://www.vocalpennscore.com/</a>. Accessed 2026-05-06.
+            </li>
+          </ol>
+          <dl style="margin:0.5rem 0 0">
+            <dt>〔ACG〕</dt>
+            <dd>上記ガイドライン本文に直接沿った記載（GRADE／KC のどちらにも番号で結びつかない一般記述を含む）。</dd>
+            <dt>〔GRADE〕</dt>
+            <dd>GRADE により推奨の強さが示された項目。下の<strong>GRADE 推奨 4 項目（要約）</strong>と対応。</dd>
+            <dt>〔KC〕</dt>
+            <dd>Key Concepts。ガイドラインの「Key concepts」の記載に基づく要点（必要に応じて KC 番号を併記）。</dd>
+            <dt>〔任意〕</dt>
+            <dd>ガイドラインが<strong>追加評価の選択肢</strong>として言及するオプション（例：HVPG）。必須手順ではない。</dd>
+            <dt>〔文献〕</dt>
+            <dd>ガイドラインが引用する研究・レビューに即した数値・レンジの記述（単独の ACG 条文というよりエビデンス報告側）。</dd>
+          </dl>
+        </div>
+
+        <h3 style="margin:0.85rem 0 0.25rem;font-size:0.95rem">GRADE 推奨（ACG ガイドライン）</h3>
+        <p style="margin:0 0 0.5rem;font-size:0.75rem;color:var(--text-muted);line-height:1.5">
+          本ガイドラインの GRADE による推奨は、要約表（Table 2）で <strong>4 項目</strong>が提示されています。
+        </p>
+        <div style="overflow-x:auto;margin-top:0.5rem">
+          <table class="simple">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>推奨（要約）</th>
+                <th>強さ</th>
+                <th>エビデンス</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>代償性で CSPH 不明瞭 → LSM＋PLT ＋ CT/MRI</td>
+                <td>条件付き</td>
+                <td>非常に低い</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>PLT &lt;50K → TPO 受容体作動薬（用量は添付文書）</td>
+                <td>強い</td>
+                <td>中等度</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>CSPH＋大手術で TIPS の別適応があれば術前 TIPS を検討</td>
+                <td>条件付き</td>
+                <td>非常に低い</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>主要肝手術 → 高容量肝外科／移植センターへ</td>
+                <td>条件付き</td>
+                <td>非常に低い</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>
+        出典：Mahmud N, Fricker ZP, McElroy LM, Qayed E, Wong RJ, Ioannou GN. <cite>ACG Clinical Guideline: Perioperative Risk Assessment and Management in Patients With Cirrhosis</cite>. <i>Am J Gastroenterol</i>. 2025;120:1968–1984. <a href="https://doi.org/10.14309/ajg.0000000000003616" rel="noopener noreferrer" target="_blank">doi:10.14309/ajg.0000000000003616</a>.
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      document.title = "周術期肝硬変：周術期リスク補助ツール（ACG）";
+      var PRIO = { HIGH: "high", MED: "med", LOW: "low" };
+
+      function parseOptFloat(id) {
+        var el = document.getElementById(id);
+        var v = parseFloat(el.value);
+        return el.value === "" || isNaN(v) ? null : v;
+      }
+
+      function parseOptInt(id) {
+        var el = document.getElementById(id);
+        var v = parseInt(el.value, 10);
+        return el.value === "" || isNaN(v) ? null : v;
+      }
+
+      function val(id) {
+        return document.getElementById(id).value;
+      }
+
+      function checked(id) {
+        return document.getElementById(id).checked;
+      }
+
+      var LAB_MIRROR_IDS = ["meld-cr", "meld-bili", "meld-inr", "ctp-bili", "ctp-alb", "ctp-inr"];
+
+      /** FIB-4 = (年齢 × AST) / (PLT[×10³/µL] × √ALT)。AST/ALT は U/L。 */
+      function computeFib4FromLabs(age, ast, alt, pltK) {
+        if (age == null || ast == null || alt == null || pltK == null) return null;
+        if (isNaN(age) || isNaN(ast) || isNaN(alt) || isNaN(pltK)) return null;
+        if (age <= 0 || ast < 0 || alt <= 0 || pltK <= 0) return null;
+        var fib = (age * ast) / (pltK * Math.sqrt(alt));
+        return Math.round(fib * 100) / 100;
+      }
+
+      function getFib4Score() {
+        return computeFib4FromLabs(parseOptInt("patient-age"), parseOptFloat("lab-ast"), parseOptFloat("lab-alt"), parseOptInt("plt"));
+      }
+
+      function applyLabSync() {
+        var sync = checked("lab-sync");
+        for (var r = 0; r < LAB_MIRROR_IDS.length; r++) {
+          var el = document.getElementById(LAB_MIRROR_IDS[r]);
+          if (el) el.readOnly = sync;
+        }
+        if (!sync) return;
+        function setId(id, src) {
+          var e = document.getElementById(id);
+          if (e) e.value = src;
+        }
+        setId("meld-cr", val("lab-cr"));
+        setId("meld-bili", val("lab-tbili"));
+        setId("meld-inr", val("lab-inr"));
+        setId("ctp-bili", val("lab-tbili"));
+        setId("ctp-alb", val("lab-alb"));
+        setId("ctp-inr", val("lab-inr"));
+      }
+
+      function updateFib4Out() {
+        var el = document.getElementById("fib4-out");
+        if (!el) return;
+        var f = getFib4Score();
+        if (f == null) {
+          el.textContent = "年齢・AST・ALT・血小板を入力すると FIB-4 が表示されます。";
+          return;
+        }
+        el.innerHTML =
+          "<strong>FIB-4:</strong> " +
+          f +
+          "　（目安: ~1.3 未満は低疑い、~2.67 超は進行線維化・肝硬変を強く疑うことが多い／病因で変動）";
+      }
+
+      /** OPTN 式に準ずる MELD（整数）。透析時 Cr 補正。 */
+      function computeMeldFromLabs(crRaw, biliRaw, inrRaw, dialysis) {
+        var cr = parseFloat(crRaw);
+        var bili = parseFloat(biliRaw);
+        var inr = parseFloat(inrRaw);
+        if (isNaN(cr) || isNaN(bili) || isNaN(inr)) return null;
+        if (dialysis) cr = 4.0;
+        cr = Math.max(1, Math.min(cr, 4));
+        bili = Math.max(1, bili);
+        inr = Math.max(1, inr);
+        var meld = 3.78 * Math.log(bili) + 11.2 * Math.log(inr) + 9.57 * Math.log(cr) + 6.43;
+        meld = Math.round(meld);
+        return Math.min(40, Math.max(1, meld));
+      }
+
+      function computeMeldNa(meld, naRaw) {
+        if (meld == null) return null;
+        var na = parseFloat(naRaw);
+        if (isNaN(na)) return null;
+        na = Math.max(125, Math.min(na, 137));
+        var meldNa = meld + 1.32 * (137 - na) - 0.033 * meld * (137 - na);
+        return Math.round(meldNa * 10) / 10;
+      }
+
+      function scoreCTPComponentBili(mgdl) {
+        if (mgdl < 2) return 1;
+        if (mgdl <= 3) return 2;
+        return 3;
+      }
+
+      function scoreCTPComponentAlb(gdl) {
+        if (gdl > 3.5) return 1;
+        if (gdl >= 2.8) return 2;
+        return 3;
+      }
+
+      function scoreCTPComponentInr(inr) {
+        if (inr < 1.7) return 1;
+        if (inr <= 2.3) return 2;
+        return 3;
+      }
+
+      function scoreCTPAscites(key) {
+        if (key === "none") return 1;
+        if (key === "slight") return 2;
+        return 3;
+      }
+
+      function scoreCTPHe(key) {
+        if (key === "none") return 1;
+        if (key === "mild") return 2;
+        return 3;
+      }
+
+      function computeCTPFromInputs() {
+        var b = parseOptFloat("ctp-bili");
+        var a = parseOptFloat("ctp-alb");
+        var i = parseOptFloat("ctp-inr");
+        if (b == null || a == null || i == null) return null;
+        var pts =
+          scoreCTPComponentBili(b) +
+          scoreCTPComponentAlb(a) +
+          scoreCTPComponentInr(i) +
+          scoreCTPAscites(val("ctp-ascites")) +
+          scoreCTPHe(val("ctp-he"));
+        var cls = pts >= 10 ? "C" : pts >= 7 ? "B" : "A";
+        return { points: pts, cls: cls };
+      }
+
+      function getEffectiveMeld() {
+        if (checked("meld-auto")) {
+          return computeMeldFromLabs(val("meld-cr"), val("meld-bili"), val("meld-inr"), checked("meld-dialysis"));
+        }
+        var m = parseOptInt("meld-manual");
+        return m;
+      }
+
+      function getEffectiveCtpClass() {
+        if (checked("ctp-auto")) {
+          var c = computeCTPFromInputs();
+          return c ? c.cls : "";
+        }
+        return val("ctp-manual");
+      }
+
+      function updateMeldOut() {
+        var el = document.getElementById("meld-out");
+        var manualWrap = document.getElementById("meld-manual-wrap");
+        if (checked("meld-auto")) {
+          manualWrap.hidden = true;
+          var m = computeMeldFromLabs(val("meld-cr"), val("meld-bili"), val("meld-inr"), checked("meld-dialysis"));
+          if (m == null) {
+            el.textContent = "クレアチニン・総ビリルビン・INR を入力すると MELD が表示されます。";
+            return;
+          }
+          var mn = computeMeldNa(m, val("meld-na"));
+          el.innerHTML =
+            "<strong>MELD:</strong> " +
+            m +
+            (mn != null ? "　<strong>MELD-Na:</strong> " + mn : "　（Na 未入力のため MELD-Na は未計算）");
+        } else {
+          manualWrap.hidden = false;
+          var mm = parseOptInt("meld-manual");
+          el.textContent =
+            mm != null ? "手入力 MELD: " + mm + "（次のアクションに反映）" : "手入力 MELD を入力するか、自動計算にチェックを入れてください。";
+        }
+      }
+
+      function updateCTPOut() {
+        var el = document.getElementById("ctp-out");
+        var manualWrap = document.getElementById("ctp-manual-wrap");
+        if (checked("ctp-auto")) {
+          manualWrap.hidden = true;
+          var c = computeCTPFromInputs();
+          if (!c) {
+            el.textContent = "ビリルビン・アルブミン・INR・腹水・肝性脳症を入力すると CTP が表示されます。";
+            return;
+          }
+          el.innerHTML =
+            "<strong>CTP 合計点:</strong> " +
+            c.points +
+            " 　<strong>分類:</strong> " +
+            c.cls +
+            "（5–6=A, 7–9=B, 10–15=C）";
+        } else {
+          manualWrap.hidden = false;
+          var cm = val("ctp-manual");
+          el.textContent = cm ? "手入力 CTP: " + cm : "手入力で A/B/C を選ぶか、自動計算にチェックを入れてください。";
+        }
+      }
+
+      function updateVocalOut() {
+        var el = document.getElementById("vocal-out");
+        if (!el) return;
+        var pct = parseOptFloat("vocal-pct");
+        var band = val("vocal-band");
+        var parts = [];
+        if (pct != null) {
+          parts.push("<strong>転記済み 90 日死亡:</strong> " + pct + "%（「次のアクション」に反映）");
+        } else if (band === "lt15") {
+          parts.push("<strong>区分のみ:</strong> 90 日死亡 &lt;15%（％の転記が推奨）");
+        } else if (band === "gte15") {
+          parts.push("<strong>区分のみ:</strong> 90 日死亡 ≥15%（％の転記が推奨）");
+        } else {
+          parts.push("公式計算機で 90-day mortality を確認し、上の％欄へ入力してください。");
+        }
+        if (val("surgery") === "hepatectomy") {
+          parts.push("<strong>メモ:</strong> 部分肝切除などは VOCAL 対象外の記載があります。サイトの説明を確認してください。");
+        }
+        el.innerHTML = parts.join("<br/>");
+      }
+
+      function getIBW() {
+        var h = parseOptFloat("patient-height");
+        if (h == null || h <= 0) return null;
+        var hm = h / 100;
+        return 22 * hm * hm;
+      }
+
+      function getNutritionTargets() {
+        var ibw = getIBW();
+        if (ibw == null) return null;
+        var kcalLow = Math.round(ibw * 30);
+        var kcalHigh = Math.round(ibw * 35);
+        var pLow = Math.round(ibw * 1.25 * 10) / 10;
+        var pHigh = Math.round(ibw * 1.5 * 10) / 10;
+        return { ibw: ibw, kcalLow: kcalLow, kcalHigh: kcalHigh, pLow: pLow, pHigh: pHigh };
+      }
+
+      function updateNutritionOut() {
+        var el = document.getElementById("nutrition-out");
+        if (!el) return;
+        var t = getNutritionTargets();
+        if (!t) {
+          el.textContent = "身長・体重を入力すると IBW と栄養目標が表示されます。";
+          return;
+        }
+        el.innerHTML =
+          "<strong>IBW（22×身長m²）:</strong> " +
+          t.ibw.toFixed(1) +
+          " kg<br/>" +
+          "<strong>目標カロリー:</strong> " +
+          t.kcalLow +
+          "–" +
+          t.kcalHigh +
+          " kcal/日<br/>" +
+          "<strong>目標蛋白:</strong> " +
+          t.pLow +
+          "–" +
+          t.pHigh +
+          " g/日（HE があっても制限しない）";
+      }
+
+      function csphBand(lsm, plt) {
+        if (lsm == null || plt == null || lsm < 0 || plt < 0) return null;
+        if (lsm >= 25) return "rulein";
+        if (lsm < 15 && plt >= 150) return "ruleout";
+        if (lsm >= 20 && lsm < 25 && plt < 150) return "probable";
+        if (lsm >= 15 && lsm < 20 && plt < 110) return "probable";
+        return "gray";
+      }
+
+      function vocalOutcome() {
+        var pctManual = parseOptFloat("vocal-pct");
+        if (pctManual != null) {
+          if (pctManual > 15) return "gte15";
+          return "lt15";
+        }
+        return val("vocal-band");
+      }
+
+      function isMajorAbdoThoracic(surgery) {
+        return (
+          surgery === "abdomen_major" ||
+          surgery === "thoracic_major" ||
+          surgery === "cardiac"
+        );
+      }
+
+      function meldInLowPearlRange(meld) {
+        return meld != null && meld >= 6 && meld <= 9;
+      }
+
+      function ctpIsMild(ctp) {
+        return ctp === "A"; /* KC-3: CTP 5–6 点（Class A のみ）が対象 */
+      }
+
+      function collectActions() {
+        var liver = val("liver-status");
+        var fib4 = getFib4Score();
+        var lsm = parseOptFloat("lsm");
+        var plt = parseOptInt("plt");
+        var meld = getEffectiveMeld();
+        var ctp = getEffectiveCtpClass();
+        var asa = val("asa");
+        var surgery = val("surgery");
+        var ascites = val("ascites");
+        var vocal = vocalOutcome();
+
+        var actions = [];
+
+        function add(prio, text) {
+          actions.push({ prio: prio, text: text });
+        }
+
+        /* --- 入力不足のガイド --- */
+        if (meld == null) {
+          add(PRIO.MED, "MELD を入力してください（肝重症度の共通指標）。未入力のままではリスク層別のメッセージが限定的です。");
+        }
+        if (plt == null && (liver === "compensated" || liver === "decompensated" || liver === "unknown")) {
+          add(PRIO.MED, "血小板を入力してください（CSPH 推定・TPO 適応の整理に使用）。");
+        }
+
+        /* --- Phase 1: 肝硬変確立 --- */
+        if (liver === "unknown") {
+          add(
+            PRIO.HIGH,
+            "肝硬変が未確立です。待機手術前に FIB-4 と LSM（＋必要に応じ画像）で進行線維化／肝硬変をスクリーニングしてください。除外できれば通常の周術期リスク評価へ進みます。"
+          );
+          if (fib4 != null && fib4 >= 2.67) {
+            add(PRIO.HIGH, "FIB-4 が高値域です。肝専門医連携・追加検査（LSM・画像）を優先し、術式決定は結果を踏まえて再検討してください。");
+          } else if (fib4 != null && fib4 < 1.3) {
+            add(
+              PRIO.LOW,
+              "FIB-4 は低〜中間域の目安です（病因・年齢で変動）。臨床所見と矛盾がなければ進行肝疾患の事前確率は相対的に低めですが、LSM 未測なら検討してください。"
+            );
+          }
+          if (lsm != null && lsm >= 12) {
+            add(PRIO.MED, "LSM が高めです。肝硬変・CSPH の評価を進め、術前リスクは肝専門と共有してください。");
+          }
+        }
+
+        if (liver === "no_advanced") {
+          add(
+            PRIO.LOW,
+            "進行線維化・肝硬変なし（低疑い）の場合、肝特異的スコアより ASA・術式・一般合併症中心の周術期評価が主になります。VOCAL-Penn は肝硬変患者向けのため適応外のことが多いです。"
+          );
+        }
+
+        /* --- 非代償性 --- */
+        if (liver === "decompensated") {
+          add(
+            PRIO.HIGH,
+            "非代償性肝硬変です。腹水・HE・静脈瘤／出血・感染（SBP 等）の最適化を最優先。緊急手術以外は elective の適応を慎重に再評価してください（CTP C は特に高リスク）。"
+          );
+          if (ctp === "C") {
+            add(PRIO.HIGH, "CTP C 相当です。〔ACG〕では elective は極めて慎重。代替治療・低侵襲オプション・移植評価の検討を。");
+          }
+        }
+
+        /* --- 肥満手術：肝疾患ステージ別 --- */
+        if (surgery === "bariatric") {
+          if (liver === "decompensated") {
+            add(PRIO.HIGH, "非代償性肝硬変では肥満手術の術後死亡率が著増します（文献：代償性 0.9% vs 非代償性 18.2%〔文献〕）。適応を多職種で再検討してください。");
+          } else if (liver === "compensated") {
+            add(PRIO.MED, "代償性肝硬変であれば、選択症例での肥満手術は安全に行いうるとされます〔ACG〕。術式は LSG が第一選択（内視鏡アクセス維持・吸収不良回避）。RYGB は吸収不良・内視鏡アクセス喪失に注意。移植候補では術式・時期を移植センターと相談〔KC〕。");
+          } else if (liver === "unknown") {
+            add(PRIO.MED, "肝硬変の有無が未確立です。肥満手術は代償性肝硬変に限り安全とされるため、線維化評価（FIB-4・LSM 等）で肝硬変の有無を確認してから適応を決定してください〔ACG〕。");
+          }
+          /* liver === "no_advanced" → 肝硬変ガイドラインの適用外のため追加警告なし */
+        }
+
+        /* --- 主要肝切除 --- */
+        if (surgery === "hepatectomy") {
+          add(PRIO.HIGH, "主要肝切除は高容量肝外科／肝移植センターへの紹介・共同管理が推奨されます〔GRADE〕〔KC〕。");
+        }
+
+        /* --- CSPH（代償性、または数値が揃う未確立例） --- */
+        var csph = null;
+        if (liver === "compensated" && lsm != null && plt != null) {
+          csph = csphBand(lsm, plt);
+        } else if (liver === "unknown" && lsm != null && plt != null && (lsm >= 15 || (fib4 != null && fib4 >= 1.3))) {
+          csph = csphBand(lsm, plt);
+          if (csph) {
+            add(PRIO.LOW, "肝硬変未確立ですが LSM・血小板から CSPH 推定を試みています。確定診断・病期は肝専門で補完してください。");
+          }
+        }
+
+        if (liver === "compensated" && lsm != null && plt != null) {
+          if (csph === "rulein") {
+            add(
+              PRIO.HIGH,
+              "CSPH：Rule in（LSM ≥25 kPa）。CSPH は周術期リスク因子です。とくに腹部手術では、腹水や側副血行路が出血・止血困難などの追加リスクとなり得ます。非腹部手術では、CT/MRIでの側副血行路・門脈圧亢進評価は全例ルーチンではなく、術式と状況に応じて行います。"
+            );
+          } else if (csph === "probable") {
+            add(
+              PRIO.MED,
+              "CSPH：高確率域（LSM・血小板の組合せ）。代償性肝硬変で CSPH の有無が不明瞭な場合、LSM＋血小板の閾値に加え、CT/MRI などの断層像で側副血行路や門脈圧亢進の合併所見を評価することが提案されています〔GRADE〕。"
+            );
+          } else if (csph === "ruleout") {
+            add(
+              PRIO.LOW,
+              "CSPH：Rule out に近い組合せ（LSM &lt;15 かつ PLT ≥150）。ただし臨床・画像と矛盾すれば再評価。"
+            );
+          } else if (csph === "gray") {
+            add(
+              PRIO.MED,
+              "CSPH：境界域です。断層像の詳細評価や HVPG 測定を検討〔任意〕。"
+            );
+          }
+        } else if (liver === "compensated" && (lsm == null || plt == null)) {
+          add(PRIO.MED, "代償性肝硬変では LSM と血小板を用いた CSPH スクリーニングが要点です。数値が揃うと本ツールが Rule in／out を表示します。");
+        }
+
+        /* --- 術前 TIPS の示唆（CSPH かつ大手術） --- */
+        if (
+          liver !== "no_advanced" &&
+          csph &&
+          csph !== "ruleout" &&
+          isMajorAbdoThoracic(surgery)
+        ) {
+          add(
+            PRIO.MED,
+            "CSPH が疑われ、大手術が予定されています。難治性腹水・静脈瘤出血歴など <strong>TIPS の既存適応</strong>がある場合に限り、術前 TIPS を多職種で検討〔GRADE〕（CSPH のみを目的にした TIPS は推奨されません。条件付き推奨・エビデンス非常に低い）。"
+          );
+        }
+
+        /* --- 術前 TIPS の示唆（非代償性肝硬変 + 大手術） --- */
+        if (liver === "decompensated" && isMajorAbdoThoracic(surgery)) {
+          add(
+            PRIO.MED,
+            "非代償性肝硬変＋大手術：難治性腹水・静脈瘤出血歴など <strong>TIPS の既存適応</strong>がある場合は、術前 TIPS を多職種で検討してください〔GRADE〕（条件付き推奨・エビデンス非常に低い）。禁忌（難治性肝性脳症・重度三尖弁逆流・心不全・多発性肝嚢胞）がないことを確認。"
+          );
+        }
+
+        /* --- ヘルニア + 腹水 --- */
+        if (surgery === "hernia" && ascites === "yes") {
+          add(PRIO.HIGH, "腹壁ヘルニアで腹水あり：まず腹水コントロールを優先し、安定後に修復を計画。急速な腹水減少は嵌頓リスクに注意。");
+        } else if (surgery === "hernia" && ascites === "no" && liver !== "no_advanced") {
+          add(
+            PRIO.LOW,
+            "ヘルニア修復は待機手術が可能なら検討の記載があります〔ACG〕（緊急と比較して予後差大）。MELD ≤21 での待機修復の QALY 優位などの記載も参照〔ACG〕。"
+          );
+        }
+
+        /* --- 胆嚢・ERCP 注意 --- */
+        if (surgery === "chole" && meld != null && meld >= 15) {
+          add(PRIO.MED, "MELD ≥15 では、総胆管結石など<strong>ERCP を併施する場合</strong>の急性 decompensation リスク増との記載があります〔ACG〕。ERCP 単独・胆嚢摘出のみの場合は適用されません。ERCP 併施時は内視鏡的治療のタイミング・体液管理を慎重に。");
+        }
+        if (surgery === "chole" && ctp === "C") {
+          add(PRIO.HIGH, "CTP C では腹腔鏡胆嚢摘出のリスクが高い場合があります。抗菌薬・ドレナージ等の代替経路を移植／肝専門と検討。");
+        }
+
+        /* --- 心臓手術 --- */
+        if (surgery === "cardiac") {
+          if (ctp === "B") {
+            add(PRIO.HIGH, "心臓手術＋CTP B：文献では術後死亡率 18–50% 程度のレンジとされる報告があります〔文献〕。EuroSCORE 単独では不十分な場合があるため、肝・麻酔・心臓外科で統合評価。");
+          } else if (ctp === "C") {
+            add(PRIO.HIGH, "心臓手術＋CTP C：極めて高リスク域の報告があります〔文献〕。代替治療・移植評価を含めた共有意思決定を。");
+          }
+          if (ascites === "yes") {
+            add(PRIO.HIGH, "心臓手術＋腹水：輸血・AKI・ICU 関連合併症・30 日死亡リスクが高いとのデータがあります〔文献〕。");
+          }
+        }
+
+        /* --- VOCAL / 移植評価 --- */
+        if (liver !== "no_advanced") {
+          if (vocal === "unknown") {
+            add(
+              PRIO.MED,
+              "<a href=\"https://www.vocalpennscore.com/\" rel=\"noopener noreferrer\" target=\"_blank\">VOCAL-Penn 公式計算機</a>で 90 日死亡リスク（％）を算出し、ページ下部の「公式サイトの 90 日死亡リスク」に転記してください（％が無い場合のみ区分を選択）。MELD/CTP 単独での判断は不十分とされる点に注意〔ACG〕。"
+            );
+          } else if (vocal === "gte15") {
+            add(PRIO.HIGH, "90 日死亡予測が ≥15% の目安に該当します。術前肝移植評価を積極的に考慮〔KC〕・臨床判断。");
+          } else if (vocal === "lt15") {
+            add(PRIO.LOW, "VOCAL-Penn の 90 日死亡リスクは &lt;15% の区分です。それでも非肝合併症・術式侵襲・フレイルでリスクは変動するため、共有意思決定を継続。");
+          }
+        }
+
+        /* --- MELD / CTP の層別パール --- */
+        if (
+          liver === "compensated" &&
+          meldInLowPearlRange(meld) &&
+          ctpIsMild(ctp) &&
+          csph === "ruleout" &&
+          (surgery === "abdomen" || surgery === "chole" || surgery === "hernia")
+        ) {
+          add(
+            PRIO.LOW,
+            "〔ACG〕の記載では、MELD 6–9・CTP 5–6 かつ CSPH／decompensation がなければ腹部手術の 30 日死亡は概ね低い群との整理があります（個別適用は臨床で）。"
+          );
+        }
+
+        if (meld != null && meld >= 15 && liver !== "no_advanced") {
+          add(PRIO.MED, "MELD が高めです。腎機能・電解質・HE・感染を含めた全身状態の最適化と、術後監視体制（ICU 等）を計画。");
+        }
+
+        /* --- 栄養・フレイル（Key Concepts 16, 17）--- */
+        var nt = getNutritionTargets();
+        var frail = val("frailty");
+        var liverHasCirrhosis = liver === "compensated" || liver === "decompensated";
+
+        if (liverHasCirrhosis || frail === "suspect" || frail === "yes") {
+          if (nt) {
+            add(
+              PRIO.MED,
+              "栄養：IBW " +
+                nt.ibw.toFixed(1) +
+                " kg → 目標 " +
+                nt.kcalLow +
+                "–" +
+                nt.kcalHigh +
+                " kcal/日・蛋白 " +
+                nt.pLow +
+                "–" +
+                nt.pHigh +
+                " g/日（IBW 換算）。可能なら術前 <strong>≥2 週</strong>から開始。"
+            );
+          } else {
+            add(
+              PRIO.MED,
+              "栄養：身長・体重を入力すると IBW から目標 kcal・蛋白量を算出します（30–35 kcal/kg、蛋白 1.25–1.5 g/kg を IBW 換算）。"
+            );
+          }
+          add(
+            PRIO.LOW,
+            "HE があっても<strong>蛋白制限は行わない</strong>（必要に応じ BCAA 製剤）。<strong>就寝前補食（LES）</strong>で夜間絶食を短縮し総蛋白維持に有用。"
+          );
+          add(
+            PRIO.LOW,
+            "経口で目標未達なら<strong>経鼻腸管栄養</strong>を検討（非出血性食道静脈瘤は禁忌ではない）。"
+          );
+        }
+
+        if (frail === "suspect" || frail === "yes") {
+          add(
+            PRIO.MED,
+            "サルコペニア／フレイル：<strong>プレハビリテーション</strong>（運動＋栄養）を多職種で計画。術式タイミング・術前外来介入を共有意思決定に組み込む。"
+          );
+        }
+
+        /* --- ASA --- */
+        if (asa === "IV" || asa === "V" || asa === "VI") {
+          add(PRIO.MED, "ASA IV–VI は周術期リスクの大きい区分です。肝評価に加え、心肺・フレイル・栄養を統合し、術式の侵襲度低減を検討。");
+        }
+
+        /* --- 血小板 / TPO --- */
+        if (plt != null && plt < 50 && liver !== "no_advanced") {
+          var dose = plt < 40 ? "60 mg/日" : "40 mg/日";
+          add(
+            PRIO.MED,
+            "PLT &lt;50×10³/µL：TPO 受容体作動薬を検討（GRADE：強推奨・中等度エビデンス〔ACG〕）。avatrombopag の目安は " +
+              dose +
+              "・5 日間（eltrombopag は門脈血栓に注意）。<strong>実際の処方は添付文書・腎機能・スケジュールに従う</strong>こと。"
+          );
+        }
+
+        /* --- 凝固：INR・TEG --- */
+        if (liver === "compensated" || liver === "decompensated") {
+          add(
+            PRIO.LOW,
+            "凝固：INR 上昇のみを理由にビタミン K・FFP でのルーチン補正は推奨されません。利用可能なら TEG/ROTEM を参考に不必要な輸血を避ける〔KC〕。"
+          );
+        }
+
+        /* --- ルーティン肝硬変管理 --- */
+        if (liver === "compensated" || liver === "decompensated") {
+          add(
+            PRIO.LOW,
+            "ルーティン管理：HCC サーベイランス、静脈瘤評価、NSBB（BP 許容下）、HE・腹水のコントロールを術前に確認〔KC〕。"
+          );
+        }
+
+        /* --- 重複を避ける簡易マージ（同一文は出さない） --- */
+        var seen = {};
+        var out = [];
+        for (var i = 0; i < actions.length; i++) {
+          var k = actions[i].prio + "|" + actions[i].text;
+          if (seen[k]) continue;
+          seen[k] = true;
+          out.push(actions[i]);
+        }
+
+        /* 優先度ソート：high → med → low */
+        var order = { high: 0, med: 1, low: 2 };
+        out.sort(function (a, b) {
+          return order[a.prio] - order[b.prio];
+        });
+
+        return out;
+      }
+
+      function render() {
+        applyLabSync();
+        updateFib4Out();
+        updateMeldOut();
+        updateCTPOut();
+        updateVocalOut();
+        updateNutritionOut();
+        var list = document.getElementById("action-list");
+        var items = collectActions();
+        list.innerHTML = "";
+        if (!items.length) {
+          var p = document.createElement("p");
+          p.className = "action-empty";
+          p.textContent = "入力項目を選ぶと、ここに次のアクションが表示されます。";
+          list.appendChild(p);
+          return;
+        }
+        for (var i = 0; i < items.length; i++) {
+          var li = document.createElement("li");
+          var pr = items[i].prio;
+          li.className = pr === PRIO.HIGH ? "action--high" : pr === PRIO.MED ? "action--med" : "action--low";
+          li.innerHTML = items[i].text;
+          list.appendChild(li);
+        }
+      }
+
+      var ids = [
+        "liver-status",
+        "patient-age",
+        "patient-height",
+        "patient-weight",
+        "frailty",
+        "lsm",
+        "plt",
+        "lab-ast",
+        "lab-alt",
+        "lab-tbili",
+        "lab-alb",
+        "lab-inr",
+        "lab-cr",
+        "asa",
+        "surgery",
+        "ascites",
+        "meld-cr",
+        "meld-bili",
+        "meld-inr",
+        "meld-na",
+        "meld-manual",
+        "ctp-bili",
+        "ctp-alb",
+        "ctp-inr",
+        "ctp-ascites",
+        "ctp-he",
+        "ctp-manual",
+        "vocal-band",
+        "vocal-pct",
+      ];
+      for (var j = 0; j < ids.length; j++) {
+        var node = document.getElementById(ids[j]);
+        if (node) {
+          node.addEventListener("input", render);
+          node.addEventListener("change", render);
+        }
+      }
+      ["meld-auto", "meld-dialysis", "ctp-auto", "lab-sync"].forEach(function (id) {
+        document.getElementById(id).addEventListener("change", render);
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

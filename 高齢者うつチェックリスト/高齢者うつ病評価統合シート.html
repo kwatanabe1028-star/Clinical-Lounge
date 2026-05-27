@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>高齢者うつ病評価統合シート（PHQ-9 / GDS-15 / DSM-5）</title>
+<style>
+:root {
+  --color-bg:      #D6D1C2;
+  --color-dark:    #1C3530;
+  --color-accent1: #4E7868;
+  --color-accent2: #3A6E5E;
+  --color-accent3: #286858;
+  --color-accent4: #1E6068;
+  --color-accent5: #1C5A72;
+  --color-accent6: #196E96;
+  --color-warning: #B86018;
+  --color-white:   #FFFFFF;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+*:focus-visible {
+  outline: 2px solid var(--color-accent6);
+  outline-offset: 2px;
+}
+
+body {
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+  background: var(--color-bg);
+  color: var(--color-dark);
+  line-height: 1.6;
+  font-size: 15px;
+  position: relative;
+}
+
+.page-planes {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.page-planes .pp-a {
+  position: absolute;
+  width: min(130vw, 900px);
+  height: 44vh;
+  top: -6%;
+  left: -20%;
+  background: color-mix(in srgb, var(--color-accent1) 24%, var(--color-bg));
+  transform: rotate(-4deg);
+}
+.page-planes .pp-b {
+  position: absolute;
+  width: 52vw;
+  max-width: 24rem;
+  height: min(68vh, 480px);
+  bottom: -12%;
+  right: -16%;
+  background: color-mix(in srgb, var(--color-dark) 14%, var(--color-bg));
+  transform: rotate(4deg);
+  border-radius: 0 0 0 16%;
+}
+.page-planes .pp-band {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--color-accent6);
+}
+
+.sticky-header {
+  background: var(--color-dark);
+  color: var(--color-white);
+  padding: 10px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--color-dark) 16%, transparent);
+}
+.sticky-header h1 { font-size: 15px; font-weight: bold; white-space: nowrap; }
+.sticky-scores {
+  display: flex;
+  gap: 10px;
+}
+.sticky-score {
+  background: color-mix(in srgb, var(--color-white) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-white) 28%, transparent);
+  border-radius: 8px;
+  padding: 4px 12px;
+  text-align: center;
+  min-width: 72px;
+}
+.sticky-score .s-label { font-size: 10px; opacity: 0.85; display: block; }
+.sticky-score .s-val { font-size: 20px; font-weight: bold; display: block; line-height: 1.1; }
+.sticky-score .s-max { font-size: 10px; opacity: 0.65; }
+.progress-wrap { font-size: 11px; opacity: 0.75; white-space: nowrap; }
+
+/* ===== CONTAINER ===== */
+.container { position: relative; z-index: 0; max-width: 760px; margin: 0 auto; padding: 18px 16px 60px; }
+
+.section-header {
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--color-dark);
+  margin: 22px 0 10px;
+  padding: 6px 12px;
+  background: color-mix(in srgb, var(--color-accent6) 14%, var(--color-white));
+  border-left: 4px solid var(--color-accent5);
+  border-radius: 0 6px 6px 0;
+}
+
+.timeframe-badge {
+  display: inline-block;
+  background: var(--color-accent3);
+  color: var(--color-white);
+  font-size: 11px;
+  padding: 1px 8px;
+  border-radius: 10px;
+  margin-left: 8px;
+  font-weight: normal;
+  vertical-align: middle;
+}
+
+.q-card {
+  background: var(--color-white);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 8px;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--color-dark) 12%, transparent);
+  border-left: 4px solid transparent;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.q-card.answered { border-left-color: var(--color-accent3); }
+.q-card:hover { box-shadow: 0 10px 28px color-mix(in srgb, var(--color-dark) 14%, transparent); }
+
+.q-top {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 11px;
+}
+.q-num {
+  min-width: 26px;
+  height: 26px;
+  background: color-mix(in srgb, var(--color-bg) 55%, var(--color-white));
+  color: color-mix(in srgb, var(--color-dark) 78%, var(--color-bg));
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.q-body { flex: 1; }
+.q-text { font-size: 15px; color: var(--color-dark); }
+.q-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+}
+.tag {
+  font-size: 10px;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+.tag-phq {
+  background: color-mix(in srgb, var(--color-accent1) 28%, var(--color-white));
+  color: color-mix(in srgb, var(--color-accent2) 45%, var(--color-dark));
+}
+.tag-gds {
+  background: color-mix(in srgb, var(--color-accent4) 22%, var(--color-white));
+  color: var(--color-dark);
+}
+.tag-dsm {
+  background: color-mix(in srgb, var(--color-accent6) 22%, var(--color-white));
+  color: var(--color-dark);
+}
+.tag-derived {
+  background: color-mix(in srgb, var(--color-bg) 70%, var(--color-white));
+  color: color-mix(in srgb, var(--color-dark) 55%, var(--color-bg));
+  font-style: italic;
+}
+
+.phq-options {
+  display: flex;
+  gap: 7px;
+}
+.btn-phq {
+  flex: 1;
+  padding: 9px 4px 7px;
+  border: 2px solid color-mix(in srgb, var(--color-dark) 14%, var(--color-white));
+  border-radius: 8px;
+  background: var(--color-white);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+  color: color-mix(in srgb, var(--color-dark) 75%, var(--color-bg));
+  font-family: inherit;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (hover: hover) {
+  .btn-phq:hover {
+    border-color: var(--color-accent5);
+    background: color-mix(in srgb, var(--color-accent6) 12%, var(--color-white));
+  }
+}
+.btn-phq.sel-0 { border-color: var(--color-accent3) !important; background: var(--color-accent3) !important; color: var(--color-white) !important; }
+.btn-phq.sel-1 { border-color: var(--color-accent1) !important; background: var(--color-accent1) !important; color: var(--color-dark) !important; }
+.btn-phq.sel-2 { border-color: color-mix(in srgb, var(--color-warning) 65%, var(--color-accent2)) !important; background: color-mix(in srgb, var(--color-warning) 55%, var(--color-accent1)) !important; color: var(--color-white) !important; }
+.btn-phq.sel-3 { border-color: var(--color-warning) !important; background: var(--color-warning) !important; color: var(--color-white) !important; }
+.btn-phq .sc { font-size: 20px; font-weight: bold; display: block; line-height: 1; }
+.btn-phq .lb { font-size: 10px; display: block; margin-top: 3px; }
+
+.yn-options { display: flex; gap: 10px; }
+.btn-yn {
+  padding: 9px 28px;
+  border: 2px solid color-mix(in srgb, var(--color-dark) 14%, var(--color-white));
+  border-radius: 8px;
+  background: var(--color-white);
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  font-family: inherit;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+  color: color-mix(in srgb, var(--color-dark) 75%, var(--color-bg));
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (hover: hover) {
+  .btn-yn:hover { border-color: color-mix(in srgb, var(--color-dark) 35%, var(--color-white)); }
+}
+.btn-yn.yes-sel { border-color: var(--color-warning) !important; background: var(--color-warning) !important; color: var(--color-white) !important; }
+.btn-yn.no-sel  { border-color: var(--color-accent3) !important; background: var(--color-accent3) !important; color: var(--color-white) !important; }
+
+.derived-note {
+  font-size: 11px;
+  color: color-mix(in srgb, var(--color-dark) 50%, var(--color-bg));
+  margin-top: 6px;
+  font-style: italic;
+}
+
+.score-panel {
+  background: var(--color-white);
+  border-radius: 14px;
+  padding: 22px 22px 18px;
+  margin-top: 28px;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--color-dark) 16%, transparent);
+}
+.score-panel-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--color-dark);
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid color-mix(in srgb, var(--color-dark) 14%, var(--color-white));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.score-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.score-box {
+  border: 1px solid color-mix(in srgb, var(--color-dark) 14%, var(--color-white));
+  border-radius: 10px;
+  padding: 16px 14px 14px;
+  text-align: center;
+}
+.score-box h3 {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--color-dark) 58%, var(--color-bg));
+  margin-bottom: 8px;
+  font-weight: normal;
+}
+.score-box .big { font-size: 44px; font-weight: bold; line-height: 1; color: var(--color-accent3); }
+.score-box .denom { font-size: 15px; color: color-mix(in srgb, var(--color-dark) 45%, var(--color-bg)); }
+.score-box .bar {
+  height: 6px;
+  background: color-mix(in srgb, var(--color-dark) 10%, var(--color-white));
+  border-radius: 3px;
+  margin: 8px 0 6px;
+  overflow: hidden;
+}
+.score-box .bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s; }
+.level-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 3px 12px;
+  border-radius: 20px;
+  margin-top: 2px;
+}
+.lv-normal   { background: color-mix(in srgb, var(--color-accent4) 20%, var(--color-white)); color: var(--color-accent2); }
+.lv-mild     { background: color-mix(in srgb, var(--color-accent1) 22%, var(--color-white)); color: color-mix(in srgb, var(--color-accent2) 40%, var(--color-dark)); }
+.lv-moderate { background: color-mix(in srgb, var(--color-warning) 12%, var(--color-white)); color: color-mix(in srgb, var(--color-warning) 35%, var(--color-dark)); }
+.lv-modsev   { background: color-mix(in srgb, var(--color-warning) 18%, var(--color-white)); color: color-mix(in srgb, var(--color-warning) 28%, var(--color-dark)); }
+.lv-severe   { background: color-mix(in srgb, var(--color-warning) 26%, var(--color-white)); color: color-mix(in srgb, var(--color-warning) 15%, var(--color-dark)); }
+.lv-pos      { background: color-mix(in srgb, var(--color-warning) 22%, var(--color-white)); color: color-mix(in srgb, var(--color-warning) 20%, var(--color-dark)); }
+.lv-neg      { background: color-mix(in srgb, var(--color-accent4) 18%, var(--color-white)); color: var(--color-accent2); }
+.lv-pend     { background: color-mix(in srgb, var(--color-bg) 65%, var(--color-white)); color: color-mix(in srgb, var(--color-dark) 48%, var(--color-bg)); }
+
+.dsm-box {
+  border: 1px solid color-mix(in srgb, var(--color-dark) 14%, var(--color-white));
+  border-radius: 10px;
+  padding: 16px;
+}
+.dsm-box h3 {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--color-dark) 58%, var(--color-bg));
+  margin-bottom: 12px;
+  font-weight: normal;
+}
+.dsm-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.dsm-item {
+  font-size: 11px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--color-dark) 14%, var(--color-white));
+  color: color-mix(in srgb, var(--color-dark) 45%, var(--color-bg));
+  transition: all 0.2s;
+}
+.dsm-item.met {
+  background: color-mix(in srgb, var(--color-accent1) 24%, var(--color-white));
+  border-color: color-mix(in srgb, var(--color-warning) 35%, var(--color-accent1));
+  color: color-mix(in srgb, var(--color-dark) 88%, var(--color-warning));
+  font-weight: bold;
+}
+.dsm-item.core.met {
+  background: color-mix(in srgb, var(--color-warning) 16%, var(--color-white));
+  border-color: color-mix(in srgb, var(--color-warning) 50%, var(--color-accent2));
+  color: color-mix(in srgb, var(--color-warning) 22%, var(--color-dark));
+}
+.dsm-item .di-label { font-weight: bold; }
+.dsm-result {
+  font-size: 13px;
+  font-weight: bold;
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+.dsm-result.pos  {
+  background: color-mix(in srgb, var(--color-warning) 14%, var(--color-white));
+  color: color-mix(in srgb, var(--color-warning) 25%, var(--color-dark));
+  border: 1px solid color-mix(in srgb, var(--color-warning) 40%, var(--color-bg));
+}
+.dsm-result.neg  {
+  background: color-mix(in srgb, var(--color-accent4) 16%, var(--color-white));
+  color: var(--color-accent2);
+  border: 1px solid var(--color-accent3);
+}
+.dsm-result.pend {
+  background: color-mix(in srgb, var(--color-bg) 55%, var(--color-white));
+  color: color-mix(in srgb, var(--color-dark) 55%, var(--color-bg));
+  border: 1px solid color-mix(in srgb, var(--color-dark) 14%, var(--color-white));
+}
+.dsm-result.full {
+  background: color-mix(in srgb, var(--color-warning) 20%, var(--color-white));
+  color: color-mix(in srgb, var(--color-warning) 18%, var(--color-dark));
+  border: 2px solid var(--color-warning);
+  font-size: 15px;
+}
+
+/* ===== DSM B-E SECTION ===== */
+#dsm-be-section {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease, opacity 0.4s ease;
+  opacity: 0;
+}
+#dsm-be-section.visible {
+  max-height: 2000px;
+  opacity: 1;
+}
+.be-alert {
+  background: color-mix(in srgb, var(--color-warning) 12%, var(--color-white));
+  border: 2px solid color-mix(in srgb, var(--color-warning) 45%, var(--color-accent4));
+  border-radius: 10px;
+  padding: 12px 18px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  font-weight: bold;
+  color: color-mix(in srgb, var(--color-warning) 22%, var(--color-dark));
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.be-criterion-card {
+  background: var(--color-white);
+  border: 1px solid color-mix(in srgb, var(--color-dark) 14%, var(--color-white));
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+.be-criterion-card.be-met    { border-left: 4px solid var(--color-accent3); }
+.be-criterion-card.be-not-met { border-left: 4px solid var(--color-warning); }
+.be-criterion-card.be-unanswered { border-left: 4px solid color-mix(in srgb, var(--color-dark) 14%, var(--color-white)); }
+.be-crit-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.be-badge {
+  min-width: 32px;
+  height: 32px;
+  background: color-mix(in srgb, var(--color-bg) 60%, var(--color-white));
+  color: color-mix(in srgb, var(--color-dark) 78%, var(--color-bg));
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.be-badge.pos { background: color-mix(in srgb, var(--color-accent4) 28%, var(--color-white)); color: var(--color-accent2); }
+.be-badge.neg { background: color-mix(in srgb, var(--color-warning) 18%, var(--color-white)); color: color-mix(in srgb, var(--color-warning) 25%, var(--color-dark)); }
+.be-crit-body { flex: 1; }
+.be-crit-title { font-size: 13px; font-weight: bold; color: var(--color-dark); }
+.be-crit-desc  {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--color-dark) 58%, var(--color-bg));
+  margin-top: 3px;
+  line-height: 1.5;
+}
+.be-crit-note  {
+  font-size: 11px;
+  color: color-mix(in srgb, var(--color-dark) 48%, var(--color-bg));
+  margin-top: 5px;
+  font-style: italic;
+}
+.be-yn-options { display: flex; gap: 8px; }
+.btn-be {
+  padding: 8px 22px;
+  border: 2px solid color-mix(in srgb, var(--color-dark) 14%, var(--color-white));
+  border-radius: 8px;
+  background: var(--color-white);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: inherit;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+  color: color-mix(in srgb, var(--color-dark) 75%, var(--color-bg));
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (hover: hover) {
+  .btn-be:hover { border-color: color-mix(in srgb, var(--color-dark) 32%, var(--color-white)); }
+}
+.btn-be.be-yes-sel { border-color: var(--color-accent3) !important; background: var(--color-accent3) !important; color: var(--color-white) !important; }
+.btn-be.be-no-sel  { border-color: var(--color-warning) !important; background: var(--color-warning) !important; color: var(--color-white) !important; }
+.be-final {
+  font-size: 14px;
+  font-weight: bold;
+  padding: 14px 18px;
+  border-radius: 10px;
+  margin-top: 14px;
+  line-height: 1.6;
+}
+.be-final.full-met {
+  background: color-mix(in srgb, var(--color-warning) 18%, var(--color-white));
+  color: color-mix(in srgb, var(--color-warning) 15%, var(--color-dark));
+  border: 2px solid var(--color-warning);
+}
+.be-final.incomplete  {
+  background: color-mix(in srgb, var(--color-bg) 55%, var(--color-white));
+  color: color-mix(in srgb, var(--color-dark) 55%, var(--color-bg));
+  border: 1px solid color-mix(in srgb, var(--color-dark) 14%, var(--color-white));
+}
+.be-final.excluded {
+  background: color-mix(in srgb, var(--color-accent4) 16%, var(--color-white));
+  color: var(--color-accent2);
+  border: 1px solid var(--color-accent3);
+}
+.be-checklist {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.be-check-item {
+  font-size: 11px;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+.be-check-item.chk-met  { background: color-mix(in srgb, var(--color-accent4) 28%, var(--color-white)); color: var(--color-accent2); }
+.be-check-item.chk-fail { background: color-mix(in srgb, var(--color-warning) 18%, var(--color-white)); color: color-mix(in srgb, var(--color-warning) 22%, var(--color-dark)); }
+.be-check-item.chk-pend { background: color-mix(in srgb, var(--color-bg) 65%, var(--color-white)); color: color-mix(in srgb, var(--color-dark) 45%, var(--color-bg)); }
+
+.phq-detail {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 4px;
+  margin-top: 10px;
+}
+.phq-cell {
+  text-align: center;
+  font-size: 10px;
+  color: color-mix(in srgb, var(--color-dark) 45%, var(--color-bg));
+}
+.phq-cell .pval {
+  font-size: 18px;
+  font-weight: bold;
+  display: block;
+  color: color-mix(in srgb, var(--color-dark) 78%, var(--color-bg));
+}
+
+.btn-reset {
+  width: 100%;
+  padding: 11px;
+  background: var(--color-white);
+  color: var(--color-warning);
+  border: 2px solid color-mix(in srgb, var(--color-warning) 28%, var(--color-bg));
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 16px;
+  font-family: inherit;
+}
+.btn-reset:hover { background: color-mix(in srgb, var(--color-warning) 8%, var(--color-white)); }
+
+@media (max-width: 600px) {
+  .sticky-scores { gap: 6px; }
+  .sticky-score { min-width: 58px; }
+  .sticky-score .s-val { font-size: 17px; }
+  .phq-options { gap: 4px; }
+  .btn-phq .lb { font-size: 9px; }
+  .score-grid { grid-template-columns: 1fr; }
+  .dsm-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+<div class="page-planes" aria-hidden="true">
+  <div class="pp-a"></div>
+  <div class="pp-b"></div>
+  <div class="pp-band"></div>
+</div>
+
+<!-- STICKY HEADER -->
+<div class="sticky-header">
+  <div>
+    <div style="font-size:11px;opacity:0.7;">高齢者うつ病評価統合シート</div>
+    <div style="font-size:14px;font-weight:bold;">PHQ-9 &nbsp;/&nbsp; GDS-15 &nbsp;/&nbsp; DSM-5</div>
+  </div>
+  <div class="sticky-scores">
+    <div class="sticky-score">
+      <span class="s-label">PHQ-9</span>
+      <span class="s-val" id="hdr-phq">—</span>
+      <span class="s-max">/27</span>
+    </div>
+    <div class="sticky-score">
+      <span class="s-label">GDS-15</span>
+      <span class="s-val" id="hdr-gds">—</span>
+      <span class="s-max">/15</span>
+    </div>
+    <div class="sticky-score">
+      <span class="s-label">DSM-5</span>
+      <span class="s-val" id="hdr-dsm">—</span>
+      <span class="s-max">/9項</span>
+    </div>
+  </div>
+  <div class="progress-wrap" id="hdr-progress">0 / 18 問</div>
+</div>
+
+<div class="container">
+
+  <!-- ==============================
+       SECTION 1: 導入・一般的な気分
+       ============================== -->
+  <div class="section-header">◆ 導入：最近の気分について</div>
+  <p style="font-size:12px;color:color-mix(in srgb, var(--color-dark) 62%, var(--color-bg));margin-bottom:12px;padding:0 4px;">
+    ※ 最初は答えやすい質問から入ります。「はい／いいえ」でお答えください。
+  </p>
+
+  <!-- Q1: GDS5 -->
+  <div class="q-card" id="card-1">
+    <div class="q-top">
+      <div class="q-num">1</div>
+      <div class="q-body">
+        <div class="q-text">たいていは気分よく過ごせていますか？</div>
+        <div class="q-tags">
+          <span class="tag tag-gds">GDS ⑤</span>
+        </div>
+      </div>
+    </div>
+    <div class="yn-options">
+      <button class="btn-yn" id="q1-yes" onclick="answerYN(1, true)">はい</button>
+      <button class="btn-yn" id="q1-no"  onclick="answerYN(1, false)">いいえ</button>
+    </div>
+  </div>
+
+  <!-- Q2: GDS7 -->
+  <div class="q-card" id="card-2">
+    <div class="q-top">
+      <div class="q-num">2</div>
+      <div class="q-body">
+        <div class="q-text">毎日の生活を楽しんでいますか？</div>
+        <div class="q-tags">
+          <span class="tag tag-gds">GDS ⑦</span>
+        </div>
+      </div>
+    </div>
+    <div class="yn-options">
+      <button class="btn-yn" id="q2-yes" onclick="answerYN(2, true)">はい</button>
+      <button class="btn-yn" id="q2-no"  onclick="answerYN(2, false)">いいえ</button>
+    </div>
+  </div>
+
+  <!-- Q3: GDS1 -->
+  <div class="q-card" id="card-3">
+    <div class="q-top">
+      <div class="q-num">3</div>
+      <div class="q-body">
+        <div class="q-text">毎日の生活に満足感がありますか？</div>
+        <div class="q-tags">
+          <span class="tag tag-gds">GDS ①</span>
+        </div>
+      </div>
+    </div>
+    <div class="yn-options">
+      <button class="btn-yn" id="q3-yes" onclick="answerYN(3, true)">はい</button>
+      <button class="btn-yn" id="q3-no"  onclick="answerYN(3, false)">いいえ</button>
+    </div>
+  </div>
+
+  <!-- Q4: GDS11 -->
+  <div class="q-card" id="card-4">
+    <div class="q-top">
+      <div class="q-num">4</div>
+      <div class="q-body">
+        <div class="q-text">今、生きていることを素晴らしいと感じますか？</div>
+        <div class="q-tags">
+          <span class="tag tag-gds">GDS ⑪</span>
+        </div>
+      </div>
+    </div>
+    <div class="yn-options">
+      <button class="btn-yn" id="q4-yes" onclick="answerYN(4, true)">はい</button>
+      <button class="btn-yn" id="q4-no"  onclick="answerYN(4, false)">いいえ</button>
+    </div>
+  </div>
+
+  <!-- ==============================
+       SECTION 2: 気分・意欲（PHQ中心）
+       ============================== -->
+  <div class="section-header">
+    ◆ 気分・意欲
+    <span class="timeframe-badge">以下は「この2週間」について</span>
+  </div>
+  <p style="font-size:12px;color:color-mix(in srgb, var(--color-dark) 62%, var(--color-bg));margin-bottom:12px;padding:0 4px;">
+    ※ この2週間で、どのくらいの頻度でそのように感じましたか？<br>
+    &nbsp;&nbsp;0＝まったくない　1＝数日　2＝半分以上の日　3＝ほとんど毎日
+  </p>
+
+  <!-- Q5: PHQ2 → GDS③⑭ -->
+  <div class="q-card" id="card-5">
+    <div class="q-top">
+      <div class="q-num">5</div>
+      <div class="q-body">
+        <div class="q-text">気分が落ち込んだり、憂うつになったり、絶望的な気持ちになることがありましたか？</div>
+        <div class="q-tags">
+          <span class="tag tag-phq">PHQ ②</span>
+          <span class="tag tag-dsm">DSM A1（中核）</span>
+          <span class="tag tag-derived">→ GDS ③⑭ 自動反映</span>
+        </div>
+      </div>
+    </div>
+    <div class="phq-options">
+      <button class="btn-phq" id="q5-0" onclick="answerPHQ(5, 0)"><span class="sc">0</span><span class="lb">まったく<br>ない</span></button>
+      <button class="btn-phq" id="q5-1" onclick="answerPHQ(5, 1)"><span class="sc">1</span><span class="lb">数日</span></button>
+      <button class="btn-phq" id="q5-2" onclick="answerPHQ(5, 2)"><span class="sc">2</span><span class="lb">半分以上<br>の日</span></button>
+      <button class="btn-phq" id="q5-3" onclick="answerPHQ(5, 3)"><span class="sc">3</span><span class="lb">ほぼ<br>毎日</span></button>
+    </div>
+    <div class="derived-note">※「生活が空虚な感じ」(GDS③)・「状況が絶望的」(GDS⑭) に自動反映されます</div>
+  </div>
+
+  <!-- Q6: PHQ1 → GDS② -->
+  <div class="q-card" id="card-6">
+    <div class="q-top">
+      <div class="q-num">6</div>
+      <div class="q-body">
+        <div class="q-text">物事に対してほとんど興味がない、または楽しみが感じられないことがありましたか？</div>
+        <div class="q-tags">
+          <span class="tag tag-phq">PHQ ①</span>
+          <span class="tag tag-dsm">DSM A2（中核）</span>
+          <span class="tag tag-derived">→ GDS ② 自動反映</span>
+        </div>
+      </div>
+    </div>
+    <div class="phq-options">
+      <button class="btn-phq" id="q6-0" onclick="answerPHQ(6, 0)"><span class="sc">0</span><span class="lb">まったく<br>ない</span></button>
+      <button class="btn-phq" id="q6-1" onclick="answerPHQ(6, 1)"><span class="sc">1</span><span class="lb">数日</span></button>
+      <button class="btn-phq" id="q6-2" onclick="answerPHQ(6, 2)"><span class="sc">2</span><span class="lb">半分以上<br>の日</span></button>
+      <button class="btn-phq" id="q6-3" onclick="answerPHQ(6, 3)"><span class="sc">3</span><span class="lb">ほぼ<br>毎日</span></button>
+    </div>
+    <div class="derived-note">※「活動や関心が低下した」(GDS②) に自動反映されます</div>
+  </div>
+
+  <!-- Q7: GDS4 -->
+  <div class="q-card" id="card-7">
+    <div class="q-top">
+      <div class="q-num">7</div>
+      <div class="q-body">
+        <div class="q-text">最近、退屈を感じることが多いですか？</div>
+        <div class="q-tags">
+          <span class="tag tag-gds">GDS ④</span>
+        </div>
+      </div>
+    </div>
+    <div class="yn-options">
+      <button class="btn-yn" id="q7-yes" onclick="answerYN(7, true)">はい</button>
+      <button class="btn-yn" id="q7-no"  onclick="answerYN(7, false)">いいえ</button>
+    </div>
+  </div>
+
+  <!-- ==============================
+       SECTION 3: 不安・将来への見方
+       ============================== -->
+  <div class="section-header">◆ 不安・将来への見方</div>
+
+  <!-- Q8: GDS6 -->
+  <div class="q-card" id="card-8">
+    <div class="q-top">
+      <div class="q-num">8</div>
+      <div class="q-body">
+        <div class="q-text">何か悪いことが起きるのではないかと、心配になることが多いですか？</div>
+        <div class="q-tags">
+          <span class="tag tag-gds">GDS ⑥</span>
+        </div>
+      </div>
+    </div>
+    <div class="yn-options">
+      <button class="btn-yn" id="q8-yes" onclick="answerYN(8, true)">はい</button>
+      <button class="btn-yn" id="q8-no"  onclick="answerYN(8, false)">いいえ</button>
+    </div>
+  </div>
+
+  <!-- Q9: GDS15 -->
+  <div class="q-card" id="card-9">
+    <div class="q-top">
+      <div class="q-num">9</div>
+      <div class="q-body">
+        <div class="q-text">他の人の方が、自分より恵まれていると思いますか？</div>
+        <div class="q-tags">
+          <span class="tag tag-gds">GDS ⑮</span>
+        </div>
+      </div>
+    </div>
+    <div class="yn-options">
+      <button class="btn-yn" id="q9-yes" onclick="answerYN(9, true)">はい</button>
+      <button class="btn-yn" id="q9-no"  onclick="answerYN(9, false)">いいえ</button>
+    </div>
+  </div>
+
+  <!-- ==============================
+       SECTION 4: 身体症状
+       ============================== -->
+  <div class="section-header">
+    ◆ 身体症状
+    <span class="timeframe-badge">この2週間</span>
+  </div>
+
+  <!-- Q10: PHQ3 -->
+  <div class="q-card" id="card-10">
+    <div class="q-top">
+      <div class="q-num">10</div>
+      <div class="q-body">
+        <div class="q-text">寝つきが悪い、夜中に目が覚める、または眠りすぎることがありましたか？</div>
+        <div class="q-tags">
+          <span class="tag tag-phq">PHQ ③</span>
+          <span class="tag tag-dsm">DSM A4</span>
+        </div>
+      </div>
+    </div>
+    <div class="phq-options">
+      <button class="btn-phq" id="q10-0" onclick="answerPHQ(10, 0)"><span class="sc">0</span><span class="lb">まったく<br>ない</span></button>
+      <button class="btn-phq" id="q10-1" onclick="answerPHQ(10, 1)"><span class="sc">1</span><span class="lb">数日</span></button>
+      <button class="btn-phq" id="q10-2" onclick="answerPHQ(10, 2)"><span class="sc">2</span><span class="lb">半分以上<br>の日</span></button>
+      <button class="btn-phq" id="q10-3" onclick="answerPHQ(10, 3)"><span class="sc">3</span><span class="lb">ほぼ<br>毎日</span></button>
+    </div>
+  </div>
+
+  <!-- Q11: PHQ4 → GDS⑬ -->
+  <div class="q-card" id="card-11">
+    <div class="q-top">
+      <div class="q-num">11</div>
+      <div class="q-body">
+        <div class="q-text">疲れを感じたり、気力がわかないことがありましたか？</div>
+        <div class="q-tags">
+          <span class="tag tag-phq">PHQ ④</span>
+          <span class="tag tag-dsm">DSM A6</span>
+          <span class="tag tag-derived">→ GDS ⑬ 自動反映</span>
+        </div>
+      </div>
+    </div>
+    <div class="phq-options">
+      <button class="btn-phq" id="q11-0" onclick="answerPHQ(11, 0)"><span class="sc">0</span><span class="lb">まったく<br>ない</span></button>
+      <button class="btn-phq" id="q11-1" onclick="answerPHQ(11, 1)"><span class="sc">1</span><span class="lb">数日</span></button>
+      <button class="btn-phq" id="q11-2" onclick="answerPHQ(11, 2)"><span class="sc">2</span><span class="lb">半分以上<br>の日</span></button>
+      <button class="btn-phq" id="q11-3" onclick="answerPHQ(11, 3)"><span class="sc">3</span><span class="lb">ほぼ<br>毎日</span></button>
+    </div>
+    <div class="derived-note">※「活力に満ちていない」(GDS⑬) に自動反映されます</div>
+  </div>
+
+  <!-- Q12: PHQ5 -->
+  <div class="q-card" id="card-12">
+    <div class="q-top">
+      <div class="q-num">12</div>
+      <div class="q-body">
+        <div class="q-text">食欲がなかったり、逆に食べすぎてしまうことがありましたか？</div>
+        <div class="q-tags">
+          <span class="tag tag-phq">PHQ ⑤</span>
+          <span class="tag tag-dsm">DSM A3</span>
+        </div>
+      </div>
+    </div>
+    <div class="phq-options">
+      <button class="btn-phq" id="q12-0" onclick="answerPHQ(12, 0)"><span class="sc">0</span><span class="lb">まったく<br>ない</span></button>
+      <button class="btn-phq" id="q12-1" onclick="answerPHQ(12, 1)"><span class="sc">1</span><span class="lb">数日</span></button>
+      <button class="btn-phq" id="q12-2" onclick="answerPHQ(12, 2)"><span class="sc">2</span><span class="lb">半分以上<br>の日</span></button>
+      <button class="btn-phq" id="q12-3" onclick="answerPHQ(12, 3)"><span class="sc">3</span><span class="lb">ほぼ<br>毎日</span></button>
+    </div>
+  </div>
+
+  <!-- ==============================
+       SECTION 5: 行動・活動
+       ============================== -->
+  <div class="section-header">◆ 行動・活動</div>
+
+  <!-- Q13: GDS9 -->
+  <div class="q-card" id="card-13">
+    <div class="q-top">
+      <div class="q-num">13</div>
+      <div class="q-body">
+        <div class="q-text">外出したり新しいことをするより、家にいることが多くなりましたか？</div>
+        <div class="q-tags">
+          <span class="tag tag-gds">GDS ⑨</span>
+        </div>
+      </div>
+    </div>
+    <div class="yn-options">
+      <button class="btn-yn" id="q13-yes" onclick="answerYN(13, true)">はい</button>
+      <button class="btn-yn" id="q13-no"  onclick="answerYN(13, false)">いいえ</button>
+    </div>
+  </div>
+
+  <!-- Q14: PHQ8 -->
+  <div class="q-card" id="card-14">
+    <div class="q-top">
+      <div class="q-num">14</div>
+      <div class="q-body">
+        <div class="q-text">動きや話し方が遅くなった、またはそわそわして落ち着かないことがありましたか？<br><span style="font-size:12px;color:color-mix(in srgb, var(--color-dark) 50%, var(--color-bg));">（周りの人から見てわかるくらい）</span></div>
+        <div class="q-tags">
+          <span class="tag tag-phq">PHQ ⑧</span>
+          <span class="tag tag-dsm">DSM A5</span>
+        </div>
+      </div>
+    </div>
+    <div class="phq-options">
+      <button class="btn-phq" id="q14-0" onclick="answerPHQ(14, 0)"><span class="sc">0</span><span class="lb">まったく<br>ない</span></button>
+      <button class="btn-phq" id="q14-1" onclick="answerPHQ(14, 1)"><span class="sc">1</span><span class="lb">数日</span></button>
+      <button class="btn-phq" id="q14-2" onclick="answerPHQ(14, 2)"><span class="sc">2</span><span class="lb">半分以上<br>の日</span></button>
+      <button class="btn-phq" id="q14-3" onclick="answerPHQ(14, 3)"><span class="sc">3</span><span class="lb">ほぼ<br>毎日</span></button>
+    </div>
+  </div>
+
+  <!-- ==============================
+       SECTION 6: 認知・集中
+       ============================== -->
+  <div class="section-header">
+    ◆ 認知・集中
+    <span class="timeframe-badge">この2週間</span>
+  </div>
+
+  <!-- Q15: PHQ7 -->
+  <div class="q-card" id="card-15">
+    <div class="q-top">
+      <div class="q-num">15</div>
+      <div class="q-body">
+        <div class="q-text">新聞を読んだりテレビを見るときなど、集中するのが難しいと感じましたか？</div>
+        <div class="q-tags">
+          <span class="tag tag-phq">PHQ ⑦</span>
+          <span class="tag tag-dsm">DSM A8</span>
+        </div>
+      </div>
+    </div>
+    <div class="phq-options">
+      <button class="btn-phq" id="q15-0" onclick="answerPHQ(15, 0)"><span class="sc">0</span><span class="lb">まったく<br>ない</span></button>
+      <button class="btn-phq" id="q15-1" onclick="answerPHQ(15, 1)"><span class="sc">1</span><span class="lb">数日</span></button>
+      <button class="btn-phq" id="q15-2" onclick="answerPHQ(15, 2)"><span class="sc">2</span><span class="lb">半分以上<br>の日</span></button>
+      <button class="btn-phq" id="q15-3" onclick="answerPHQ(15, 3)"><span class="sc">3</span><span class="lb">ほぼ<br>毎日</span></button>
+    </div>
+  </div>
+
+  <!-- Q16: GDS10 -->
+  <div class="q-card" id="card-16">
+    <div class="q-top">
+      <div class="q-num">16</div>
+      <div class="q-body">
+        <div class="q-text">他の人より記憶力が落ちたと感じますか？</div>
+        <div class="q-tags">
+          <span class="tag tag-gds">GDS ⑩</span>
+        </div>
+      </div>
+    </div>
+    <div class="yn-options">
+      <button class="btn-yn" id="q16-yes" onclick="answerYN(16, true)">はい</button>
+      <button class="btn-yn" id="q16-no"  onclick="answerYN(16, false)">いいえ</button>
+    </div>
+  </div>
+
+  <!-- ==============================
+       SECTION 7: 自己評価・無価値感
+       ============================== -->
+  <div class="section-header">
+    ◆ 自己評価・無価値感
+    <span class="timeframe-badge">この2週間</span>
+  </div>
+
+  <!-- Q17: PHQ6 → GDS⑧⑫ -->
+  <div class="q-card" id="card-17">
+    <div class="q-top">
+      <div class="q-num">17</div>
+      <div class="q-body">
+        <div class="q-text">自分はダメな人間だ・失敗したと感じたり、自分や家族に申し訳ないという気持ちになることがありましたか？</div>
+        <div class="q-tags">
+          <span class="tag tag-phq">PHQ ⑥</span>
+          <span class="tag tag-dsm">DSM A7</span>
+          <span class="tag tag-derived">→ GDS ⑧⑫ 自動反映</span>
+        </div>
+      </div>
+    </div>
+    <div class="phq-options">
+      <button class="btn-phq" id="q17-0" onclick="answerPHQ(17, 0)"><span class="sc">0</span><span class="lb">まったく<br>ない</span></button>
+      <button class="btn-phq" id="q17-1" onclick="answerPHQ(17, 1)"><span class="sc">1</span><span class="lb">数日</span></button>
+      <button class="btn-phq" id="q17-2" onclick="answerPHQ(17, 2)"><span class="sc">2</span><span class="lb">半分以上<br>の日</span></button>
+      <button class="btn-phq" id="q17-3" onclick="answerPHQ(17, 3)"><span class="sc">3</span><span class="lb">ほぼ<br>毎日</span></button>
+    </div>
+    <div class="derived-note">※「無力だと感じる」(GDS⑧)・「今の自分はダメだと思う」(GDS⑫) に自動反映されます</div>
+  </div>
+
+  <!-- ==============================
+       SECTION 8: 希死念慮（最後に）
+       ============================== -->
+  <div class="section-header" style="background:color-mix(in srgb, var(--color-warning) 12%, var(--color-white));border-left-color:var(--color-warning);color:color-mix(in srgb, var(--color-warning) 28%, var(--color-dark));">
+    ◆ 希死念慮・自傷念慮
+    <span class="timeframe-badge" style="background:var(--color-warning);">この2週間</span>
+  </div>
+  <p style="font-size:12px;color:color-mix(in srgb, var(--color-warning) 28%, var(--color-dark));margin-bottom:12px;padding:0 4px;">
+    ※ 最後に少し難しい質問があります。正直に教えていただけますか。
+  </p>
+
+  <!-- Q18: PHQ9 -->
+  <div class="q-card" id="card-18" style="border:1px solid color-mix(in srgb, var(--color-warning) 35%, var(--color-bg));">
+    <div class="q-top">
+      <div class="q-num" style="background:color-mix(in srgb, var(--color-warning) 10%, var(--color-white));color:color-mix(in srgb, var(--color-warning) 28%, var(--color-dark));">18</div>
+      <div class="q-body">
+        <div class="q-text">死んだ方がましだ、あるいは自分を何らかの方法で傷つけようと思ったことがありましたか？</div>
+        <div class="q-tags">
+          <span class="tag tag-phq">PHQ ⑨</span>
+          <span class="tag tag-dsm">DSM A9</span>
+        </div>
+      </div>
+    </div>
+    <div class="phq-options">
+      <button class="btn-phq" id="q18-0" onclick="answerPHQ(18, 0)"><span class="sc">0</span><span class="lb">まったく<br>ない</span></button>
+      <button class="btn-phq" id="q18-1" onclick="answerPHQ(18, 1)"><span class="sc">1</span><span class="lb">数日</span></button>
+      <button class="btn-phq" id="q18-2" onclick="answerPHQ(18, 2)"><span class="sc">2</span><span class="lb">半分以上<br>の日</span></button>
+      <button class="btn-phq" id="q18-3" onclick="answerPHQ(18, 3)"><span class="sc">3</span><span class="lb">ほぼ<br>毎日</span></button>
+    </div>
+  </div>
+
+  <!-- ======================================================
+       DSM-5 基準 BからE（基準Aが充足されたと判定されたときに自動表示）
+       ====================================================== -->
+  <div id="dsm-be-section">
+
+    <div class="be-alert">
+      <span style="font-size:20px;">⚠️</span>
+      <div>
+        <div>基準Aの充足が示唆されました</div>
+        <div style="font-size:11px;font-weight:normal;margin-top:2px;">このあとに続くカードについて、<strong>基準BからE</strong>に順に答えてください。</div>
+        <div style="font-size:10px;font-weight:normal;margin-top:8px;line-height:1.55;opacity:0.95;">
+          ※ <strong>B</strong> … 生活・職業など重要な領域での苦痛・機能障害の有無　※ <strong>C</strong> … 物質使用や身体疾患の生理的作用では説明できないかの確認　※ <strong>D</strong> … 精神病性障害ではよりよく説明されないかの確認　※ <strong>E</strong> … 躁・軽躁エピソードの既往がないかの確認
+        </div>
+      </div>
+    </div>
+
+    <!-- 基準B -->
+    <div class="be-criterion-card be-unanswered" id="be-card-B">
+      <div class="be-crit-header">
+        <div class="be-badge" id="be-badge-B">B</div>
+        <div class="be-crit-body">
+          <div class="be-crit-title">基準B：臨床的に意味のある苦痛・機能障害</div>
+          <div class="be-crit-desc">これらの症状は、社会的・職業的・その他の重要な生活領域において、<br>臨床的に著しい苦痛または機能の障害を引き起こしていますか？</div>
+          <div class="be-crit-note">（日常生活・家事・人間関係・趣味などへの支障があるかどうか）</div>
+        </div>
+      </div>
+      <div class="be-yn-options">
+        <button class="btn-be" id="be-B-yes" onclick="answerBE('B', true)">はい（支障あり）</button>
+        <button class="btn-be" id="be-B-no"  onclick="answerBE('B', false)">いいえ（支障なし）</button>
+      </div>
+    </div>
+
+    <!-- 基準C -->
+    <div class="be-criterion-card be-unanswered" id="be-card-C">
+      <div class="be-crit-header">
+        <div class="be-badge" id="be-badge-C">C</div>
+        <div class="be-crit-body">
+          <div class="be-crit-title">基準C：物質・身体疾患の除外</div>
+          <div class="be-crit-desc">症状は、薬物・アルコール・投薬などの物質、または<br>他の身体疾患の生理的作用によるものでは<strong>ない</strong>と判断されますか？</div>
+          <div class="be-crit-note">（甲状腺疾患・脳血管障害・パーキンソン病・ステロイドなど薬剤性を除外）</div>
+        </div>
+      </div>
+      <div class="be-yn-options">
+        <button class="btn-be" id="be-C-yes" onclick="answerBE('C', true)">除外できる</button>
+        <button class="btn-be" id="be-C-no"  onclick="answerBE('C', false)">除外できない／不明</button>
+      </div>
+    </div>
+
+    <!-- 基準D -->
+    <div class="be-criterion-card be-unanswered" id="be-card-D">
+      <div class="be-crit-header">
+        <div class="be-badge" id="be-badge-D">D</div>
+        <div class="be-crit-body">
+          <div class="be-crit-title">基準D：精神病性障害の除外</div>
+          <div class="be-crit-desc">症状は、統合失調症・統合失調感情障害・妄想性障害・<br>その他の統合失調症スペクトラム障害ではより良く説明されない、と判断されますか？</div>
+          <div class="be-crit-note">（精神病症状が先行・持続していないか確認。うつ状態が精神病性障害の文脈外である）</div>
+        </div>
+      </div>
+      <div class="be-yn-options">
+        <button class="btn-be" id="be-D-yes" onclick="answerBE('D', true)">除外できる</button>
+        <button class="btn-be" id="be-D-no"  onclick="answerBE('D', false)">除外できない／不明</button>
+      </div>
+    </div>
+
+    <!-- 基準E -->
+    <div class="be-criterion-card be-unanswered" id="be-card-E">
+      <div class="be-crit-header">
+        <div class="be-badge" id="be-badge-E">E</div>
+        <div class="be-crit-body">
+          <div class="be-crit-title">基準E：躁・軽躁エピソードの否定</div>
+          <div class="be-crit-desc">これまでに躁エピソードまたは軽躁エピソードがなかった、と確認されますか？</div>
+          <div class="be-crit-note">（双極性障害を示唆する高揚感・活動亢進・睡眠不要感などの既往を確認。<br>物質・医学的疾患によるものは例外として適用外とする）</div>
+        </div>
+      </div>
+      <div class="be-yn-options">
+        <button class="btn-be" id="be-E-yes" onclick="answerBE('E', true)">躁・軽躁なし</button>
+        <button class="btn-be" id="be-E-no"  onclick="answerBE('E', false)">躁・軽躁の既往あり</button>
+      </div>
+    </div>
+
+    <!-- 総合判定 -->
+    <div class="be-final incomplete" id="be-final">
+      <div>基準BからEを順に確認してください</div>
+    </div>
+
+  </div><!-- /dsm-be-section -->
+
+  <!-- ==============================
+       SCORE PANEL
+       ============================== -->
+  <div class="score-panel" id="score-panel">
+    <div class="score-panel-title">
+      <span>スコア・評価</span>
+      <span id="answered-count" style="font-size:12px;color:color-mix(in srgb, var(--color-dark) 50%, var(--color-bg));font-weight:normal;"></span>
+    </div>
+
+    <div class="score-grid">
+
+      <!-- PHQ-9 -->
+      <div class="score-box">
+        <h3>PHQ-9（抑うつ重症度）</h3>
+        <div>
+          <span class="big" id="phq-score">0</span>
+          <span class="denom"> / 27</span>
+        </div>
+        <div class="bar"><div class="bar-fill" id="phq-bar" style="width:0%;background:var(--color-accent3);"></div></div>
+        <div><span class="level-badge" id="phq-level">—</span></div>
+        <div style="font-size:10px;color:color-mix(in srgb, var(--color-dark) 50%, var(--color-bg));margin-top:6px;">
+          0–4:正常 &nbsp; 5–9:軽度 &nbsp; 10–14:中等度<br>15–19:中等度重症 &nbsp; 20–27:重症
+        </div>
+        <!-- PHQ detail -->
+        <div class="phq-detail" id="phq-detail"></div>
+      </div>
+
+      <!-- GDS-15 -->
+      <div class="score-box">
+        <h3>GDS-15（高齢者抑うつ尺度）</h3>
+        <div>
+          <span class="big" id="gds-score">0</span>
+          <span class="denom"> / 15</span>
+        </div>
+        <div class="bar"><div class="bar-fill" id="gds-bar" style="width:0%;background:var(--color-accent4);"></div></div>
+        <div><span class="level-badge" id="gds-level">—</span></div>
+        <div style="font-size:10px;color:color-mix(in srgb, var(--color-dark) 50%, var(--color-bg));margin-top:6px;">
+          0–4:正常 &nbsp; 5–8:軽度うつ<br>9–11:中等度うつ &nbsp; 12–15:重症うつ
+        </div>
+        <div id="gds-detail" style="font-size:10px;color:color-mix(in srgb, var(--color-dark) 50%, var(--color-bg));margin-top:6px;text-align:left;"></div>
+      </div>
+
+      <!-- DSM-5 -->
+      <div class="dsm-box" style="grid-column:1/-1;">
+        <h3>DSM-5 大うつ病エピソード 診断基準 A（過去2週間）</h3>
+        <div class="dsm-grid" id="dsm-grid">
+          <!-- filled by JS -->
+        </div>
+        <div class="dsm-result pend" id="dsm-result">基準Aの判定に必要な情報がまだ不足しています。設問に順にご回答ください（「この2週間」の頻度を問うPHQの各問も含みます）。</div>
+        <div style="font-size:10px;color:color-mix(in srgb, var(--color-dark) 50%, var(--color-bg));margin-top:8px;">
+          ※ PHQスコア≥1を「症状あり」として判定しています（暫定的なスクリーニング）。<br>
+          ※ 基準Aが充足されたと判定された場合、この結果ボックスより<strong>上</strong>に、基準BからEの設問が自動表示されます（スクロールしてご回答ください）。<br>
+          ※（参考）<strong>B</strong> 苦痛・機能障害　<strong>C</strong> 物質・身体疾患の除外　<strong>D</strong> 精神病性障害の除外　<strong>E</strong> 躁・軽躁の否定
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:flex-start;gap:10px;background:color-mix(in srgb, var(--color-accent4) 16%, var(--color-white));border:1px solid var(--color-accent3);border-radius:8px;padding:10px 14px;margin-top:16px;font-size:12px;color:var(--color-accent2);">
+      <span style="font-size:16px;flex-shrink:0;">🔒</span>
+      <div>
+        <strong>回答内容はこの端末の外に送信されません。</strong><br>
+        オフラインの単一 HTML です。サーバーへの保存はなく、ページを閉じると回答は消えます。
+      </div>
+    </div>
+
+    <button type="button" class="btn-reset" onclick="resetAll()">回答をすべてクリア</button>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+const answers = {}; // { qId: value }  value = 0-3 (phq) or true/false (yn)
+const dsmBE   = {}; // { 'B': true/false, 'C': true/false, 'D': true/false, 'E': true/false }
+
+// ============================================================
+// QUESTION DEFINITIONS
+// Maps each question to PHQ items, GDS items, DSM criteria
+// ============================================================
+const Q_DEFS = {
+  // id: { type:'yn'|'phq', phqItem?, gdsItems:[{item, scoring}], dsmCriterion? }
+  // GDS scoring: for normal (not reversed) questions, yes=1; for reversed, no=1
+  // We store the score when answer is "yes". Reversed items: yesScore=0, noScore=1.
+  1:  { type:'yn',  gds:[{item:5,  yesScore:0, noScore:1}] },
+  2:  { type:'yn',  gds:[{item:7,  yesScore:0, noScore:1}] },
+  3:  { type:'yn',  gds:[{item:1,  yesScore:0, noScore:1}] },
+  4:  { type:'yn',  gds:[{item:11, yesScore:0, noScore:1}] },
+  5:  { type:'phq', phqItem:2, gds:[{item:3,  deriveThreshold:1}, {item:14, deriveThreshold:1}], dsm:'A1', dsmCore:true },
+  6:  { type:'phq', phqItem:1, gds:[{item:2,  deriveThreshold:1}], dsm:'A2', dsmCore:true },
+  7:  { type:'yn',  gds:[{item:4,  yesScore:1, noScore:0}] },
+  8:  { type:'yn',  gds:[{item:6,  yesScore:1, noScore:0}] },
+  9:  { type:'yn',  gds:[{item:15, yesScore:1, noScore:0}] },
+  10: { type:'phq', phqItem:3, dsm:'A4' },
+  11: { type:'phq', phqItem:4, gds:[{item:13, deriveThreshold:1}], dsm:'A6' },
+  12: { type:'phq', phqItem:5, dsm:'A3' },
+  13: { type:'yn',  gds:[{item:9,  yesScore:1, noScore:0}] },
+  14: { type:'phq', phqItem:8, dsm:'A5' },
+  15: { type:'phq', phqItem:7, dsm:'A8' },
+  16: { type:'yn',  gds:[{item:10, yesScore:1, noScore:0}] },
+  17: { type:'phq', phqItem:6, gds:[{item:8,  deriveThreshold:1}, {item:12, deriveThreshold:1}], dsm:'A7' },
+  18: { type:'phq', phqItem:9, dsm:'A9' },
+};
+
+// DSM criterion labels
+const DSM_LABELS = {
+  A1: { label:'①抑うつ気分',   core: true },
+  A2: { label:'②興味・喜びの喪失', core: true },
+  A3: { label:'③体重・食欲変化', core: false },
+  A4: { label:'④睡眠障害',     core: false },
+  A5: { label:'⑤精神運動変化', core: false },
+  A6: { label:'⑥疲労感',       core: false },
+  A7: { label:'⑦無価値感・罪悪感', core: false },
+  A8: { label:'⑧集中困難',     core: false },
+  A9: { label:'⑨希死念慮',     core: false },
+};
+
+// PHQ item labels
+const PHQ_LABELS = ['①興味喪失','②抑うつ','③睡眠','④疲労','⑤食欲','⑥無価値','⑦集中','⑧精神運動','⑨希死'];
+
+// ============================================================
+// EVENT HANDLERS
+// ============================================================
+function answerPHQ(qId, val) {
+  answers[qId] = val;
+  // Update button styles
+  for (let i = 0; i <= 3; i++) {
+    const btn = document.getElementById(`q${qId}-${i}`);
+    btn.className = 'btn-phq' + (i === val ? ` sel-${i}` : '');
+  }
+  document.getElementById(`card-${qId}`).classList.add('answered');
+  recalc();
+}
+
+function answerYN(qId, isYes) {
+  answers[qId] = isYes;
+  const yBtn = document.getElementById(`q${qId}-yes`);
+  const nBtn = document.getElementById(`q${qId}-no`);
+  yBtn.className = 'btn-yn' + (isYes  ? ' yes-sel' : '');
+  nBtn.className = 'btn-yn' + (!isYes ? ' no-sel'  : '');
+  document.getElementById(`card-${qId}`).classList.add('answered');
+  recalc();
+}
+
+function answerBE(crit, val) {
+  dsmBE[crit] = val;
+  const yBtn = document.getElementById(`be-${crit}-yes`);
+  const nBtn = document.getElementById(`be-${crit}-no`);
+  yBtn.className = 'btn-be' + (val  ? ' be-yes-sel' : '');
+  nBtn.className = 'btn-be' + (!val ? ' be-no-sel'  : '');
+  const card  = document.getElementById(`be-card-${crit}`);
+  const badge = document.getElementById(`be-badge-${crit}`);
+  card.className  = 'be-criterion-card ' + (val ? 'be-met' : 'be-not-met');
+  badge.className = 'be-badge ' + (val ? 'pos' : 'neg');
+  updateBEFinal();
+}
+
+// ============================================================
+// SCORING ENGINE
+// ============================================================
+function recalc() {
+  // --- PHQ-9 ---
+  let phqTotal = 0;
+  const phqItems = {}; // phqItem -> score
+  for (let qId = 1; qId <= 18; qId++) {
+    const def = Q_DEFS[qId];
+    if (def.type === 'phq' && answers[qId] !== undefined) {
+      phqItems[def.phqItem] = answers[qId];
+      phqTotal += answers[qId];
+    }
+  }
+
+  // --- GDS-15 ---
+  let gdsTotal = 0;
+  const gdsItems = {}; // gds item number -> score
+  for (let qId = 1; qId <= 18; qId++) {
+    const def = Q_DEFS[qId];
+    if (!def.gds) continue;
+    def.gds.forEach(g => {
+      if (answers[qId] === undefined) return;
+      let score;
+      if (def.type === 'yn') {
+        score = answers[qId] ? g.yesScore : g.noScore;
+      } else {
+        // PHQ derived: if phq >= threshold, score 1
+        score = (answers[qId] >= g.deriveThreshold) ? 1 : 0;
+        // GDS13 special: fatigue means NO energy = 1 point
+        // (handled: if phq4 >= 1, GDS13 gets 1)
+      }
+      gdsItems[g.item] = score;
+      gdsTotal += score;
+    });
+  }
+
+  // --- DSM-5 ---
+  const dsmMet = {};
+  for (let qId = 1; qId <= 18; qId++) {
+    const def = Q_DEFS[qId];
+    if (!def.dsm || answers[qId] === undefined) continue;
+    dsmMet[def.dsm] = (answers[qId] >= 1); // symptom present if >= 1
+  }
+
+  const answeredCount = Object.keys(answers).length;
+
+  // ---- Update UI ----
+  updatePHQ(phqTotal, phqItems, answeredCount);
+  updateGDS(gdsTotal, gdsItems, answeredCount);
+  updateDSM(dsmMet, answeredCount);
+  updateHeader(phqTotal, gdsTotal, dsmMet, answeredCount);
+}
+
+function updatePHQ(total, items, answered) {
+  const scoreEl = document.getElementById('phq-score');
+  const barEl   = document.getElementById('phq-bar');
+  const levelEl = document.getElementById('phq-level');
+  const detailEl = document.getElementById('phq-detail');
+
+  // Only show score if at least 1 PHQ question answered
+  const phqAnswered = Object.values(Q_DEFS).filter(d => d.type === 'phq').length;
+  const countPHQ = [5,6,10,11,12,14,15,17,18].filter(qId => answers[qId] !== undefined).length;
+
+  if (countPHQ === 0) {
+    scoreEl.textContent = '—';
+    levelEl.textContent = '未回答';
+    levelEl.className = 'level-badge lv-pend';
+    barEl.style.width = '0%';
+    detailEl.innerHTML = '';
+    return;
+  }
+
+  scoreEl.textContent = total;
+  barEl.style.width = Math.round(total / 27 * 100) + '%';
+  barEl.style.background = total >= 20 ? 'var(--color-warning)' : total >= 15 ? 'color-mix(in srgb, var(--color-warning) 62%, var(--color-accent2))' : total >= 10 ? 'var(--color-accent1)' : total >= 5 ? 'var(--color-accent4)' : 'color-mix(in srgb, var(--color-dark) 40%, var(--color-bg))';
+
+  let level, cls;
+  if      (total >= 20) { level = '重症';       cls = 'lv-severe'; }
+  else if (total >= 15) { level = '中等度重症';  cls = 'lv-modsev'; }
+  else if (total >= 10) { level = '中等度';      cls = 'lv-moderate'; }
+  else if (total >=  5) { level = '軽度';        cls = 'lv-mild'; }
+  else                   { level = '正常域';      cls = 'lv-normal'; }
+  levelEl.textContent = level;
+  levelEl.className = 'level-badge ' + cls;
+
+  // PHQ detail row (items 1-9)
+  const phqQMap = {1:6, 2:5, 3:10, 4:11, 5:12, 6:17, 7:15, 8:14, 9:18};
+  let html = '';
+  for (let item = 1; item <= 9; item++) {
+    const qId = phqQMap[item];
+    const val = answers[qId];
+    html += `<div class="phq-cell"><span class="pval" style="color:${val>=3?'var(--color-warning)':val>=2?'color-mix(in srgb, var(--color-warning) 58%, var(--color-accent1))':val>=1?'var(--color-accent1)':'color-mix(in srgb, var(--color-dark) 45%, var(--color-bg))'}">${val !== undefined ? val : '—'}</span>${PHQ_LABELS[item-1].replace('①','').replace('②','').replace('③','').replace('④','').replace('⑤','').replace('⑥','').replace('⑦','').replace('⑧','').replace('⑨','')}</div>`;
+  }
+  detailEl.innerHTML = html;
+}
+
+function updateGDS(total, items, answered) {
+  const scoreEl = document.getElementById('gds-score');
+  const barEl   = document.getElementById('gds-bar');
+  const levelEl = document.getElementById('gds-level');
+  const detailEl = document.getElementById('gds-detail');
+
+  const countGDS = Object.keys(items).length;
+  if (countGDS === 0) {
+    scoreEl.textContent = '—';
+    levelEl.textContent = '未回答';
+    levelEl.className = 'level-badge lv-pend';
+    barEl.style.width = '0%';
+    detailEl.innerHTML = '';
+    return;
+  }
+
+  scoreEl.textContent = total;
+  barEl.style.width = Math.round(total / 15 * 100) + '%';
+  barEl.style.background = total >= 12 ? 'var(--color-warning)' : total >= 9 ? 'color-mix(in srgb, var(--color-warning) 58%, var(--color-accent1))' : total >= 5 ? 'var(--color-accent1)' : 'var(--color-accent4)';
+
+  let level, cls;
+  if      (total >= 12) { level = '重症うつ';   cls = 'lv-severe'; }
+  else if (total >=  9) { level = '中等度うつ';  cls = 'lv-moderate'; }
+  else if (total >=  5) { level = '軽度うつ';    cls = 'lv-mild'; }
+  else                   { level = '正常域';       cls = 'lv-normal'; }
+  levelEl.textContent = level;
+  levelEl.className = 'level-badge ' + cls;
+
+  // GDS detail
+  const gdsLabels = {
+    1:'①満足',2:'②活動低下',3:'③空虚感',4:'④退屈',5:'⑤気分良好(R)',
+    6:'⑥悪い予感',7:'⑦楽しい(R)',8:'⑧無力感',9:'⑨外出減少',10:'⑩記憶低下',
+    11:'⑪生きがい(R)',12:'⑫無価値感',13:'⑬活力(R)',14:'⑭絶望感',15:'⑮他者比較'
+  };
+  let html = '<div style="display:flex;flex-wrap:wrap;gap:3px;">';
+  for (let i = 1; i <= 15; i++) {
+    const v = items[i];
+    const color = v === 1 ? 'color-mix(in srgb, var(--color-warning) 28%, var(--color-dark))' : v === 0 ? 'var(--color-accent2)' : 'color-mix(in srgb, var(--color-dark) 38%, var(--color-bg))';
+    const bg    = v === 1 ? 'color-mix(in srgb, var(--color-warning) 12%, var(--color-white))' : v === 0 ? 'color-mix(in srgb, var(--color-accent4) 16%, var(--color-white))' : 'color-mix(in srgb, var(--color-bg) 65%, var(--color-white))';
+    html += `<span style="font-size:10px;padding:1px 5px;background:${bg};color:${color};border-radius:4px;border:1px solid color-mix(in srgb, var(--color-dark) 20%, var(--color-white));">${gdsLabels[i]}=${v !== undefined ? v : '?'}</span>`;
+  }
+  html += '</div>';
+  detailEl.innerHTML = html;
+}
+
+function updateDSM(dsmMet, answered) {
+  const gridEl  = document.getElementById('dsm-grid');
+  const resultEl = document.getElementById('dsm-result');
+
+  let html = '';
+  let metCount = 0;
+  const dsmOrder = ['A1','A2','A3','A4','A5','A6','A7','A8','A9'];
+  dsmOrder.forEach(key => {
+    const d = DSM_LABELS[key];
+    const met = dsmMet[key];
+    const cls = met ? (d.core ? 'dsm-item core met' : 'dsm-item met') : 'dsm-item';
+    const mark = met === undefined ? '' : (met ? '✓ ' : '');
+    html += `<div class="${cls}"><span class="di-label">${mark}${d.label}</span></div>`;
+    if (met) metCount++;
+  });
+  gridEl.innerHTML = html;
+
+  const hasEnoughAnswers = Object.keys(dsmMet).length >= 5;
+  const coreMet = dsmMet['A1'] || dsmMet['A2'];
+  const aMet    = metCount >= 5 && coreMet;
+
+  // Show/hide B-E section
+  const beSection = document.getElementById('dsm-be-section');
+  if (aMet) {
+    beSection.classList.add('visible');
+  } else {
+    beSection.classList.remove('visible');
+  }
+
+  if (!hasEnoughAnswers) {
+    resultEl.className = 'dsm-result pend';
+    resultEl.textContent = '基準Aの判定に必要な情報がまだ不足しています。設問に順にご回答ください（「この2週間」の頻度を問うPHQの各問も含みます）。';
+    return;
+  }
+
+  if (aMet) {
+    resultEl.className = 'dsm-result pos';
+    resultEl.innerHTML = `⚠️ 基準A 充足：${metCount}項目該当（中核症状あり）。<strong>基準BからEを確認してください</strong>。<div style="font-size:11px;font-weight:normal;margin-top:10px;line-height:1.65;">※ <strong>B</strong> … 生活・職業など重要な領域での苦痛・機能障害の有無　※ <strong>C</strong> … 物質使用や身体疾患の生理的作用では説明できないか　※ <strong>D</strong> … 精神病性障害ではよりよく説明されないか　※ <strong>E</strong> … 躁・軽躁エピソードの既往がないか</div><div style="font-size:11px;font-weight:normal;margin-top:8px;line-height:1.55;">設問はこの結果より<strong>上</strong>に表示されています（上へスクロールしてご回答ください）。</div>`;
+  } else if (metCount >= 5 && !coreMet) {
+    resultEl.className = 'dsm-result pend';
+    resultEl.innerHTML = `${metCount}項目該当ですが、中核症状（①抑うつ気分・②興味・喜びの喪失）がありません。<strong>基準Aは充足されません</strong>。`;
+  } else {
+    resultEl.className = 'dsm-result neg';
+    resultEl.innerHTML = `基準A 非充足：該当は${metCount}項目（5項目に達していません）。`;
+  }
+
+  updateBEFinal();
+}
+
+function updateBEFinal() {
+  const finalEl = document.getElementById('be-final');
+  if (!finalEl) return;
+
+  const crits = ['B','C','D','E'];
+  const allAnswered = crits.every(c => dsmBE[c] !== undefined);
+  const allMet      = crits.every(c => dsmBE[c] === true);
+
+  const checkHtml = crits.map(c => {
+    const v = dsmBE[c];
+    const cls  = v === undefined ? 'chk-pend' : (v ? 'chk-met' : 'chk-fail');
+    const mark = v === undefined ? '?' : (v ? '✓' : '✗');
+    return `<span class="be-check-item ${cls}">基準${c} ${mark}</span>`;
+  }).join('');
+
+  if (!allAnswered) {
+    finalEl.className = 'be-final incomplete';
+    finalEl.innerHTML = `<div>基準BからEの各項目に、未回答があります</div><div class="be-checklist">${checkHtml}</div>`;
+  } else if (allMet) {
+    finalEl.className = 'be-final full-met';
+    finalEl.innerHTML = `
+      <div>🔴 大うつ病エピソードの診断基準AからEが、スクリーニング上すべて充足</div>
+      <div class="be-checklist">${checkHtml}</div>
+      <div style="font-size:11px;font-weight:normal;margin-top:8px;color:color-mix(in srgb, var(--color-warning) 28%, var(--color-dark));">
+        ※ これはスクリーニング結果であり、臨床診断は総合的な判断に基づいて行ってください。
+      </div>`;
+  } else {
+    const failedCrits = crits.filter(c => dsmBE[c] === false).map(c => {
+      const reasons = {
+        B: '症状による生活障害が認められない',
+        C: '物質・身体疾患の影響を除外できない',
+        D: '精神病性障害でより良く説明される可能性あり',
+        E: '躁・軽躁エピソードの既往あり（双極性障害の検討が必要）'
+      };
+      return `基準${c}：${reasons[c]}`;
+    });
+    finalEl.className = 'be-final excluded';
+    finalEl.innerHTML = `
+      <div>🟢 大うつ病エピソードの診断基準（スクリーニング）は満たしません</div>
+      <div class="be-checklist">${checkHtml}</div>
+      <div style="font-size:11px;font-weight:normal;margin-top:6px;color:var(--color-accent2);">
+        除外理由：${failedCrits.join('　／　')}
+      </div>`;
+  }
+}
+
+function updateHeader(phqTotal, gdsTotal, dsmMet, answered) {
+  const phqQ = [5,6,10,11,12,14,15,17,18];
+  const phqCount = phqQ.filter(qId => answers[qId] !== undefined).length;
+  document.getElementById('hdr-phq').textContent = phqCount > 0 ? phqTotal : '—';
+
+  const gdsCount = Object.keys(answers).length;
+  document.getElementById('hdr-gds').textContent = gdsCount > 0 ? calcGDSFromState() : '—';
+
+  const dsmCount = Object.values(dsmMet).filter(v => v).length;
+  document.getElementById('hdr-dsm').textContent = Object.keys(dsmMet).length > 0 ? `${dsmCount}項` : '—';
+
+  document.getElementById('hdr-progress').textContent = `${answered} / 18 問`;
+  document.getElementById('answered-count').textContent = `${answered} / 18 問 回答済み`;
+}
+
+function calcGDSFromState() {
+  let total = 0;
+  for (let qId = 1; qId <= 18; qId++) {
+    const def = Q_DEFS[qId];
+    if (!def.gds || answers[qId] === undefined) continue;
+    def.gds.forEach(g => {
+      if (def.type === 'yn') {
+        total += answers[qId] ? g.yesScore : g.noScore;
+      } else {
+        total += (answers[qId] >= g.deriveThreshold) ? 1 : 0;
+      }
+    });
+  }
+  return total;
+}
+
+// ============================================================
+// RESET
+// ============================================================
+function resetAll() {
+  if (!confirm('全回答をリセットしますか？')) return;
+  Object.keys(answers).forEach(k => delete answers[k]);
+  Object.keys(dsmBE).forEach(k => delete dsmBE[k]);
+
+  for (let qId = 1; qId <= 18; qId++) {
+    const def = Q_DEFS[qId];
+    document.getElementById(`card-${qId}`).classList.remove('answered');
+    if (def.type === 'phq') {
+      for (let i = 0; i <= 3; i++) {
+        const btn = document.getElementById(`q${qId}-${i}`);
+        if (btn) btn.className = 'btn-phq';
+      }
+    } else {
+      const y = document.getElementById(`q${qId}-yes`);
+      const n = document.getElementById(`q${qId}-no`);
+      if (y) y.className = 'btn-yn';
+      if (n) n.className = 'btn-yn';
+    }
+  }
+
+  // Reset B-E UI
+  ['B','C','D','E'].forEach(c => {
+    const yb = document.getElementById(`be-${c}-yes`);
+    const nb = document.getElementById(`be-${c}-no`);
+    if (yb) yb.className = 'btn-be';
+    if (nb) nb.className = 'btn-be';
+    const card  = document.getElementById(`be-card-${c}`);
+    const badge = document.getElementById(`be-badge-${c}`);
+    if (card)  card.className  = 'be-criterion-card be-unanswered';
+    if (badge) badge.className = 'be-badge';
+  });
+
+  recalc();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  recalc();
+});
+</script>
+</body>
+</html>
