@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>高齢者退院ケーススタディ（症例ベース学習）</title>
+<style>
+:root {
+  --color-bg:      #D6D1C2;
+  --color-dark:    #1C3530;
+  --color-accent1: #4E7868;
+  --color-accent2: #3A6E5E;
+  --color-accent3: #286858;
+  --color-accent4: #1E6068;
+  --color-accent5: #1C5A72;
+  --color-accent6: #196E96;
+  --color-warning: #B86018;
+  --color-white:   #FFFFFF;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+*:focus-visible {
+  outline: 2px solid var(--color-accent6);
+  outline-offset: 2px;
+}
+
+body {
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+  background: var(--color-bg);
+  color: var(--color-dark);
+  line-height: 1.7;
+  font-size: 15px;
+  position: relative;
+}
+
+/* ===== BACKGROUND PLANES（斜め色面装飾） ===== */
+.page-planes {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.page-planes .pp-a {
+  position: absolute;
+  width: min(130vw, 900px);
+  height: 44vh;
+  top: -6%;
+  left: -20%;
+  background: color-mix(in srgb, var(--color-accent1) 24%, var(--color-bg));
+  transform: rotate(-4deg);
+}
+.page-planes .pp-b {
+  position: absolute;
+  width: 52vw;
+  max-width: 24rem;
+  height: min(68vh, 480px);
+  bottom: -12%;
+  right: -16%;
+  background: color-mix(in srgb, var(--color-dark) 14%, var(--color-bg));
+  transform: rotate(4deg);
+  border-radius: 0 0 0 16%;
+}
+.page-planes .pp-band {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--color-accent6);
+}
+
+/* ===== STICKY HEADER ===== */
+.sticky-header {
+  background: var(--color-dark);
+  color: var(--color-white);
+  padding: 10px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--color-dark) 16%, transparent);
+}
+.sticky-header .hdr-titles { min-width: 0; }
+.sticky-header .hdr-sub { font-size: 11px; opacity: 0.7; }
+.sticky-header .hdr-main { font-size: 15px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hdr-progress { font-size: 11px; opacity: 0.8; white-space: nowrap; text-align: right; }
+
+/* ===== CONTAINER ===== */
+.container { position: relative; z-index: 0; max-width: 760px; margin: 0 auto; padding: 18px 16px 64px; }
+
+.view { display: none; }
+.view.active { display: block; }
+
+/* ===== SECTION HEADER ===== */
+.section-header {
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--color-dark);
+  margin: 22px 0 10px;
+  padding: 6px 12px;
+  background: color-mix(in srgb, var(--color-accent6) 14%, var(--color-white));
+  border-left: 4px solid var(--color-accent5);
+  border-radius: 0 6px 6px 0;
+}
+
+.tool-title {
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--color-dark);
+  margin-bottom: 6px;
+}
+.tool-lede {
+  font-size: 13px;
+  color: color-mix(in srgb, var(--color-dark) 62%, var(--color-bg));
+  margin-bottom: 16px;
+}
+
+/* ===== 注記 (framework disclaimer) ===== */
+.framework-note {
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-white));
+  border: 1px solid color-mix(in srgb, var(--color-warning) 35%, var(--color-bg));
+  border-left: 4px solid var(--color-warning);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--color-warning) 30%, var(--color-dark));
+  line-height: 1.7;
+}
+.framework-note strong { color: color-mix(in srgb, var(--color-warning) 20%, var(--color-dark)); }
+
+/* ===== CASE CARDS (view A) ===== */
+.case-list { display: flex; flex-direction: column; gap: 14px; }
+.case-card {
+  background: var(--color-white);
+  border-radius: 12px;
+  padding: 18px 20px;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--color-dark) 12%, transparent);
+  border-left: 4px solid var(--color-accent3);
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.12s;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  color: inherit;
+}
+@media (hover: hover) {
+  .case-card:hover { box-shadow: 0 12px 30px color-mix(in srgb, var(--color-dark) 18%, transparent); transform: translateY(-1px); }
+}
+.case-card .cc-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.case-card .cc-title { font-size: 16px; font-weight: bold; color: var(--color-dark); }
+.goal-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 10px;
+  border-radius: 12px;
+  letter-spacing: 0.03em;
+}
+.goal-HOME     { background: color-mix(in srgb, var(--color-accent3) 22%, var(--color-white)); color: var(--color-accent2); }
+.goal-FACILITY { background: color-mix(in srgb, var(--color-accent6) 20%, var(--color-white)); color: var(--color-accent5); }
+.goal-HOME_EOL, .goal-FACILITY_EOL, .goal-TREAT, .goal-UNDECIDED {
+  background: color-mix(in srgb, var(--color-bg) 65%, var(--color-white)); color: color-mix(in srgb, var(--color-dark) 55%, var(--color-bg));
+}
+.case-card .cc-summary { font-size: 13.5px; color: color-mix(in srgb, var(--color-dark) 72%, var(--color-bg)); margin-bottom: 10px; }
+.case-card .cc-meta { font-size: 11.5px; color: color-mix(in srgb, var(--color-dark) 50%, var(--color-bg)); display: flex; align-items: center; gap: 6px; }
+.case-card .cc-arrow { color: var(--color-accent3); font-weight: bold; }
+
+/* ===== INTRO (view B) ===== */
+.panel {
+  background: var(--color-white);
+  border-radius: 14px;
+  padding: 22px 24px;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--color-dark) 14%, transparent);
+  margin-bottom: 18px;
+}
+.intro-title { font-size: 18px; font-weight: bold; color: var(--color-dark); margin-bottom: 4px; }
+.intro-body { font-size: 14.5px; color: color-mix(in srgb, var(--color-dark) 88%, var(--color-bg)); }
+.intro-body p { margin-bottom: 12px; }
+.intro-body p:last-child { margin-bottom: 0; }
+.intro-count {
+  background: color-mix(in srgb, var(--color-accent6) 12%, var(--color-white));
+  border: 1px solid color-mix(in srgb, var(--color-accent5) 30%, var(--color-bg));
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--color-accent5);
+  margin: 14px 0;
+}
+.no-save-note {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--color-dark) 55%, var(--color-bg));
+  margin-bottom: 4px;
+}
+
+/* ===== PROGRESS INDICATOR (view C top) ===== */
+.progress-bar {
+  background: var(--color-white);
+  border-radius: 12px;
+  padding: 14px 18px 12px;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-dark) 10%, transparent);
+  margin-bottom: 16px;
+  overflow-x: auto;
+}
+.phase-track {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: max-content;
+}
+.phase-node { display: flex; flex-direction: column; align-items: center; flex: 1 1 0; min-width: 70px; }
+.phase-label {
+  font-size: 11px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: color-mix(in srgb, var(--color-dark) 48%, var(--color-bg));
+  text-align: center;
+  white-space: nowrap;
+}
+.phase-node.done .phase-label,
+.phase-node.current .phase-label { color: var(--color-dark); }
+.phase-dots { display: flex; gap: 4px; }
+.phase-dot {
+  width: 11px; height: 11px; border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--color-dark) 22%, var(--color-white));
+  background: var(--color-white);
+}
+.phase-dot.done    { background: var(--color-accent3); border-color: var(--color-accent3); }
+.phase-dot.current { background: var(--color-white); border-color: var(--color-accent3); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent3) 30%, transparent); }
+.phase-arrow { color: color-mix(in srgb, var(--color-dark) 30%, var(--color-bg)); font-size: 12px; align-self: center; margin-top: 18px; }
+
+/* ===== ROADMAP MATRIX（判断ポイント画面: 二軸マトリクス・現在地表示） ===== */
+.roadmap-matrix {
+  background: var(--color-white);
+  border-radius: 12px;
+  padding: 14px 16px 12px;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-dark) 10%, transparent);
+  margin-bottom: 16px;
+}
+.rm-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.rm-title { font-size: 12px; font-weight: bold; color: var(--color-dark); }
+.rm-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.rm-badge {
+  font-size: 10.5px;
+  font-weight: bold;
+  padding: 2px 10px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--color-bg) 60%, var(--color-white));
+  color: color-mix(in srgb, var(--color-dark) 55%, var(--color-bg));
+  border: 1px solid color-mix(in srgb, var(--color-dark) 14%, var(--color-white));
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+.rm-badge.on {
+  background: var(--color-accent5);
+  color: var(--color-white);
+  border-color: var(--color-accent5);
+}
+.rm-grid {
+  display: grid;
+  grid-template-columns: 68px repeat(3, 1fr);
+  gap: 4px;
+  font-size: 11px;
+}
+.rm-cell {
+  border: 1.5px solid color-mix(in srgb, var(--color-dark) 14%, var(--color-white));
+  border-radius: 6px;
+  padding: 7px 6px;
+  text-align: center;
+  color: color-mix(in srgb, var(--color-dark) 55%, var(--color-bg));
+  background: color-mix(in srgb, var(--color-bg) 20%, var(--color-white));
+  line-height: 1.35;
+  transition: background-color 0.25s, border-color 0.25s, color 0.25s, box-shadow 0.25s;
+}
+.rm-cell.rm-corner { background: transparent; border: none; }
+.rm-cell.rm-rowhead,
+.rm-cell.rm-colhead {
+  font-weight: bold;
+  color: var(--color-dark);
+  background: color-mix(in srgb, var(--color-accent6) 10%, var(--color-white));
+  border-color: color-mix(in srgb, var(--color-dark) 10%, var(--color-white));
+}
+/* 行ハイライト（Medical 確定後: Step1回答後〜） */
+.rm-cell.rm-row-active {
+  background: color-mix(in srgb, var(--color-accent1) 16%, var(--color-white));
+  border-color: color-mix(in srgb, var(--color-accent3) 45%, var(--color-bg));
+}
+.rm-cell.rm-rowhead.rm-row-active {
+  background: color-mix(in srgb, var(--color-accent3) 22%, var(--color-white));
+  color: var(--color-accent2);
+}
+/* セル確定ハイライト（Goal:Final 確定後: Step3回答後〜） */
+.rm-cell.rm-cell-active {
+  background: var(--color-accent3);
+  color: var(--color-white);
+  border-color: var(--color-accent3);
+  font-weight: bold;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent3) 28%, transparent);
+}
+.rm-note {
+  font-size: 10.5px;
+  color: color-mix(in srgb, var(--color-dark) 50%, var(--color-bg));
+  margin-top: 8px;
+}
+
+/* ===== STEP (view C) ===== */
+.step-phase-tag {
+  display: inline-block;
+  background: var(--color-accent3);
+  color: var(--color-white);
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2px 12px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+.step-situation {
+  background: var(--color-white);
+  border-radius: 12px;
+  padding: 18px 20px;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--color-dark) 12%, transparent);
+  margin-bottom: 14px;
+  font-size: 14.5px;
+  color: color-mix(in srgb, var(--color-dark) 90%, var(--color-bg));
+}
+.step-situation p { margin-bottom: 10px; }
+.step-situation p:last-child { margin-bottom: 0; }
+.step-situation ul { margin: 8px 0 8px 20px; }
+.step-situation li { margin-bottom: 4px; }
+.step-question {
+  font-size: 15.5px;
+  font-weight: bold;
+  color: var(--color-dark);
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--color-accent6) 12%, var(--color-white));
+  border-left: 4px solid var(--color-accent5);
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 16px;
+}
+
+/* ===== CHOICES ===== */
+.choices { display: flex; flex-direction: column; gap: 10px; }
+.choice-btn {
+  background: var(--color-white);
+  border: 2px solid color-mix(in srgb, var(--color-dark) 14%, var(--color-white));
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 14.5px;
+  font-family: inherit;
+  color: var(--color-dark);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s, box-shadow 0.15s;
+  line-height: 1.6;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.choice-btn .ch-mark {
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--color-dark) 25%, var(--color-white));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: bold;
+  margin-top: 1px;
+  color: color-mix(in srgb, var(--color-dark) 60%, var(--color-bg));
+}
+@media (hover: hover) {
+  .choice-btn:not(.locked):hover {
+    border-color: var(--color-accent5);
+    background: color-mix(in srgb, var(--color-accent6) 8%, var(--color-white));
+  }
+}
+.choice-btn.locked { cursor: default; }
+/* 回答後の状態 */
+.choice-btn.correct {
+  border-color: var(--color-accent3);
+  background: color-mix(in srgb, var(--color-accent3) 12%, var(--color-white));
+}
+.choice-btn.correct .ch-mark { background: var(--color-accent3); border-color: var(--color-accent3); color: var(--color-white); }
+.choice-btn.incorrect {
+  border-color: var(--color-warning);
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-white));
+}
+.choice-btn.incorrect .ch-mark { background: var(--color-warning); border-color: var(--color-warning); color: var(--color-white); }
+/* 選んだものを強調 */
+.choice-btn.chosen { box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-dark) 22%, transparent); }
+.choice-btn .ch-text { flex: 1; }
+.choice-btn .ch-you {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 1px 8px;
+  border-radius: 10px;
+  margin-left: 8px;
+  vertical-align: middle;
+  background: color-mix(in srgb, var(--color-dark) 70%, var(--color-bg));
+  color: var(--color-white);
+}
+
+.explanation {
+  font-size: 13px;
+  line-height: 1.75;
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: color-mix(in srgb, var(--color-dark) 85%, var(--color-bg));
+}
+.explanation.exp-correct {
+  background: color-mix(in srgb, var(--color-accent3) 10%, var(--color-white));
+  border: 1px solid color-mix(in srgb, var(--color-accent3) 40%, var(--color-bg));
+}
+.explanation.exp-incorrect {
+  background: color-mix(in srgb, var(--color-warning) 8%, var(--color-white));
+  border: 1px solid color-mix(in srgb, var(--color-warning) 32%, var(--color-bg));
+}
+.explanation .exp-head { font-weight: bold; font-size: 11px; display: block; margin-bottom: 4px; }
+.exp-correct .exp-head   { color: var(--color-accent2); }
+.exp-incorrect .exp-head { color: color-mix(in srgb, var(--color-warning) 25%, var(--color-dark)); }
+
+/* ===== COMMENTARY ===== */
+.commentary {
+  background: color-mix(in srgb, var(--color-accent5) 10%, var(--color-white));
+  border: 1px solid color-mix(in srgb, var(--color-accent5) 28%, var(--color-bg));
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-top: 18px;
+  font-size: 13.5px;
+  line-height: 1.75;
+  color: color-mix(in srgb, var(--color-dark) 90%, var(--color-bg));
+}
+.commentary .cm-head {
+  font-size: 12px; font-weight: bold; color: var(--color-accent5);
+  display: block; margin-bottom: 8px;
+}
+.commentary p { margin-bottom: 10px; }
+.commentary p:last-child { margin-bottom: 0; }
+.commentary ul { margin: 6px 0 10px 20px; }
+.commentary li { margin-bottom: 4px; }
+
+/* ===== BUTTONS ===== */
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background: var(--color-accent3);
+  color: var(--color-white);
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  font-family: inherit;
+  cursor: pointer;
+  margin-top: 18px;
+  transition: background-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.btn-primary:hover { background: var(--color-accent2); }
+.btn-secondary {
+  padding: 11px 18px;
+  background: var(--color-white);
+  color: var(--color-accent5);
+  border: 2px solid color-mix(in srgb, var(--color-accent5) 30%, var(--color-bg));
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.btn-secondary:hover { background: color-mix(in srgb, var(--color-accent6) 8%, var(--color-white)); }
+.back-link {
+  display: inline-block;
+  font-size: 13px;
+  color: var(--color-accent5);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 4px 0;
+  margin-bottom: 8px;
+}
+.back-link:hover { text-decoration: underline; }
+
+/* ===== RESULT (view D) ===== */
+.result-score {
+  text-align: center;
+  padding: 8px 0 4px;
+}
+.result-score .rs-big { font-size: 52px; font-weight: bold; color: var(--color-accent3); line-height: 1; }
+.result-score .rs-denom { font-size: 22px; color: color-mix(in srgb, var(--color-dark) 45%, var(--color-bg)); }
+.result-score .rs-label { font-size: 12px; color: color-mix(in srgb, var(--color-dark) 55%, var(--color-bg)); margin-top: 4px; }
+
+/* ===== ROADMAP FLOWCHART（結果画面: 全体像・通った経路の強調） ===== */
+.roadmap-flow {
+  background: var(--color-white);
+  border-radius: 14px;
+  padding: 20px 20px 16px;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--color-dark) 14%, transparent);
+  overflow-x: auto;
+}
+.rf-title { font-size: 15px; font-weight: bold; color: var(--color-dark); margin-bottom: 4px; }
+.rf-sub { font-size: 11.5px; color: color-mix(in srgb, var(--color-dark) 55%, var(--color-bg)); margin-bottom: 14px; }
+
+.rf-track { display: flex; flex-direction: column; gap: 2px; min-width: 320px; }
+.rf-step { display: flex; flex-direction: column; }
+.rf-row { display: flex; align-items: stretch; gap: 10px; }
+
+/* 各フェーズの候補ノード群（例: HIGH/MID/LOW、[A]/[B] など） */
+.rf-branches { display: flex; flex-direction: column; gap: 5px; flex: 1; }
+.rf-node {
+  border: 1.5px solid color-mix(in srgb, var(--color-dark) 16%, var(--color-white));
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--color-dark) 40%, var(--color-bg));
+  background: color-mix(in srgb, var(--color-bg) 25%, var(--color-white));
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+/* 通った経路: 濃色・太線 */
+.rf-node.rf-on {
+  border-color: var(--color-dark);
+  border-width: 2px;
+  background: color-mix(in srgb, var(--color-accent3) 14%, var(--color-white));
+  color: var(--color-dark);
+  font-weight: bold;
+}
+/* 通らなかった経路: 薄いグレー・低コントラストのまま残す */
+.rf-node.rf-off {
+  opacity: 0.55;
+}
+.rf-node .rf-node-tag {
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: bold;
+  padding: 0 6px;
+  border-radius: 8px;
+  margin-right: 6px;
+  background: color-mix(in srgb, var(--color-dark) 12%, var(--color-white));
+  color: color-mix(in srgb, var(--color-dark) 55%, var(--color-bg));
+}
+.rf-node.rf-on .rf-node-tag {
+  background: var(--color-accent3);
+  color: var(--color-white);
+}
+
+.rf-connector {
+  display: flex;
+  justify-content: center;
+  font-size: 15px;
+  color: color-mix(in srgb, var(--color-dark) 28%, var(--color-bg));
+  padding: 2px 0;
+}
+.rf-connector.rf-on { color: var(--color-dark); font-weight: bold; }
+
+.rf-phase-label {
+  font-size: 10.5px;
+  font-weight: bold;
+  color: var(--color-accent5);
+  margin: 10px 0 4px;
+}
+.rf-annot {
+  font-size: 11px;
+  color: color-mix(in srgb, var(--color-warning) 30%, var(--color-dark));
+  background: color-mix(in srgb, var(--color-warning) 10%, var(--color-white));
+  border: 1px solid color-mix(in srgb, var(--color-warning) 35%, var(--color-bg));
+  border-radius: 6px;
+  padding: 4px 10px;
+  margin: 4px 0;
+  display: inline-block;
+}
+.rf-highnote {
+  font-size: 10.5px;
+  color: color-mix(in srgb, var(--color-dark) 45%, var(--color-bg));
+  margin: 2px 0 4px;
+}
+
+.rf-summary {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid color-mix(in srgb, var(--color-dark) 12%, var(--color-bg));
+  font-size: 12.5px;
+  line-height: 1.9;
+  color: color-mix(in srgb, var(--color-dark) 88%, var(--color-bg));
+}
+.rf-summary .rf-summary-head { font-weight: bold; color: var(--color-dark); display: block; margin-bottom: 4px; }
+
+.result-list { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+.result-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--color-bg) 30%, var(--color-white));
+  font-size: 13px;
+}
+.result-row .rr-mark {
+  flex-shrink: 0;
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: bold; color: var(--color-white);
+}
+.result-row.ok  .rr-mark { background: var(--color-accent3); }
+.result-row.ng  .rr-mark { background: var(--color-warning); }
+.result-row .rr-body { flex: 1; }
+.result-row .rr-phase { font-size: 10px; font-weight: bold; color: var(--color-accent5); display: block; }
+.result-row .rr-q { font-weight: bold; color: var(--color-dark); }
+.result-row .rr-you { font-size: 12px; color: color-mix(in srgb, var(--color-dark) 60%, var(--color-bg)); margin-top: 2px; }
+
+.debrief-body { font-size: 14px; line-height: 1.8; color: color-mix(in srgb, var(--color-dark) 90%, var(--color-bg)); }
+.debrief-body p { margin-bottom: 10px; }
+.debrief-body ol { margin: 8px 0 10px 22px; }
+.debrief-body li { margin-bottom: 5px; }
+.debrief-body strong { color: var(--color-dark); }
+.sources-list { margin: 6px 0 0 20px; font-size: 13px; }
+.sources-list li { margin-bottom: 4px; }
+
+.result-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.result-actions button { flex: 1 1 auto; min-width: 130px; }
+
+/* ===== FOOTER ===== */
+.footer-note {
+  text-align: center;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--color-dark) 55%, var(--color-bg));
+  margin-top: 28px;
+  padding-top: 14px;
+  border-top: 1px solid color-mix(in srgb, var(--color-dark) 12%, var(--color-bg));
+  line-height: 1.7;
+}
+.privacy-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: color-mix(in srgb, var(--color-accent4) 14%, var(--color-white));
+  border: 1px solid var(--color-accent3);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 20px;
+  font-size: 12px;
+  color: var(--color-accent2);
+}
+
+@media (max-width: 600px) {
+  .container { padding: 16px 12px 56px; }
+  .tool-title { font-size: 19px; }
+  .phase-node { min-width: 60px; }
+  .phase-label { font-size: 10px; }
+  .result-actions button { min-width: 100%; }
+  .rm-grid { grid-template-columns: 52px repeat(3, 1fr); font-size: 10px; }
+  .rm-cell { padding: 6px 3px; }
+}
+</style>
+</head>
+<body>
+<div class="page-planes" aria-hidden="true">
+  <div class="pp-a"></div>
+  <div class="pp-b"></div>
+  <div class="pp-band"></div>
+</div>
+
+<!-- STICKY HEADER -->
+<div class="sticky-header">
+  <div class="hdr-titles">
+    <div class="hdr-sub">クリニカルラウンジ / 退院支援・地域連携</div>
+    <div class="hdr-main">高齢者退院ケーススタディ</div>
+  </div>
+  <div class="hdr-progress" id="hdr-progress"></div>
+</div>
+
+<div class="container">
+
+  <!-- ============================================================
+       [A] 症例選択画面（ホーム）
+       ============================================================ -->
+  <div class="view active" id="view-home">
+    <div class="tool-title">高齢者退院ケーススタディ</div>
+    <p class="tool-lede">
+      症例をたどりながら、退院調整の各場面で「最も適切な判断」を選ぶ、症例ベースの学習教材です。
+      正誤の判定に加え、なぜ他の選択肢を選ばないのか(誤答の除外理由)まで解説します。
+    </p>
+
+    <!-- 本教材のラベルについて（省略不可の注記） -->
+    <div class="framework-note">
+      本教材の Medical:HIGH/MID/LOW や Goal:Now/Final 等のラベルは、<strong>「退院ゴールロードマップ」という、著者が独自に体系化した思考フレームワーク</strong>であり、公式な医学用語や制度上の分類ではありません。医療区分・要介護度など制度上の基準とは区別してご利用ください。
+    </div>
+
+    <div class="section-header">◆ 症例を選ぶ</div>
+    <div class="case-list" id="case-list"><!-- CASES から自動生成 --></div>
+
+    <div class="footer-note">
+      実務での素早い参照は <strong>[[退院ナビ]]</strong> へ。本教材は学習用で、実務リファレンスとは役割が分かれています。<br>
+      <button class="back-link" onclick="location.href='../portal/index.html'">← クリニカルラウンジ(ポータル)へ戻る</button>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       [B] 症例導入画面
+       ============================================================ -->
+  <div class="view" id="view-intro">
+    <button class="back-link" onclick="goHome()">← 症例一覧へ戻る</button>
+    <div class="panel">
+      <div class="intro-title" id="intro-title"></div>
+      <div class="intro-body" id="intro-body"></div>
+      <div class="intro-count" id="intro-count"></div>
+      <p class="no-save-note">途中保存はありません。1症例 5〜10 分を目安に通しでどうぞ(リロードで最初に戻ります)。</p>
+    </div>
+    <button class="btn-primary" onclick="startSteps()">開始する</button>
+  </div>
+
+  <!-- ============================================================
+       [C] 判断ポイント画面（Step ごとに再利用）
+       ============================================================ -->
+  <div class="view" id="view-step">
+    <div class="progress-bar">
+      <div class="phase-track" id="phase-track"><!-- 進行インジケータ --></div>
+    </div>
+    <div class="roadmap-matrix" id="roadmap-matrix"><!-- 二軸マトリクス(現在地表示) --></div>
+    <span class="step-phase-tag" id="step-phase"></span>
+    <div class="step-situation" id="step-situation"></div>
+    <div class="step-question" id="step-question"></div>
+    <div class="choices" id="step-choices"></div>
+    <div id="step-commentary"></div>
+    <button class="btn-primary" id="step-next" style="display:none;" onclick="nextStep()"></button>
+  </div>
+
+  <!-- ============================================================
+       [D] 結果画面
+       ============================================================ -->
+  <div class="view" id="view-result">
+    <div class="panel">
+      <div class="result-score">
+        <div><span class="rs-big" id="result-correct">0</span><span class="rs-denom" id="result-total"> / 0</span></div>
+        <div class="rs-label">正答数 / 判断ポイント数</div>
+      </div>
+    </div>
+
+    <div class="section-header">◆ 退院ゴールロードマップ(通った経路)</div>
+    <div class="roadmap-flow" id="roadmap-flow"><!-- フローチャート(全体像・通った経路の強調) --></div>
+
+    <div class="section-header">◆ 判断ポイントの記録</div>
+    <div class="result-list" id="result-list"></div>
+
+    <div class="section-header">◆ 症例全体の振り返り</div>
+    <div class="panel">
+      <div class="debrief-body" id="debrief-summary"></div>
+    </div>
+
+    <div class="section-header">◆ 参照資料</div>
+    <div class="panel">
+      <ul class="sources-list" id="debrief-sources"></ul>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn-primary" style="margin-top:0;" onclick="retryCase()">もう一度</button>
+      <button class="btn-secondary" onclick="goHome()">他の症例へ</button>
+      <button class="btn-secondary" onclick="location.href='../portal/index.html'">ポータルへ戻る</button>
+    </div>
+
+    <div class="privacy-note">
+      <span style="font-size:16px;flex-shrink:0;">🔒</span>
+      <div>
+        <strong>回答内容はこの端末の外に送信されません。</strong> オフラインの単一 HTML です。進捗の保存はなく、ページを閉じると記録は消えます。
+      </div>
+    </div>
+    <div class="footer-note">
+      実務での素早い参照は <strong>[[退院ナビ]]</strong> へ(役割分担: 本教材=学習 / 退院ナビ=実務リファレンス)。
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+/* =====================================================================
+   ===== ENGINE =====
+   （画面切替・採点・進行バー。CASES の中身はハードコードしない）
+   ===================================================================== */
+
+// 工程 enum（進行インジケータの順序）
+const PHASES = ["情報収集", "評価", "ゴール設定", "施設選定", "調整"];
+
+// Goal:Final の 6 値（MVP では HOME / FACILITY のみ使用）
+const GOAL_FINALS = ["HOME", "HOME_EOL", "FACILITY", "FACILITY_EOL", "TREAT", "UNDECIDED"];
+
+// アプリ状態（1オブジェクトで足りる。永続化は一切しない）
+const state = {
+  view: "home",        // home | intro | step | result
+  caseId: null,        // 選択中の症例 id
+  stepIndex: 0,        // 現在の Step 番号
+  records: [],         // 各 Step の回答記録 [{stepIndex, phase, question, chosenText, isCorrect}]
+  choiceOrder: [],      // 現在の Step の表示順 → 元の choices 配列インデックスの対応
+};
+
+// Fisher-Yates シャッフル。データ上の正解位置が常に選択肢1番目に固定されているため、
+// 表示順をランダム化して「常に一番上を選べば満点」という抜け道を防ぐ。
+function shuffledIndices(n) {
+  const arr = Array.from({ length: n }, (_, i) => i);
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function currentCase() {
+  return CASES.find(c => c.id === state.caseId) || null;
+}
+
+function showView(name) {
+  state.view = name;
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  document.getElementById("view-" + name).classList.add("active");
+  window.scrollTo(0, 0);
+  updateHeaderProgress();
+}
+
+function updateHeaderProgress() {
+  const el = document.getElementById("hdr-progress");
+  const c = currentCase();
+  if (state.view === "step" && c) {
+    el.textContent = `判断ポイント ${state.stepIndex + 1} / ${c.steps.length}`;
+  } else if (state.view === "result" && c) {
+    el.textContent = "結果";
+  } else {
+    el.textContent = "";
+  }
+}
+
+/* ---------- [A] ホーム: 症例カード生成 ---------- */
+function renderHome() {
+  const list = document.getElementById("case-list");
+  list.innerHTML = "";
+  CASES.forEach(c => {
+    const btn = document.createElement("button");
+    btn.className = "case-card";
+    btn.type = "button";
+    btn.onclick = () => openCase(c.id);
+    btn.innerHTML =
+      `<div class="cc-top">
+         <span class="cc-title">${escapeHtml(c.title)}</span>
+         <span class="goal-badge goal-${c.goalFinal}">Goal:Final = ${c.goalFinal}</span>
+       </div>
+       <div class="cc-summary">${escapeHtml(c.summary)}</div>
+       <div class="cc-meta">判断ポイント ${c.steps.length} 個 <span class="cc-arrow">▶ この症例を始める</span></div>`;
+    list.appendChild(btn);
+  });
+}
+
+function openCase(id) {
+  state.caseId = id;
+  state.stepIndex = 0;
+  state.records = [];
+  const c = currentCase();
+  document.getElementById("intro-title").textContent = c.title;
+  document.getElementById("intro-body").innerHTML = paragraphs(c.intro);
+  document.getElementById("intro-count").textContent =
+    `この症例では ${c.steps.length} 個の判断ポイントがあります。`;
+  showView("intro");
+}
+
+function startSteps() {
+  state.stepIndex = 0;
+  state.records = [];
+  renderStep();
+  showView("step");
+}
+
+/* ---------- 進行インジケータ ---------- */
+function renderPhaseTrack() {
+  const c = currentCase();
+  const track = document.getElementById("phase-track");
+  track.innerHTML = "";
+  // 各工程に属する Step のインデックス一覧を集計
+  const phaseSteps = {};
+  PHASES.forEach(p => (phaseSteps[p] = []));
+  c.steps.forEach((s, i) => {
+    if (phaseSteps[s.phase]) phaseSteps[s.phase].push(i);
+  });
+
+  PHASES.forEach((phase, pi) => {
+    const node = document.createElement("div");
+    node.className = "phase-node";
+    const idxs = phaseSteps[phase];
+
+    // この工程の状態を判定（現在の Step がこの工程内 or 済 or 未）
+    let nodeClass = "";
+    if (idxs.length) {
+      if (idxs.includes(state.stepIndex)) nodeClass = "current";
+      else if (idxs.every(i => i < state.stepIndex)) nodeClass = "done";
+    }
+    if (nodeClass) node.classList.add(nodeClass);
+
+    const dots = idxs.map(i => {
+      let cls = "phase-dot";
+      if (i < state.stepIndex) cls += " done";
+      else if (i === state.stepIndex) cls += " current";
+      return `<span class="${cls}"></span>`;
+    }).join("");
+
+    node.innerHTML =
+      `<div class="phase-label">${phase}</div>
+       <div class="phase-dots">${dots || '<span class="phase-dot" style="opacity:.35"></span>'}</div>`;
+    track.appendChild(node);
+
+    if (pi < PHASES.length - 1) {
+      const arrow = document.createElement("div");
+      arrow.className = "phase-arrow";
+      arrow.textContent = "▶";
+      track.appendChild(arrow);
+    }
+  });
+}
+
+/* ---------- 二軸マトリクス（判断ポイント画面: 現在地表示） ----------
+   仕様(04_diagram_spec.md §1): 行=Medical(HIGH/MID/LOW) × 列=Goal:Finalの3グループ。
+   Step1(情報収集)回答後に行を確定、Step3(ゴール設定)回答後にセルを確定。
+   ハイライト状態はページ内の一時的な描画のみ（保存しない）。 */
+const MATRIX_ROWS = ["HIGH", "MID", "LOW"];
+const MATRIX_COLS = ["HOME系", "FACILITY系", "TREAT・未定"];
+const MATRIX_CELLS = {
+  HIGH: { "HOME系": "自宅+訪問看護(医療濃い在宅)", "FACILITY系": "介護医療院", "TREAT・未定": "医療療養病床" },
+  MID:  { "HOME系": "回リハ/老健→自宅",           "FACILITY系": "特養/老健(つなぎ)", "TREAT・未定": "地包ケア 等" },
+  LOW:  { "HOME系": "自宅/回リハ",                 "FACILITY系": "特養/有料/サ高住", "TREAT・未定": "(該当少)" },
+};
+
+function renderMatrix() {
+  const c = currentCase();
+  const step = c.steps[state.stepIndex];
+  const rm = c.roadmap;
+  const el = document.getElementById("roadmap-matrix");
+
+  // 直前までの Step が全て回答済みかどうかで「行確定」「セル確定」のタイミングを判定する
+  // （線形進行のため、現在の Step より前は必ず回答記録がある）
+  const medicalStepIdx = c.steps.findIndex(s => s.phase === "情報収集");
+  const goalStepIdx = c.steps.findIndex(s => s.phase === "ゴール設定");
+  const medicalDecided = medicalStepIdx >= 0 && (state.stepIndex > medicalStepIdx ||
+    (state.stepIndex === medicalStepIdx && !!state.records[medicalStepIdx]));
+  const cellDecided = goalStepIdx >= 0 && (state.stepIndex > goalStepIdx ||
+    (state.stepIndex === goalStepIdx && !!state.records[goalStepIdx]));
+
+  const rowLabels = { HIGH: "HIGH", MID: "MID", LOW: "LOW" };
+
+  let grid = `<div class="rm-cell rm-corner"></div>`;
+  MATRIX_COLS.forEach(col => { grid += `<div class="rm-cell rm-colhead">${col}</div>`; });
+
+  MATRIX_ROWS.forEach(row => {
+    const rowActive = medicalDecided && row === rm.medical;
+    grid += `<div class="rm-cell rm-rowhead${rowActive ? " rm-row-active" : ""}">${rowLabels[row]}</div>`;
+    MATRIX_COLS.forEach(col => {
+      const isTargetCell = cellDecided && row === rm.medical && col === rm.goalGroup;
+      const cls = ["rm-cell"];
+      if (rowActive) cls.push("rm-row-active");
+      if (isTargetCell) cls.push("rm-cell-active");
+      grid += `<div class="${cls.join(" ")}">${MATRIX_CELLS[row][col]}</div>`;
+    });
+  });
+
+  // Step2(評価)で表示する [A]/[B] バッジ(マトリクスの軸ではないため外側に添える)
+  let badges = "";
+  if (step.phase === "評価" || step.phase === "ゴール設定" || step.phase === "施設選定" || step.phase === "調整") {
+    const showA = medicalDecided; // 評価フェーズ以降に表示
+    if (showA) {
+      badges =
+        `<div class="rm-badges">
+           <span class="rm-badge${rm.primaryPurpose === "A" ? " on" : ""}">[A]医療保険</span>
+           <span class="rm-badge${rm.primaryPurpose === "B" ? " on" : ""}">[B]介護保険</span>
+         </div>`;
+    }
+  }
+
+  el.innerHTML =
+    `<div class="rm-head">
+       <span class="rm-title">◆ 退院ゴールロードマップ(現在地)</span>
+       ${badges}
+     </div>
+     <div class="rm-grid">${grid}</div>
+     <div class="rm-note">縦: Medical(医療の濃さ) ／ 横: Goal:Final のグループ。判断が進むほど、現在地が絞り込まれます。</div>`;
+}
+
+/* ---------- [C] Step 描画 ---------- */
+function renderStep() {
+  const c = currentCase();
+  const step = c.steps[state.stepIndex];
+  renderPhaseTrack();
+  renderMatrix();
+
+  document.getElementById("step-phase").textContent = step.phase;
+  document.getElementById("step-situation").innerHTML = richText(step.situation);
+  document.getElementById("step-question").textContent = step.question;
+
+  const choicesEl = document.getElementById("step-choices");
+  choicesEl.innerHTML = "";
+  document.getElementById("step-commentary").innerHTML = "";
+  const nextBtn = document.getElementById("step-next");
+  nextBtn.style.display = "none";
+
+  state.choiceOrder = shuffledIndices(step.choices.length);
+  state.choiceOrder.forEach((origIdx, displayIdx) => {
+    const ch = step.choices[origIdx];
+    const btn = document.createElement("button");
+    btn.className = "choice-btn";
+    btn.type = "button";
+    btn.innerHTML =
+      `<span class="ch-mark">${String.fromCharCode(65 + displayIdx)}</span>
+       <span class="ch-text">${escapeHtml(ch.text)}</span>`;
+    btn.onclick = () => answerStep(origIdx);
+    choicesEl.appendChild(btn);
+  });
+  updateHeaderProgress();
+}
+
+function answerStep(chosenIndex) {
+  const c = currentCase();
+  const step = c.steps[state.stepIndex];
+  const chosen = step.choices[chosenIndex];
+
+  // 記録（一度きり。選び直し不可）
+  state.records[state.stepIndex] = {
+    stepIndex: state.stepIndex,
+    phase: step.phase,
+    question: step.question,
+    chosenText: chosen.text,
+    isCorrect: !!chosen.isCorrect,
+  };
+
+  // マトリクスの現在地表示を更新(Step1回答後=行確定 / Step3回答後=セル確定)
+  renderMatrix();
+
+  const choicesEl = document.getElementById("step-choices");
+  const btns = choicesEl.querySelectorAll(".choice-btn");
+
+  state.choiceOrder.forEach((origIdx, displayIdx) => {
+    const ch = step.choices[origIdx];
+    const btn = btns[displayIdx];
+    btn.classList.add("locked");
+    btn.onclick = null;
+    // ○/× マーク & 色分け（正解=緑系 / 不正解=warning）
+    const mark = btn.querySelector(".ch-mark");
+    if (ch.isCorrect) {
+      btn.classList.add("correct");
+      mark.textContent = "○";
+    } else {
+      btn.classList.add("incorrect");
+      mark.textContent = "×";
+    }
+    if (origIdx === chosenIndex) {
+      btn.classList.add("chosen");
+      btn.querySelector(".ch-text").insertAdjacentHTML("beforeend",
+        `<span class="ch-you">あなたの選択</span>`);
+    }
+    // 全選択肢の explanation を開示（誤答の除外理由まで学ぶ）
+    const exp = document.createElement("div");
+    exp.className = "explanation " + (ch.isCorrect ? "exp-correct" : "exp-incorrect");
+    exp.innerHTML =
+      `<span class="exp-head">${ch.isCorrect ? "○ 採用理由" : "× 除外すべき理由"}</span>${escapeHtml(ch.explanation)}`;
+    btn.insertAdjacentElement("afterend", exp);
+  });
+
+  // 全体解説
+  const cm = document.getElementById("step-commentary");
+  cm.innerHTML =
+    `<div class="commentary"><span class="cm-head">全体解説</span>${richText(step.commentary)}</div>`;
+
+  // 次へボタン
+  const nextBtn = document.getElementById("step-next");
+  const isLast = state.stepIndex === c.steps.length - 1;
+  nextBtn.textContent = isLast ? "結果を見る" : "次の判断ポイントへ →";
+  nextBtn.style.display = "block";
+  nextBtn.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function nextStep() {
+  const c = currentCase();
+  if (state.stepIndex < c.steps.length - 1) {
+    state.stepIndex += 1;
+    renderStep();
+    showView("step");
+  } else {
+    renderResult();
+    showView("result");
+  }
+}
+
+/* ---------- [D] 結果 ---------- */
+/* ---------- フローチャート（結果画面: 全体像・通った経路の強調） ----------
+   仕様(04_diagram_spec.md §2): 5フェーズの骨格は両症例共通。
+   通った経路=濃色・太線(rf-on)、通らなかった経路=薄いグレーのまま残す(rf-off)。
+   HIGHルートは詳細化せず「医療療養病床/介護医療院へ合流」の省略ノードとする。 */
+function renderFlowchart() {
+  const c = currentCase();
+  const rm = c.roadmap;
+  const el = document.getElementById("roadmap-flow");
+
+  const node = (text, on, tag) =>
+    `<div class="rf-node ${on ? "rf-on" : "rf-off"}">${tag ? `<span class="rf-node-tag">${tag}</span>` : ""}${escapeHtml(text)}</div>`;
+  const connector = (on) => `<div class="rf-connector ${on ? "rf-on" : ""}">▼</div>`;
+
+  let html = "";
+
+  // ① 医療の濃さ判定
+  html += `<div class="rf-phase-label">① 医療の濃さ判定(Medical)</div>`;
+  html += `<div class="rf-branches">`;
+  html += node("HIGH → 医療療養病床/介護医療院へ合流(省略ノード)", rm.medical === "HIGH");
+  html += node("MID", rm.medical === "MID");
+  html += node("LOW", rm.medical === "LOW", rm.medical === "LOW" ? "確定" : null);
+  html += `</div>`;
+
+  if (rm.medical === "HIGH") {
+    // 仕様上、両症例とも通らない経路。省略ノードで合流した旨だけ示す。
+    el.innerHTML =
+      `<div class="rf-sub">この症例は Medical: HIGH のため、②以降は医療療養病床/介護医療院へ直接合流します。</div>
+       ${html}`;
+    return;
+  }
+
+  html += connector(true);
+
+  // ② 主目的（一次分岐 [A]/[B]）
+  html += `<div class="rf-phase-label">② 主目的(一次分岐)</div>`;
+  if (rm.specialCondition) {
+    html += `<div class="rf-annot">${escapeHtml(rm.specialCondition)}</div>`;
+  }
+  html += `<div class="rf-branches">`;
+  html += node("[A]医療保険(治療・機能回復に専念)", rm.primaryPurpose === "A", rm.primaryPurpose === "A" ? "確定" : null);
+  html += node("[B]介護保険(生活を支える)", rm.primaryPurpose === "B", rm.primaryPurpose === "B" ? "確定" : null);
+  html += `</div>`;
+
+  html += connector(true);
+
+  // ③ ゴール(Now×Final)
+  html += `<div class="rf-phase-label">③ ゴール(Goal:Now × Goal:Final)</div>`;
+  html += `<div class="rf-branches">`;
+  html += node(`Goal:Now = ${rm.goalNow} / Goal:Final = ${c.goalFinal}`, true, "確定");
+  html += `</div>`;
+
+  html += connector(true);
+
+  // ④ 施設選定
+  html += `<div class="rf-phase-label">④ 施設選定</div>`;
+  html += `<div class="rf-branches">`;
+  html += node(rm.facilityNode, true, "確定");
+  html += `</div>`;
+  if (rm.facilityNote) {
+    html += `<div class="rf-highnote">※ ${escapeHtml(rm.facilityNote)}</div>`;
+  }
+
+  html += connector(true);
+
+  // ⑤ 調整
+  html += `<div class="rf-phase-label">⑤ 調整</div>`;
+  html += `<div class="rf-branches">`;
+  html += node(rm.coordNode, true, "確定");
+  html += `</div>`;
+
+  el.innerHTML =
+    `<div class="rf-sub">濃い色・太線=この症例で通った経路。薄いグレー=通らなかった他の可能性(地図の全体像として残しています)。</div>
+     <div class="rf-track">${html}</div>
+     <div class="rf-summary"><span class="rf-summary-head">◆ 通った経路のまとめ</span>${escapeHtml(rm.summaryLine)}</div>`;
+}
+
+function renderResult() {
+  const c = currentCase();
+  const total = c.steps.length;
+  const correct = state.records.filter(r => r && r.isCorrect).length;
+
+  document.getElementById("result-correct").textContent = correct;
+  document.getElementById("result-total").textContent = " / " + total;
+  renderFlowchart();
+
+  const listEl = document.getElementById("result-list");
+  listEl.innerHTML = "";
+  c.steps.forEach((step, i) => {
+    const rec = state.records[i];
+    const ok = rec && rec.isCorrect;
+    const row = document.createElement("div");
+    row.className = "result-row " + (ok ? "ok" : "ng");
+    row.innerHTML =
+      `<div class="rr-mark">${ok ? "○" : "×"}</div>
+       <div class="rr-body">
+         <span class="rr-phase">${step.phase}</span>
+         <span class="rr-q">${escapeHtml(step.question)}</span>
+         <div class="rr-you">あなたの選択: ${escapeHtml(rec ? rec.chosenText : "(未回答)")}</div>
+       </div>`;
+    listEl.appendChild(row);
+  });
+
+  document.getElementById("debrief-summary").innerHTML = richText(c.debrief.summary);
+
+  const srcEl = document.getElementById("debrief-sources");
+  srcEl.innerHTML = "";
+  c.debrief.sources.forEach(s => {
+    const li = document.createElement("li");
+    li.textContent = s;
+    srcEl.appendChild(li);
+  });
+}
+
+function retryCase() {
+  const id = state.caseId;
+  state.stepIndex = 0;
+  state.records = [];
+  openCase(id);
+}
+
+function goHome() {
+  state.caseId = null;
+  state.stepIndex = 0;
+  state.records = [];
+  showView("home");
+}
+
+/* ---------- ユーティリティ ---------- */
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+// 段落（\n\n 区切り）を <p> に
+function paragraphs(text) {
+  return String(text).split(/\n\n+/).map(p =>
+    `<p>${escapeHtml(p).replace(/\n/g, "<br>")}</p>`).join("");
+}
+// 段落 + 箇条書き（行頭 "- "）+ 太字（**...**）に対応した簡易リッチテキスト
+function richText(text) {
+  const blocks = String(text).split(/\n\n+/);
+  return blocks.map(block => {
+    const lines = block.split("\n");
+    const isList = lines.every(l => l.trim().startsWith("- ") || l.trim() === "");
+    if (isList && lines.some(l => l.trim().startsWith("- "))) {
+      const items = lines.filter(l => l.trim().startsWith("- "))
+        .map(l => `<li>${inline(l.trim().slice(2))}</li>`).join("");
+      return `<ul>${items}</ul>`;
+    }
+    return `<p>${inline(block).replace(/\n/g, "<br>")}</p>`;
+  }).join("");
+}
+function inline(s) {
+  // 太字 **...** のみ許可。それ以外はエスケープ
+  return escapeHtml(s).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+}
+
+/* ---------- データ検証（執筆ミスの早期発見。console に出す） ---------- */
+function validateCases() {
+  CASES.forEach(c => {
+    if (!GOAL_FINALS.includes(c.goalFinal)) {
+      console.error(`[検証] ${c.id}: goalFinal "${c.goalFinal}" は enum 外`);
+    }
+    c.steps.forEach(s => {
+      if (!PHASES.includes(s.phase)) {
+        console.error(`[検証] ${c.id}/${s.id}: phase "${s.phase}" は enum 外`);
+      }
+      const correctCount = s.choices.filter(ch => ch.isCorrect).length;
+      if (correctCount !== 1) {
+        console.error(`[検証] ${c.id}/${s.id}: 正解が ${correctCount} 個（1個であるべき）`);
+      }
+      s.choices.forEach((ch, i) => {
+        if (!ch.explanation || !ch.explanation.trim()) {
+          console.error(`[検証] ${c.id}/${s.id} choice[${i}]: explanation が空`);
+        }
+      });
+    });
+  });
+}
+
+/* =====================================================================
+   ===== CASE DATA =====
+   （執筆者=医療側が触るのはこの区画だけ。症例追加 = 配列に1要素追加）
+   本文は 03_strategy.md の完成台本をそのまま転記している。
+   ===================================================================== */
+const CASES = [
+
+/* ---------- 症例1: 82歳女性・肺炎治療後 — Goal:Final = HOME ---------- */
+{
+  id: "case-home-01",
+  title: "82歳女性・肺炎治療後の退院調整",
+  goalFinal: "HOME",
+  summary: "肺炎で入院した82歳女性。治療は順調だが、入院で足腰が弱ってきた。「家に帰る」までの道筋をどう組み立てるか。",
+  // ---- 04_diagram_spec.md: 二軸マトリクス・フローチャート用の確定値(症例ごとに固定) ----
+  roadmap: {
+    medical: "LOW",              // Step1で確定する Medical(HIGH/MID/LOW)
+    goalGroup: "HOME系",         // マトリクスの列グループ(HOME系/FACILITY系/TREAT・未定)
+    primaryPurpose: "A",         // Step2で確定する一次分岐 [A]医療保険 / [B]介護保険
+    specialCondition: null,      // 特殊条件の注記(あれば短い文言)
+    goalNow: "REHAB",
+    facilityNode: "回復期リハビリテーション病棟",
+    facilityNote: null,
+    coordNode: "退院前カンファレンスで空白なく在宅移行",
+    summaryLine: "① LOW → ② [A]医療保険 → ③ Goal:Now=REHAB / Goal:Final=HOME → ④ 回復期リハビリテーション病棟 → ⑤ 退院前カンファレンスで空白なく在宅移行",
+  },
+  intro:
+`あなたは急性期病院の内科病棟を担当する医師です。
+
+**患者**: 82歳女性。長男夫婦と3人暮らし。
+**入院前の生活**: 屋内は自立歩行、買い物は長男の妻と一緒に外出。家事の一部(洗濯物たたみ・簡単な調理)を担っていた。要介護認定は未申請。
+**入院経過**: 5日前、発熱と食欲低下で救急外来を受診し、誤嚥性ではない市中肺炎の診断で入院。抗菌薬治療が奏功し、解熱・炎症反応も改善傾向。酸素投与は昨日終了した。
+**現在の課題**: ベッド上で過ごす時間が長く、看護師から「トイレ歩行時にふらつきがある」と報告があった。本人は「早く家に帰りたい。歩けるようになりたい」と話しており、リハビリへの意欲は高い。長男夫婦も「元の生活に戻れるなら協力したい」と前向きである。`,
+  steps: [
+    {
+      id: "s1-info",
+      phase: "情報収集",
+      situation:
+`入院6日目。抗菌薬は内服薬へ切り替え可能な状態まで改善した。退院調整を始めるにあたり、まず患者の「医療の濃さ(Medical)」— つまり退院後にどれくらいの医療管理が必要か — を判定することにした。
+
+現時点の情報を整理すると:
+- 点滴は本日終了予定。以後は内服薬(降圧薬+抗菌薬の残り数日分)のみ
+- 酸素投与は終了済み。在宅酸素の必要なし
+- 喀痰吸引・経管栄養・褥瘡処置などの医療処置はなし
+- 血糖測定やインスリン注射もなし`,
+      question: "この患者の「医療の濃さ(Medical)」の判定として、最も適切なものはどれか。",
+      choices: [
+        {
+          text: "Medical: LOW(内服管理が中心で、退院後の医療処置はほぼ不要)と判定する",
+          isCorrect: true,
+          explanation: "退院後に残る医療は内服薬の管理のみで、点滴・酸素・吸引・注射などの処置は何もない。これは典型的な Medical: LOW である。LOW と判定できれば、行き先の選択肢は「ゴール(どこで何をしたいか)」と「介護力(家族がどれだけ支えられるか)」で決まる — つまり医療の事情で行き先が縛られない、自由度の高い状態だと分かる。この判定が後のすべての分岐の土台になる。"
+        },
+        {
+          text: "高齢者は誰でも医療的なリスクを抱えているので、一律に Medical: MID として扱う",
+          isCorrect: false,
+          explanation: "「高齢者だから一律に」と考えたくなる気持ちは分かるが、それでは Medical 判定の目的を果たせない。Medical 判定は年齢やリスクの漠然とした印象ではなく、退院後も実際に続く医療処置の種類と量を1件ずつ確認して決めるものである。本症例は点滴も酸素も吸引も注射も不要で、残るのは内服薬の管理のみ。「一律MID」にしてしまうと、本来自由に選べるはずの行き先が不必要に狭められる。"
+        },
+        {
+          text: "肺炎で入院したので、退院後も感染症の管理が必要だと考え、Medical: HIGH と判定する",
+          isCorrect: false,
+          explanation: "治療中の病名から医療の重さを類推したくなるのは自然な発想だが、これは診断名と退院後に必要な医療の量を混同している。Medical: HIGH とは「24時間に近い医療管理(頻回吸引・人工呼吸器・中心静脈栄養など)が必要」という状態を指す言葉であり、肺炎という病名そのものがその条件を満たすわけではない。実際、この患者の抗菌薬治療はすでに終盤で、退院後は内服薬のみになる見込みである。診断名ではなく「今後も続く処置」で判定することが必要である。"
+        },
+        {
+          text: "医療の濃さの判定はリハビリスタッフの仕事なので、医師は関与しない",
+          isCorrect: false,
+          explanation: "職種の役割分担を意識するのは大切な視点だが、Medical 判定(医療処置の要否)はリハビリの範囲ではなく、投薬・処置の管理そのものであり、医師が中心になって行う医学的判断である。この判定が遅れると、退院調整全体の最初の一歩(行き先の一次分岐)が始められない。入院後2〜3日でゴールの仮置きと MSW(医療ソーシャルワーカー)への依頼を始めるのが目安であり、入院6日目の今、医師の判断を留保する理由はない。"
+        }
+      ],
+      commentary:
+`退院調整の最初の仕事は「医療の濃さ(Medical: HIGH / MID / LOW)」の判定である。これは退院ゴールロードマップの一次分岐の入力パラメータで、
+- **HIGH**(24時間に近い医療管理)→ 医療療養病床 or 介護医療院にほぼ限定
+- **MID**(処置はあるが常時ではない)→ ゴール次第で分岐
+- **LOW**(内服中心)→ ゴールと介護力で自由に選べる
+
+というように、判定結果によって行き先候補の広さがまったく変わる。ポイントは、**年齢や診断名の印象ではなく「退院後も続く医療処置の量」を1件ずつ確認して判定する**こと。本症例は内服のみの LOW であり、「どこへ帰るか」を医療の事情ではなく本人のゴールから考えられる、恵まれたスタートラインに立っている。`
+    },
+    {
+      id: "s2-assess",
+      phase: "評価",
+      situation:
+`入院8日目。リハビリスタッフの評価が出た。「病棟内は手すり利用でトイレ歩行可能。ただし持久力が低下しており、連続歩行は50m程度で息切れ。入院前の『買い物外出・家事参加』のレベルには集中的なリハビリが必要」とのこと。いわゆる**廃用症候群**(入院安静で全身の機能が落ちた状態)の軽度〜中等度と評価された。
+
+本人は「リハビリを頑張って、また台所に立ちたい」と明確に希望している。長男夫婦は日中仕事だが、朝夕の見守りは可能という。
+
+次に考えるべきは、退院ゴールロードマップの一次分岐 — この患者の主目的は**[A]医療保険(治療・機能回復に専念)**か、**[B]介護保険(生活を支える)**か — である。`,
+      question: "この患者の現時点の主目的の評価として、最も適切なものはどれか。",
+      choices: [
+        {
+          text: "主目的は「機能回復に専念」であり、[A]医療保険側(病院でのリハビリ継続)を軸に考える",
+          isCorrect: true,
+          explanation: "本人の希望(家に帰って元の生活に戻る)と現状(廃用による機能低下)のギャップを埋めるのは集中リハビリであり、これは「治療・機能回復に専念」= [A]医療保険側の主目的である。回復期リハ病棟や地域包括ケア病棟は「病院への入院継続」であり [A] に属する。「リハビリして家に帰りたい」は [A] 側 — ここは誤解されやすいが、本症例はその典型例である。"
+        },
+        {
+          text: "高齢者の退院先を考えるときは、まず介護保険の申請から動くのが基本なので、[B]介護保険側で考える",
+          isCorrect: false,
+          explanation: "「高齢者の退院調整といえば介護保険」というイメージを持つのは無理もないが、[A]か[B]かは年齢や制度の慣習ではなくその時点の主目的で決まる。この患者がいま必要としているのは介護サービスではなく、落ちた身体機能を戻すための集中リハビリである。ここで[B]から動き出すと、機能回復の機会(回復期リハ病棟など)を検討しないまま素通りしてしまう。"
+        },
+        {
+          text: "歩行がまだ不安定で転倒の危険があるため、リハビリより先に、施設で安全に過ごしながら回復を待つ方針([B])に切り替える",
+          isCorrect: false,
+          explanation: "転倒を心配する視点そのものは正しいが、そこから「施設で回復を待つ」と結論づけるのは論理が飛躍している。廃用症候群は放置して回復を待つ状態ではなく、集中的なリハビリという能動的な働きかけによって改善する状態である。本人の意欲も家族の支援体制も整っている今、機能回復の手段([A]側のリハビリ)を検討せずに施設探し([B])へ進むと、本来自宅に戻れたはずの人の回復の機会を奪うことになる。"
+        },
+        {
+          text: "[A]か[B]かは制度の話なので、区役所の窓口に判断を委ねる",
+          isCorrect: false,
+          explanation: "相談先を頼る発想自体は誤りではないが、この場面での判断主体を取り違えている。[A]/[B]の一次分岐は「退院後にどの制度の資源を使うべきか」という医学的な評価に基づく判断であり、区役所の窓口ではなく病院側(主治医・病棟・MSW)が本人の状態を見て決めるものである。窓口はこの判断が固まった後、申請手続きを進める段階で関わる存在である。"
+        }
+      ],
+      commentary:
+`退院ゴールロードマップの一次分岐は「**[A]医療保険=治療・機能回復に専念** vs **[B]介護保険=生活を支える**」である。判断基準は年齢でも介護度でもなく「**いまの主目的は何か**」。
+
+ここで最も誤解されやすいのが、回復期リハ病棟・地域包括ケア病棟の位置づけである。名前に「リハ」「ケア」と付くが、どちらも**病院への入院継続([A]医療保険)**であり、介護施設ではない。「リハビリして家に帰りたい」という希望は[A]側の入口に立っている、と整理できるかどうかが、このフェーズの分かれ目になる。
+
+本症例は「改善見込みのある廃用 + 本人の意欲 + 家族の支援」が揃っており、[A]側で機能回復を図ってから自宅へ、という道筋が最有力となる。`
+    },
+    {
+      id: "s3-goal",
+      phase: "ゴール設定",
+      situation:
+`入院10日目。肺炎の治療は完了し、医学的には急性期病院にいる理由がなくなった。カンファレンスで退院後のゴールを正式に設定する段階になった。
+
+退院ゴールロードマップでは、ゴールを2段階で言語化する:
+- **Goal:Now(直近のゴール)**: TREAT(治療継続)/ REHAB(リハビリ)/ COMFORT(緩和)/ UNDECIDED
+- **Goal:Final(最終的な行き先)**: HOME / HOME_EOL / FACILITY / FACILITY_EOL / TREAT / UNDECIDED
+
+本人「家に帰って、また家族とご飯を作りたい」。長男夫婦「歩けるようになって帰ってきてくれるのが一番」。リハビリ評価では、集中的なリハビリにより入院前レベル近くまでの回復が十分見込めるとされている。`,
+      question: "この患者の Goal:Now / Goal:Final の設定として、最も適切なものはどれか。",
+      choices: [
+        {
+          text: "Goal:Now = REHAB、Goal:Final = HOME(集中リハビリで機能を戻し、自宅へ帰る)",
+          isCorrect: true,
+          explanation: "直近にやるべきことは廃用からの機能回復(REHAB)、最終到達点は本人・家族の一致した希望である自宅(HOME)。「REHAB → HOME」は退院ゴールロードマップにおける典型組み合わせの一つで、回復期リハ病棟の最も標準的な適応パターンでもある。Now と Final を分けて言語化することで、「そのリハビリは何のためか(=家に帰るためか)」がチーム全員と転院先に共有され、以降の施設選定・調整が一直線になる。"
+        },
+        {
+          text: "Goal:Now = TREAT、Goal:Final = HOME(肺炎後で体力も落ちているので、もうしばらく治療の延長として様子を見る)",
+          isCorrect: false,
+          explanation: "体力の落ちた患者をもう少し慎重に見守りたいという気持ちは理解できるが、TREAT(治療継続)という言葉は今のこの患者の状態を正確に表していない。肺炎治療そのものはすでに完了しており、いま取り組むべきは治療ではなくリハビリ(REHAB)である。Now を TREAT のままにすると、転院先の候補が医療療養病床など「治療・静養」の場に向いてしまい、集中リハビリという本当のニーズとずれてしまう。"
+        },
+        {
+          text: "Goal:Now = REHAB、Goal:Final = FACILITY(念のため、リハビリの結果が思わしくない場合に備えて施設も視野に入れておく)",
+          isCorrect: false,
+          explanation: "万一に備えておきたいという慎重さは分かるが、Final は「保険として広めに置いておく」項目ではなく、現時点で最も可能性の高い到達点を言語化するものである。本人・家族はともに自宅復帰を希望し、リハビリでの改善見込みも十分あり、同居家族の支援体制もある。FACILITY に傾ける根拠となる事情(在宅の支援体制が整わない、改善の見込みが乏しい等)は今のところ何もない。Final を FACILITY にすると、転院先への依頼文書やリハビリの目標設定(自宅での生活動作に向けた訓練)まで、実際の見込みとずれた方向に歪んでしまう。"
+        },
+        {
+          text: "Goal:Final = UNDECIDED のまま転院し、リハビリの結果を見てから行き先を決める",
+          isCorrect: false,
+          explanation: "結果を見てから判断したいという慎重な姿勢は理解できるが、本症例ではその材料がすでに揃っている。UNDECIDED は「本人の意思確認ができない」「家族間で意見が割れている」など、本当に決められない場合に使う値であり、希望も改善見込みも一致している本症例には当てはまらない。加えて実務上、回復期リハ病棟は在宅復帰率が評価される仕組みのため、「帰り先未定」のままでは受け入れ判断がしづらく、転院打診で不利に働いてしまう。決められる材料がある今、ゴールは決めてから動くのが原則である。"
+        }
+      ],
+      commentary:
+`ゴール設定の要点は「**Goal:Now(直近)と Goal:Final(最終)を分けて言語化する**」こと。この2段構えにより、「今やること」と「目指す場所」の混同を防げる。
+
+本症例の「REHAB → HOME」は最も典型的な組み合わせで、その主要ルートが**回復期リハ病棟**である。あわせて押さえておくべき制度知識として、回復期リハ病棟には疾患ごとの入院期限があり、廃用症候群では**最大90日**。つまり「REHAB → HOME」は無期限の道ではなく、期限内に自宅生活レベルまで戻す計画として設計する必要がある。ゴールを早期に文書化(カルテ記録・MSW依頼)することが、次の施設選定フェーズの推進力になる。`
+    },
+    {
+      id: "s4-select",
+      phase: "施設選定",
+      situation:
+`入院12日目。「Goal:Now = REHAB、Goal:Final = HOME」がカンファレンスで確定し、MSW に転院調整の依頼を出すことになった。具体的な転院先・退院先のカテゴリを決める。
+
+現状の整理:
+- Medical: LOW(内服のみ)
+- 廃用症候群 軽度〜中等度。集中リハビリで入院前レベル近くまで改善見込みあり
+- 本人のリハビリ意欲は高い。1日複数単位のリハビリに耐えられる体力は回復してきた
+- 自宅は戸建て。玄関に段差あり。日中は独居時間帯がある`,
+      question: "この患者の次の行き先として、最も適切なものはどれか。",
+      choices: [
+        {
+          text: "回復期リハビリテーション病棟へ転院し、集中リハビリ後に自宅退院を目指す",
+          isCorrect: true,
+          explanation: "「REHAB → HOME」の標準的なルートである。回復期リハ病棟は医療保険の入院で、1日最大3時間程度の集中リハビリを毎日提供でき、廃用症候群も対象疾患(上限90日)。本人の意欲・体力・改善見込みがあり、明確な在宅復帰目標がある本症例は理想的な適応である。回復期リハ病棟側も在宅復帰率が評価指標であるため、「自宅へ帰る見込みの高い患者」として受け入れられやすいという実務上の追い風もある。"
+        },
+        {
+          text: "このまま自宅へ直接退院し、外来リハビリか通所リハビリで機能回復を図る",
+          isCorrect: false,
+          explanation: "早く自宅に戻してあげたいという思いは自然だが、今のこの患者の状態では時期尚早である。現状は連続歩行50mで息切れ・トイレ歩行にふらつきがあり、日中独居の時間帯がある自宅では転倒・再入院のリスクが高い。外来・通所リハは週数回・短時間の提供であり、毎日・長時間の集中リハビリと比べると回復のペースには大きな差がある。廃用がごく軽度であれば直接自宅+在宅サービスも選択肢になりうるが、本症例の機能低下の程度はそれを許す段階には至っていない。"
+        },
+        {
+          text: "特別養護老人ホーム(特養)に入所を申し込む",
+          isCorrect: false,
+          explanation: "高齢者の退院先としてまず思い浮かぶ選択肢の一つかもしれないが、本症例には制度上・目的上どちらの面でも合わない。特養は「生活の場(終身利用)」であり、機能回復を目的とする場ではなく、Goal:Final = HOME というこの患者のゴールとは方向性が異なる。加えて特養は原則要介護3以上が入所要件であり、要介護認定すら未申請の本症例は入所基準を満たさない。"
+        },
+        {
+          text: "老人保健施設(老健)に入所し、リハビリをしながら在宅復帰を目指す",
+          isCorrect: false,
+          explanation: "老健は「在宅復帰の架け橋」を掲げる介護保険施設であり、自宅を目指す方向性そのものは本症例と一致している。ただし本症例においては回復期リハ病棟のほうが適している。理由は2つ。(1) リハビリの提供量 — 老健のリハは回復期リハ病棟ほど毎日・集中的ではなく、改善が見込みやすいこの時期のリハビリ効果を最大限に引き出しにくい。(2) 制度の前提 — 老健は介護保険施設のため要介護認定が必要で、未申請の本症例では入所までに時間を要する。医療保険で今すぐ動ける回復期リハ病棟のほうが、この患者には合っている。"
+        },
+        {
+          text: "地域包括ケア病棟へ転院し、在宅復帰の準備を進める",
+          isCorrect: false,
+          explanation: "「在宅復帰」という言葉だけを見ると本症例に合いそうに思えるが、地域包括ケア病棟の主な役割は「在宅復帰の準備・方針の話し合い」(最長60日)であり、回復期リハ病棟ほどの集中的なリハビリ量は制度上想定されていない。本症例のように機能回復の目標が明確で、集中リハビリの適応がはっきりしている患者には、リハビリに特化した回復期リハ病棟のほうが適切である。地域包括ケア病棟が力を発揮するのは、ゴールがまだ固まっていない場合や、環境調整に時間がかかる場合である。"
+        }
+      ],
+      commentary:
+`施設選定は「ゴールから逆算」する。Goal:Now = REHAB、Goal:Final = HOME なら、問うべきは「**どこなら最短・最確実に自宅レベルまで機能を戻せるか**」であり、答えの軸は**リハビリの提供量と制度上の入りやすさ**である。
+
+- 回復期リハ病棟(医療保険・集中リハ・廃用は90日上限)= 本命
+- 老健(介護保険・在宅復帰目的だがリハ量は回リハに劣る)= 次善の選択肢
+- 直接自宅+在宅サービス = 廃用がごく軽度な場合の選択肢
+- 特養・地域包括ケア病棟 = 本症例のニーズとは目的が異なる
+
+もう一つの実務知識として、回復期リハ病棟は**在宅復帰率**が施設の評価指標になっているため、「自宅へ帰る計画が明確な患者」は歓迎され、「帰り先未定・施設確定」の患者は敬遠されやすい。ゴール設定を先に固めたこと(Step 3)が、転院打診の通りやすさに直結している — 前のフェーズの判断が次のフェーズに一つずつつながっていることを実感してほしい。`
+    },
+    {
+      id: "s5-coord",
+      phase: "調整",
+      situation:
+`回復期リハ病棟への転院が決まり、約2か月半のリハビリを経て「屋内自立歩行・段差昇降可・調理などの家事動作も概ね可能」まで回復した。回復期リハ病棟の退院前カンファレンスに、あなたも紹介元の主治医として書面で意見を求められている。
+
+残る課題:
+- 玄関の段差(入院前は問題なかったが、より安全にしたい)
+- 日中の独居時間帯の見守り・体力維持
+- 入院を機に申請した要介護認定は「要支援2」の見込み
+
+自宅退院日は2週間後に設定された。`,
+      question: "自宅退院に向けた退院前の調整として、最も適切な方針はどれか。",
+      choices: [
+        {
+          text: "退院前カンファレンスで、福祉用具・住宅改修(手すり等)、通所リハビリなど退院後サービスの初回日を「退院日から途切れなく」確定させる",
+          isCorrect: true,
+          explanation: "退院調整の最終フェーズの核心は「退院日とサービス開始日の空白を作らない」ことである。退院前カンファレンス(目安: 退院3〜7日前までに実施)で、ケアマネジャー・家族・サービス事業者と、(1) 玄関の手すり設置・福祉用具、(2) 通所リハビリによる体力維持と日中の活動確保、(3) 緊急時の連絡体制、をそれぞれ初回日まで具体化する。「サービスは退院後にゆっくり決めればいい」とした瞬間に、空白期間の転倒・閉じこもり・再入院のリスクが跳ね上がる。"
+        },
+        {
+          text: "回復は良好なので、特別なサービスは入れず退院し、困ったら地域包括支援センターに相談してもらう",
+          isCorrect: false,
+          explanation: "ここまで順調に回復してきたのだから大丈夫だろう、と考えたくなるのはよく分かる。しかし退院直後は病院から自宅へ環境が大きく変わる、最も転倒しやすい時期である。82歳・肺炎と廃用の経過を持つ本症例では、体力を維持する仕掛け(通所リハ等)がないと、数か月かけて再び廃用が進んでしまう可能性がある。「困ってから相談する」のではなく、困る前に薄くサービスを入れておくほうが、結果的に本人の自立を長く支えることにつながる。"
+        },
+        {
+          text: "念のため訪問看護を毎日入れ、訪問介護・訪問リハ・通所リハもすべて限度額まで組み込む",
+          isCorrect: false,
+          explanation: "できるだけ手厚く支えたいという配慮は良い姿勢だが、本症例の状態には量が過剰である。Medical: LOW・ADL がほぼ自立まで回復した本症例に、毎日の訪問看護が必要になる医学的な理由はなく、そもそも要支援2の支給限度額ではすべてを組み込むことはできない。また、サービスを詰め込みすぎると本人が「自分でやる」機会を奪われ、かえって機能低下を招くこともある。調整の目的は量を増やすことではなく、必要なものを必要なだけ、切れ目なく入れることである。"
+        },
+        {
+          text: "住宅改修や介護保険サービスの調整はケアマネジャーの仕事なので、医療側からは特に情報提供しない",
+          isCorrect: false,
+          explanation: "専門職同士で役割を分けたいという発想自体は自然だが、この場面では連携が欠かせない。ケアマネジャーが適切なプランを組むには、医療側からの情報 — 到達した ADL、残存するリスク(易疲労・再肺炎の注意点)、推奨するサービスの方向性 — が不可欠である。退院前カンファレンスはまさにその情報を渡す場であり、医療とケアの情報を確実に引き継ぐことが、退院調整の最後の仕事である。"
+        }
+      ],
+      commentary:
+`調整フェーズの合言葉は「**空白を作らない**」。退院調整タイムラインの終盤では、
+- 退院14日前まで: 受入先(本症例では自宅+サービス体制)の決定
+- 退院3〜7日前: 退院前カンファレンスで、訪問系・通所系サービスの**初回日を確定**
+- 退院当日: 確定した体制の中へ着地
+
+という段取りが目安になる。ポイントは、サービスの「種類」だけでなく「初回日」まで詰めること。退院日と初回サービスの間に空白があれば、そこが最も事故(転倒・体調悪化)の起きやすい期間になる。
+
+また、サービス量は「多いほど安心」ではない。本人の残存能力を活かす最小限の設計(本症例なら手すり+通所リハ+緊急連絡体制)が、機能維持の観点でも本人の尊厳の観点でも正しい。`
+    }
+  ],
+  debrief: {
+    summary:
+`本症例は **Goal:Final = HOME(在宅復帰)** の典型ルートを辿った:
+
+1. **情報収集**: Medical: LOW と正しく判定 → 行き先の自由度が高いと確認
+2. **評価**: 「リハビリして家に帰りたい」= [A]医療保険側の主目的と整理(回リハは病院への入院継続、という誤解ポイントを突破)
+3. **ゴール設定**: Goal:Now = REHAB / Goal:Final = HOME を早期に言語化・文書化
+4. **施設選定**: ゴールから逆算し、集中リハビリ量で勝る回復期リハ病棟を選択(廃用90日上限を意識した計画)
+5. **調整**: 退院前カンファレンスで、退院日とサービス初回日の空白を作らずに自宅へ着地
+
+一貫していたのは「**ゴールを先に言葉にし、そこから逆算する**」という型である。各フェーズの判断は独立しておらず、Step 1 の Medical 判定が選択肢の広さを決め、Step 3 のゴール文書化が Step 4 の転院打診の通りやすさを決めた。前のフェーズの判断が次のフェーズへ一つずつつながっていく、この感覚こそ、退院調整プロセス全体を見通す視点の育成につながる。`,
+    sources: [
+      "退院ゴールロードマップ(本教材の判断フレームワーク: 一次分岐[A/B]、Medical判定、Goal:Now×Goal:Final、施設10カテゴリ、退院調整タイムライン)",
+      "回復期リハ・地域包括ケア病棟: 要件・適応・転院調整ガイド"
+    ]
+  }
+},
+
+/* ---------- 症例2: 87歳女性・大腿骨頸部骨折術後 — Goal:Final = FACILITY ---------- */
+{
+  id: "case-facility-01",
+  title: "87歳女性・大腿骨頸部骨折術後、認知症を伴う退院調整",
+  goalFinal: "FACILITY",
+  summary: "転倒骨折で手術を受けた87歳女性。認知症があり、家では89歳の夫が一人で介護してきた。「家に帰る」以外の道をどう組み立てるか。",
+  // ---- 04_diagram_spec.md: 二軸マトリクス・フローチャート用の確定値(症例ごとに固定) ----
+  roadmap: {
+    medical: "LOW",
+    goalGroup: "FACILITY系",
+    primaryPurpose: "B",
+    specialCondition: "特殊条件: BPSD中等度",
+    goalNow: "REHAB",
+    facilityNode: "特別養護老人ホーム(特養)",
+    facilityNote: "グループホームも対抗候補として併記",
+    coordNode: "特養待機中のつなぎ(地域包括ケア病棟/老健)",
+    summaryLine: "① LOW → ② [B]介護保険 →(特殊条件: BPSD中等度)→ ③ Goal:Now=REHAB / Goal:Final=FACILITY → ④ 特別養護老人ホーム(特養。グループホームも対抗候補) → ⑤ 特養待機中のつなぎ(地域包括ケア病棟/老健)",
+  },
+  intro:
+`あなたは急性期病院の整形外科病棟を担当する医師(または病棟の退院調整に関わる医療者)です。
+
+**患者**: 87歳女性。89歳の夫と2人暮らし。子どもは遠方在住の長女が1人。
+**既往**: アルツハイマー型認知症(3年前に診断)。要介護2。入院前は夫の声かけ・見守りで身の回りのことを行い、デイサービスを週2回利用していた。
+**入院経過**: 10日前、自宅で夜間にトイレへ向かう途中に転倒し、右大腿骨頸部骨折の診断で入院。8日前に人工骨頭挿入術を施行。術後経過は良好で、創部の問題はない。
+**現在の課題**: 入院後、夕方から夜間にかけて落ち着かなくなり、「家に帰る」と言って病棟内を歩き回る、オムツ交換やリハビリの介助に抵抗する、といった行動が見られる(中等度の BPSD — 認知症に伴う行動・心理症状 — と評価)。日中は穏やかで、簡単な会話は成立する。
+**家族の状況**: 夫は「できれば家に連れて帰りたいが、正直、骨折する前から介護は限界だった。夜中に起きられると私も倒れそうだ」と疲労を吐露している。長女は「父の体が心配。母には安全なところで暮らしてほしい」との意向。`,
+  steps: [
+    {
+      id: "s1-info",
+      phase: "情報収集",
+      situation:
+`術後10日目(入院12日目)。リハビリは車椅子移乗と平行棒内歩行まで進んだが、指示が入りにくく進行はゆっくりである。退院調整を始めるにあたり、この患者で**最初に集めるべき情報**を整理したい。
+
+カルテには手術記録とリハビリ記録は揃っている。一方、退院調整の観点では情報が断片的である。`,
+      question: "この患者の退院調整を始めるにあたり、最初に揃えるべき情報の組み合わせとして最も適切なものはどれか。",
+      choices: [
+        {
+          text: "BPSD の内容・程度・出現時間帯、現在の ADL と要介護度、主介護者(夫)の介護力と健康状態、の3点をまず揃える",
+          isCorrect: true,
+          explanation: "この3点が本症例の行き先を決める主要パラメータである。(1) BPSD の程度は特殊条件として通常フローに上書きされる情報で、受け入れ可能な施設の範囲を直接決める(軽度〜中等度なら特養・老健・グループホームが視野、重度なら認知症治療病棟レベル)。(2) ADL と要介護度は施設要件(特養は原則要介護3以上)に関わり、状態が変わった今は区分変更申請の要否の判断材料になる。(3) 介護力は在宅か施設かを決める最大の要因 — 89歳の夫の疲弊は、支えるはずの人がもう一人倒れかねない重大な情報である。この3点で判断の土台ができる。"
+        },
+        {
+          text: "認知症があるので、まず認知機能検査(長谷川式・MMSE等)のスコアを確定させることを最優先にする",
+          isCorrect: false,
+          explanation: "認知機能を客観的な数値で把握したくなる気持ちは分かるが、退院調整の入口としては目的がずれている。認知機能検査のスコアは診断・重症度の記録には有用だが、行き先の分岐を直接動かすのは検査点数そのものではなく、BPSD(行動・心理症状)の実際の内容や程度、日常生活でどれだけ介助が必要か、家族がどれだけ支えられるかである。点数の精緻化に時間をかけている間に、施設打診に使える生活情報の収集が遅れてしまう。"
+        },
+        {
+          text: "本人が繰り返し口にする「家に帰りたい」という希望を尊重し、在宅復帰を前提に情報を集める",
+          isCorrect: false,
+          explanation: "本人の言葉を大切にする姿勢は正しいが、それだけを前提に情報収集の方向を決めてしまうのは早計である。中等度の認知症がある本症例では、本人の発言と、意思決定能力の評価、家族の介護力とを併せて解釈する必要がある。「家に帰りたい」という言葉だけを起点にすると、89歳の夫が夜間対応は不可能だと明言している、という決定的な情報を見落としたまま調整が進んでしまう。本人の意向は集めるべき情報の一つであり、それだけで方向を決め打ちしないことが大切である。"
+        },
+        {
+          text: "近隣の施設の空き状況と費用を先に調べ、現実的な選択肢を把握してから評価を始める",
+          isCorrect: false,
+          explanation: "現実的な選択肢を早めに知っておきたいという発想は理解できるが、順序が逆になっている。空き状況や費用は「施設選定」フェーズで活きてくる情報であり、その前に「この患者にはどのカテゴリの施設が合うのか」を決める評価材料(BPSD・ADL・介護力)が必要である。評価より先に空き情報を集めてしまうと、空いている施設に患者を当てはめる進め方になりやすく、本人の状態に合わない施設への誘導につながりかねない。"
+        }
+      ],
+      commentary:
+`情報収集フェーズの原則は「**行き先の分岐を動かす変数から集める**」こと。本症例でその変数は、
+
+1. **BPSD の程度**(特殊条件 — 通常の分岐フローに上書きされる)
+2. **ADL・要介護度**(施設の入所要件に直結)
+3. **主介護者の介護力**(在宅か施設かを決める最大の要因)
+
+の3つである。特に BPSD は「軽度〜中等度なら特養・老健・グループホームが受け入れ可能、重度なら認知症治療病棟(精神科)や療養病棟レベル」というように、程度の一段階の違いで行き先カテゴリが丸ごと変わる。「夕方〜夜間に出る」「日中は穏やか」といった出現パターンまで記録しておくと、後の施設打診の際に受け入れ判断の材料として活きる。
+
+また、症状がせん妄(急性の意識の混乱。原因疾患の治療で改善しうる)ではなく認知症由来の BPSD であることの見極めも、この段階の仕事である。`
+    },
+    {
+      id: "s2-assess",
+      phase: "評価",
+      situation:
+`入院14日目。情報が揃った:
+- **BPSD**: 中等度。夕方〜夜間の帰宅要求・徘徊と介助への抵抗。日中は穏やか。せん妄を疑う急性の変動はなく、認知症由来と評価。向精神薬の定期使用はなし
+- **ADL**: 移乗・トイレは一部介助。歩行は見守り〜介助レベル。要介護2(区分変更申請をすれば要介護3相当が見込まれる、と院内の認定調査経験者の見立て)
+- **医療処置**: 創部は治癒。内服のみ(Medical: LOW)
+- **介護力**: 夫89歳、腰痛あり。夜間対応は不可能と本人が明言。長女は遠方で月1回の来訪が限度
+
+この情報をもとに、一次分岐([A]医療保険 vs [B]介護保険)と特殊条件の評価を行う。`,
+      question: "この患者の評価として、最も適切なものはどれか。",
+      choices: [
+        {
+          text: "主目的は「生活を支える」= [B]介護保険側。ただし BPSD 中等度という特殊条件があるため、施設候補は「BPSD を受け入れられるか」で絞り込む必要がある、と評価する",
+          isCorrect: true,
+          explanation: "Medical: LOW で医療の必要は薄く、課題の中心は「認知症を抱えた生活を、誰が・どこで支えるか」— これは[B]介護保険の主目的である。そのうえで本症例の鍵は、BPSD という特殊条件が通常フローに上書きされること。中等度 BPSD は特養・老健・グループホームで受け入れ可能な範囲だが、施設打診の際に程度・パターンの正確な情報提供が不可欠になる。「[B]側 + 特殊条件で絞り込み」という二段の評価が正しい型である。"
+        },
+        {
+          text: "骨折術後でリハビリが必要な段階なので、主目的は「機能回復に専念」= [A]医療保険側と評価する",
+          isCorrect: false,
+          explanation: "術後だからリハビリが主目的だと考えるのは自然な発想であり、症例1ではまさにその整理が正解だった。しかし本症例では前提が異なる。認知症のため指示が入りにくくリハビリの進行は限定的であり、この患者が抱える最大の課題は機能回復そのものではなく、「回復しても在宅生活が成立しない(支える家族の体力が限界にある)」ことにある。同じ「高齢者の術後」という状況でも、主目的の評価は患者ごとの文脈で変わるという点に注意したい。"
+        },
+        {
+          text: "BPSD があるので、精神科の認知症治療病棟への転院を前提に評価する",
+          isCorrect: false,
+          explanation: "BPSD への対応を早めに考えるのは良い着眼点だが、程度の見立てが実際より重く出てしまっている。認知症治療病棟が視野に入るのは重度の BPSD(激しい興奮・暴力・自傷など、一般の介護施設では対応が難しいレベル)であり、本症例のように夕方〜夜間の帰宅要求と介助への抵抗にとどまり、日中は穏やかというケースは、特養・老健・グループホームで受け入れ可能な範囲にある。BPSD の有無だけで判断すると、本来不要な精神科入院という選択に流れやすいので注意したい。"
+        },
+        {
+          text: "夫の疲弊は介護サービスの増量で解決できるので、在宅継続を前提に[B]側の在宅サービスを評価する",
+          isCorrect: false,
+          explanation: "できる限り在宅で支えたいという思いは尊重したいが、この患者のケースではサービスを増やすだけでは埋まらない隙間がある。夜間の BPSD(帰宅要求・徘徊)に対応できる定期的な公的サービスは在宅では極めて限られており、89歳・腰痛持ちの夫が「夜間対応は不可能」と明言している以上、増量では解決しない。介護をする側の体力が尽きてもう一人の患者になってしまう事態は、在宅介護で最も避けたい結末である。介護力の限界を正面から見て評価に組み込む必要がある。"
+        }
+      ],
+      commentary:
+`評価フェーズの本質は「**一次分岐([A]/[B])+ 特殊条件の上書き確認**」の2段構えである。
+
+一次分岐は症例1と同じ問い(主目的は機能回復か、生活支援か)だが、答えは逆になる。違いを生んだのは診断名ではなく、**改善見込み・本人の受けられるリハ量・介護力**という文脈である。
+
+そして本症例の核心は特殊条件。退院ゴールロードマップでは BPSD・緩和(COMFORT)・透析・MDRO(多剤耐性菌)保菌などを「通常フローに上書きされる特殊条件」として扱い、該当すれば最優先で考慮する。BPSD は程度が決定的で:
+- **軽度〜中等度** → 特養・老健・グループホームで受け入れ可能
+- **重度** → 認知症治療病棟(精神科)・療養病棟レベル
+- **せん妄**なら、そもそも原因治療が優先(施設探しの前に医学的介入)
+
+「BPSD あり」で止めず「中等度・夜間帯・介助抵抗」まで言語化することが、後の施設打診の成否を分ける。`
+    },
+    {
+      id: "s3-goal",
+      phase: "ゴール設定",
+      situation:
+`入院16日目。家族カンファレンスを開催した。夫は涙ながらに「本当は家に帰してやりたい。でも、もう私では守ってやれない」と語り、長女も施設入所に同意。本人は「家に帰りたい」と繰り返すが、話題が変わると穏やかになる。チームは、本人のこれまでの人生観(長女いわく「人に迷惑をかけたくない、が口癖だった」)も踏まえ、意思決定支援のプロセスを記録に残した。
+
+方針として「**最終的な生活の場は施設(Goal:Final = FACILITY)**」の合意が形成された。残る論点は **Goal:Now** — 施設入所までの直近をどう設計するかである。リハビリ科からは「歩行能力は回リハ転院でさらに伸ばせる余地はあるが、認知症のため効果は限定的」との評価が出ている。`,
+      question: "Goal:Now の設定として、最も適切なものはどれか。",
+      choices: [
+        {
+          text: "Goal:Now = REHAB(移乗・トイレ動作の改善を目標としたリハビリ継続)、Goal:Final = FACILITY と設定し、この組み合わせを前提に転院・入所先を選ぶ",
+          isCorrect: true,
+          explanation: "「REHAB → FACILITY」は退院ゴールロードマップにおける典型組み合わせの一つ(リハ後も自宅困難 → 施設)である。施設入所が最終目標でも、移乗・トイレ動作が一部介助から見守りレベルに改善すれば、本人の尊厳と施設での生活の質、受け入れ側の介護負担が大きく変わる — リハビリの価値は「家に帰るため」だけではない。重要なのは、Final = FACILITY を先に確定させてから Now = REHAB の場を選ぶこと。この順序が次フェーズ(どこでリハをするか)の判断を規定する。"
+        },
+        {
+          text: "Goal:Now = REHAB、Goal:Final = HOME に設定する。本人が「家に帰りたい」と言っている以上、本人意思を最優先すべきである",
+          isCorrect: false,
+          explanation: "本人の言葉をそのまま尊重したいという姿勢は医療者としてとても大切なものである。ただし、意思決定支援とは言葉を字義通り実行することだけを指すのではなく、本人の価値観(「人に迷惑をかけたくない」)・認知機能・家族の介護力を総合して本人にとっての最善を丁寧に組み立てるプロセスでもある。夜間対応ができない89歳の夫のもとへ HOME 設定で帰した場合、再転倒や夫の共倒れという、本人が最も望まないはずの結末を招きかねない。家族カンファレンスで合意形成のプロセスを記録した上での FACILITY 設定は、本人の意思を無視したものではなく、意思決定支援を尽くした結果である。"
+        },
+        {
+          text: "Goal:Now = UNDECIDED とし、まず施設の空きを探し、見つかった施設に合わせてゴールを後決めする",
+          isCorrect: false,
+          explanation: "空いている施設から現実的に考えたいという発想は分からなくはないが、ゴール設定の順序としては逆である。ゴールは施設の空き状況から逆算するものではなく、本人の状態と価値観から導くものである。ゴールが UNDECIDED のままでは、MSW への依頼文書も転院打診も軸を欠き、調整全体の方向が定まらなくなる。UNDECIDED は意思確認・合意形成が本当に済んでいない場合に使う値であり、本症例のように家族カンファレンスで合意が形成された後に使うものではない。"
+        },
+        {
+          text: "Goal:Now = TREAT とし、BPSD に対する薬物調整を精神科入院で行ってから施設を探す",
+          isCorrect: false,
+          explanation: "BPSD をきちんと落ち着けてから次に進みたいという配慮は理解できるが、本症例ではその手順が過剰である。本症例の BPSD は中等度で、向精神薬の定期使用がなくても病棟でマネジメントできており、精神科入院での「治療」を挟む医学的な必然性は乏しい。TREAT を挟んで入院が長引くと、その間に認知症の患者にとって負担の大きい環境変化への曝露や廃用の進行が起きやすくなる。中等度 BPSD は、先に「治す」対象というより、施設側へ正確な情報を伝えて受け入れてもらう対象として扱うほうが適切である。"
+        }
+      ],
+      commentary:
+`このフェーズの学びは2つある。
+
+**1つ目: 「REHAB → FACILITY」という組み合わせの存在。** ゴール設定は「リハビリするなら家に帰る人」「施設に入るならリハビリ不要」という二分法ではない。施設で暮らすためのリハビリ — 移乗・トイレ動作の自立度を上げ、施設での生活の質と受け入れやすさを高める — は立派な Goal:Now = REHAB である。Now と Final を分離して言語化する意味は、まさにこういう組み合わせを表現できることにある。
+
+**2つ目: 認知症患者の意思決定支援。** 「本人が帰りたいと言っている」は出発点であって結論ではない。本人の価値観・現在の判断能力・家族の意向と介護力を突き合わせ、合意形成のプロセスをカルテに記録する(ACP — 人生会議 — の言語化)。これは退院調整タイムラインでも入院早期(2〜3日目〜)に着手すべき項目とされており、本症例では家族カンファレンスがその場となった。
+
+そして実務上決定的なのが、**Final = FACILITY の確定を先に済ませたこと**。次の施設選定フェーズで見るように、この確定が「どこでリハビリをするか」の選択肢を大きく変える。`
+    },
+    {
+      id: "s4-select",
+      phase: "施設選定",
+      situation:
+`入院18日目。「Goal:Now = REHAB、Goal:Final = FACILITY」が確定し、MSW と具体的な行き先の検討に入った。要介護の区分変更申請は提出済み(要介護3相当の見込み)。
+
+MSW からの情報:
+- 近隣の**特養**は待機者が多く、申し込みから入所まで数か月〜年単位が通例
+- **グループホーム**は空きが出れば比較的早いが、地域(同一市区町村)の被保険者であることが要件
+- 若手医師からは「歩行がまだ伸びる余地があるなら、**回復期リハ病棟**に転院してから施設を探せばよいのでは」という意見も出た`,
+      question: "この患者の行き先(最終的な生活の場)の選定方針として、最も適切なものはどれか。",
+      choices: [
+        {
+          text: "特別養護老人ホーム(特養)を第一候補として直ちに申し込み、並行してグループホームも見学・検討する",
+          isCorrect: true,
+          explanation: "Goal:Final = FACILITY・要介護3相当見込み・中等度 BPSD・終身の生活の場が必要 — この条件が揃う本症例の本命は特養(生活の場・終身利用・中等度までの BPSD 受け入れ可)である。そして特養は待機が長いからこそ「直ちに申し込む」が正解になる — 申し込みの遅れはそのまま入所の遅れである。同時に、認知症ケアに特化した少人数共同生活の場であるグループホーム(BPSD 軽度〜中等度が対象)も、本人に合う可能性のある有力候補として並行検討する。複数候補を並走させるのが施設選定の定石である。"
+        },
+        {
+          text: "まず回復期リハ病棟へ転院して歩行能力を最大限高め、そのうえで施設を探す",
+          isCorrect: false,
+          explanation: "歩行能力を少しでも伸ばしてから次に進みたいという考えは、リハビリを大切にする姿勢として理解できる。しかし回復期リハ病棟は在宅復帰率が制度上の評価指標であり、「施設入所(FACILITY)確定」の患者はその指標にカウントされないため、転院の打診自体が断られやすいという実務上の壁がある。加えて認知症のためリハ効果は限定的との評価も出ており、時間をかけて伸ばしを待つ効果も見込みにくい。症例1(HOME 目標)では回リハが本命だったのとは対照的に、Goal:Final が変わると同じ施設の適否も反転することを示す例である。"
+        },
+        {
+          text: "老人保健施設(老健)への長期入所を最終的な生活の場として選定する",
+          isCorrect: false,
+          explanation: "老健を「施設」の一つとして最終的な住まいの候補に挙げたくなるのは自然だが、老健の制度上の役割を正確に捉えられていない。老健は「在宅復帰の架け橋」— 数か月のリハビリ・生活訓練を経て家に帰すことを目的とする中間施設であり、終身の生活の場としては設計されていない。Final = FACILITY が確定した患者の「最終的な住まい」として選ぶのは、この施設が本来担っている役割とは異なる(なお、次の Step で扱う「特養待機中のつなぎ」としての老健活用は、これとは別の検討価値がある)。"
+        },
+        {
+          text: "有料老人ホーム(介護付き)を第一候補とする。空きが早く、すぐ入所できるからである",
+          isCorrect: false,
+          explanation: "早く入所先を確保したいという思いは分かるが、「空きが早い」ことだけを基準に第一候補を決めるのは十分ではない。有料老人ホームは有力な選択肢の一つだが、月額費用が特養より高額になりやすく、年金暮らしの高齢夫婦という本症例の経済状況では長期の負担が可能かを事前に確認する必要がある。また施設によって認知症・BPSD への対応力の差が大きく、確認を怠ると入所後のミスマッチ(退去要請)につながりかねない。費用と対応力を確認したうえで候補に加えるのは良いが、確認前に第一候補とするのは順序が早すぎる。"
+        },
+        {
+          text: "医療療養病床に入院させ、長期の療養先とする",
+          isCorrect: false,
+          explanation: "「手のかかる患者だから医療の場で」と考えたくなる気持ちは分かるが、これは Medical 判定の結果と噛み合っていない。医療療養病床は Medical: HIGH(24時間に近い医療管理が必要)な患者のための病床であり、内服のみ(Medical: LOW)の本症例はその対象に当たらない。BPSD への対応は介護・ケアの領域の課題であり、医療処置の量(医療の濃さ)とは別の軸で考える必要がある。Step 1 で行った Medical 判定が、ここで誤った選択肢を除外する材料として活きていることを確認してほしい。"
+        }
+      ],
+      commentary:
+`施設選定は「**Goal:Final × Medical × 特殊条件 × 要介護度**」の掛け算で候補を絞る。本症例では:
+
+- Goal:Final = FACILITY(終身の生活の場)→ 特養・グループホーム・有料/サ高住が候補
+- Medical: LOW → 医療療養病床・介護医療院は不要
+- BPSD 中等度 → 特養・グループホームは受け入れ可能圏内
+- 要介護3相当見込み → 特養の入所要件(原則要介護3以上)を満たす見込み
+
+結果、**特養が本命、グループホームが対抗**となる。
+
+本 Step には退院ゴールロードマップが整理した二大落とし穴が仕込まれている。(1) **回リハは在宅復帰率で評価されるため、FACILITY 確定患者は断られやすい** — 症例1で本命だった回リハが、Final が変わっただけで不適になる。(2) **老健は在宅復帰の架け橋であり終身の住まいではない** — 名前の印象でなく制度上の役割で判断する。
+
+そして特養の実務鉄則: **待機が長いからこそ、方針が固まったら即申し込む**。「入所は先の話だから申し込みも先で」は、待機期間の分だけ結論を遅らせる。`
+    },
+    {
+      id: "s5-coord",
+      phase: "調整",
+      situation:
+`入院20日目。特養2施設への申し込みを提出し、グループホーム1か所の見学を長女の次回来訪時に設定した。区分変更の結果はまだ出ていない。
+
+ここで現実的な問題が浮上した。**特養の入所は早くて数か月先**。しかし急性期病院としての治療は完了しており、この病棟に数か月とどまることはできない。「特養入所までの間、どこで過ごすか」— つなぎの設計が必要である。
+
+MSW からは「地域包括ケア病棟(最長60日)なら受け入れ可能な病院が近隣にある。老健の一般型(在宅復帰を強く求めないタイプ)も選択肢」との情報提供があった。`,
+      question: "特養入所までの「つなぎ」の調整方針として、最も適切なものはどれか。",
+      choices: [
+        {
+          text: "地域包括ケア病棟または老健(一般型)へ「特養待機中のつなぎ」であることを明示して打診する。診療情報提供書には BPSD の程度・出現パターンと対応方法を必ず記載する",
+          isCorrect: true,
+          explanation: "つなぎ調整の正しい型である。ポイントは2つ。(1) ゴールと期限を明示して打診する — 「特養申込済・待機中・入所まで数か月見込み」という設計図を受け入れ側と共有すれば、地域包括ケア病棟(最長60日)の期限や老健の受け入れ方針との整合を先方も判断できる。60日を超えそうなら「地包ケア → 老健」の二段構えも視野に入る。(2) BPSD 情報の正確な記載 — 程度・時間帯・有効な対応(日中は穏やか、夜間の帰宅要求には〇〇の声かけが有効、等)を診療情報提供書に書く。この情報を伏せて打診し、後から発覚して断られるのが最悪のパターンである。"
+        },
+        {
+          text: "地域包括ケア病棟へ「とりあえず」転院させ、行き先はそこで考えてもらう",
+          isCorrect: false,
+          explanation: "治療が終わった以上、次の場に早く移したいという気持ちは理解できる。しかし地域包括ケア病棟には最長60日という期限があり、「とりあえず入院」でゴールを未設定のまま入ると、60日後に行き先が決まらず立ち往生してしまう。本症例はすでにゴール(特養)も申し込みも済んでおり、伝えるべき設計図がすでにできている。それを伝えずに丸投げする理由はなく、地包ケアは「入院時にゴール設定必須」の病棟だと覚えておきたい。"
+        },
+        {
+          text: "BPSD のことを詳しく書くと受け入れを断られかねないので、診療情報提供書には「認知症あり」とだけ簡潔に記載して打診する",
+          isCorrect: false,
+          explanation: "受け入れてもらいやすくしたいという気遣いから出た判断だと思うが、これは短期的には通りやすく見えて、長期的には確実に破綻する方法である。夜間の帰宅要求・介助抵抗は入所すれば必ず顕在化し、「聞いていた話と違う」となれば早期退所や次回以降の受け入れ拒否につながり、病院と施設の信頼関係にも影響してしまう。BPSD は「隠す」のではなく「対応方法とセットで正確に伝える」ほうが、結果的に受け入れへの近道になる。"
+        },
+        {
+          text: "数か月なら夫の頑張りでしのげる可能性があるので、いったん自宅退院し、在宅サービスを厚くして特養の空きを待つ",
+          isCorrect: false,
+          explanation: "家族の頑張りに期待したくなる気持ちは分かるが、Step 2 で確認した評価(夜間対応は不可能・介護力がすでに限界にある)を覆す新しい根拠は何も出ていない。「つなぎだから短期間、短期間なら在宅でも」という考え方は、待機が数か月〜年単位になりうる特養では成り立ちにくい。待機中に夜間の転倒や夫の共倒れが起きれば、調整はふりだしに戻り、本人はさらなる環境変化と機能低下にさらされてしまう。つなぎ期間こそ、安全が確保された場所で過ごせるよう設計することが必要である。"
+        },
+        {
+          text: "特養の入所が決まるまで、現在の急性期病棟での入院を継続する",
+          isCorrect: false,
+          explanation: "環境を変えないことが一番安全だと考えるのは自然な発想だが、この場面では成立しない。急性期病棟は治療が完了した患者の長期滞在を想定した場所ではなく(在院日数の仕組みの上でも継続は難しい)、数か月の待機場所には向かない。急性期病棟はリハビリの提供量や生活環境の面でも長期療養には適しておらず、かえって本人の廃用や BPSD を悪化させるおそれがある。"
+        }
+      ],
+      commentary:
+`調整フェーズの本症例での主題は「**つなぎの設計**」と「**依頼文書の質**」である。
+
+**つなぎの設計**: 特養のように待機が長い本命がある場合、「本命への申し込み」と「待機中の居場所」を並行して設計する。つなぎの候補は:
+- **地域包括ケア病棟**(医療保険・最長60日): 期限内に入所できる見込みがあるか、が使いどころの判断基準
+- **老健(一般型)**(介護保険): 60日を超える待機で現実的。ただし老健は薬剤費が施設側の負担(包括払い)になる仕組みのため、高額な薬を使っている患者では受け入れのボトルネックになりうる — 本症例は内服が安価で問題になりにくいが、確認事項として覚えておく
+
+**依頼文書の質**: 打診が断られる典型原因は「情報の記載漏れ・隠し」である。BPSD の程度と対応方法、(該当すれば)MDRO 保菌や透析スケジュール — 受け入れ側が判断に使う情報を、不利に見えるものほど正確に書く。それが結局、最も早く・最も適切な受け入れ先にたどり着く道である。`
+    }
+  ],
+  debrief: {
+    summary:
+`本症例は **Goal:Final = FACILITY(施設入所)** のルートを辿った:
+
+1. **情報収集**: BPSD の程度・ADL/要介護度・介護力という「分岐を動かす3変数」を先に揃えた
+2. **評価**: [B]介護保険側と整理し、BPSD 中等度という特殊条件を「程度」まで言語化した(重度なら別ルートだった)
+3. **ゴール設定**: 意思決定支援のプロセスを経て Goal:Now = REHAB / Goal:Final = FACILITY を確定。「施設で暮らすためのリハビリ」という組み合わせを学んだ
+4. **施設選定**: Final × Medical × 特殊条件 × 要介護度の掛け算で特養本命・グループホーム対抗に絞り、待機の長さゆえに即申し込みした。FACILITY 確定患者に回リハが不適になる「在宅復帰率の落とし穴」が最大の学びどころ
+5. **調整**: 特養待機の「つなぎ」を地包ケア(60日期限)/老健で設計し、BPSD 情報を対応方法とセットで正確に開示する依頼文書の鉄則を確認した
+
+症例1(HOME)と並べると、**同じ判断の型(Medical 判定 → 一次分岐 → Now/Final → 逆算選定 → 空白を作らない調整)を使いながら、入力(改善見込み・介護力・特殊条件)が変わると結論がすべて変わる**ことがわかる。特に回復期リハ病棟が「症例1では本命、症例2では落とし穴」になった対比は、施設を名前でなく制度上の役割と評価指標で理解することの重要性を示している。`,
+    sources: [
+      "退院ゴールロードマップ(本教材の判断フレームワーク: 一次分岐[A/B]、特殊条件(BPSD)、Goal:Now×Goal:Final、施設10カテゴリ、落とし穴集、退院調整タイムライン)",
+      "回復期リハ・地域包括ケア病棟: 要件・適応・転院調整ガイド"
+    ]
+  }
+}
+
+];
+/* ===== /CASE DATA ===== */
+
+/* ---------- 起動 ---------- */
+validateCases();
+renderHome();
+showView("home");
+</script>
+</body>
+</html>

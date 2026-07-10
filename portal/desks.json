@@ -1,8 +1,21 @@
 {
-  "version": "1.1.0",
-  "updated": "2026-05-05",
-  "changelogNote": "肝硬変周術期（ACG 要点）ツールを追加",
+  "version": "1.2.0",
+  "updated": "2026-07-10",
+  "changelogNote": "退院支援・地域連携デスクと「高齢者退院ケーススタディ」を追加",
   "desks": [
+    {
+      "id": "desk-discharge",
+      "roleLabel": "Clinical desk",
+      "name": "退院支援・地域連携",
+      "lede": "症例をたどって退院調整の判断を学ぶ、症例ベースの学習教材。",
+      "tools": [
+        {
+          "href": "../高齢者退院ケーススタディ/高齢者退院ケーススタディ.html",
+          "title": "高齢者退院ケーススタディ",
+          "desc": "2症例（HOME/FACILITY）の多段階シナリオ。各判断ポイントで選択→正誤＋厚めの解説"
+        }
+      ]
+    },
     {
       "id": "desk-gi-periop",
       "roleLabel": "Clinical desk",
