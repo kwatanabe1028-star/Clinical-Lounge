@@ -134,6 +134,78 @@ body {
 }
 .framework-note strong { color: color-mix(in srgb, var(--color-warning) 20%, var(--color-dark)); }
 
+/* ===== OVERVIEW（総論画面。症例選択より前に表示） ===== */
+.overview-chapter {
+  background: var(--color-white);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--color-dark) 10%, transparent);
+}
+.overview-chapter-title {
+  font-size: 15.5px;
+  font-weight: bold;
+  color: var(--color-dark);
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+  border-bottom: 2px solid color-mix(in srgb, var(--color-accent5) 25%, var(--color-white));
+}
+.overview-body {
+  font-size: 14px;
+  line-height: 1.85;
+  color: color-mix(in srgb, var(--color-dark) 90%, var(--color-bg));
+}
+.overview-body p { margin-bottom: 12px; }
+.overview-body p:last-child { margin-bottom: 0; }
+.overview-body ul { margin: 8px 0 12px 20px; }
+.overview-body li { margin-bottom: 6px; }
+.overview-body strong { color: var(--color-dark); }
+.overview-subhead {
+  font-size: 12.5px;
+  font-weight: bold;
+  color: var(--color-accent5);
+  margin: 14px 0 4px;
+}
+.overview-diagram-slot { margin: 16px 0; }
+
+/* 施設10カテゴリ表（第5章） */
+.overview-table-wrap { overflow-x: auto; margin: 12px 0 16px; }
+.overview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  min-width: 560px;
+}
+.overview-table th,
+.overview-table td {
+  border: 1px solid color-mix(in srgb, var(--color-dark) 14%, var(--color-white));
+  padding: 7px 9px;
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.5;
+}
+.overview-table th {
+  background: color-mix(in srgb, var(--color-accent6) 14%, var(--color-white));
+  color: var(--color-dark);
+  font-weight: bold;
+  white-space: nowrap;
+}
+.overview-table td:first-child,
+.overview-table th:first-child { text-align: center; white-space: nowrap; }
+.overview-table tr:nth-child(even) td {
+  background: color-mix(in srgb, var(--color-bg) 18%, var(--color-white));
+}
+
+.overview-goal-list { margin: 8px 0 12px 4px; }
+.overview-goal-list li { margin-bottom: 5px; list-style: none; padding-left: 16px; position: relative; }
+.overview-goal-list li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--color-accent5);
+  font-weight: bold;
+}
+
 /* ===== CASE CARDS (view A) ===== */
 .case-list { display: flex; flex-direction: column; gap: 14px; }
 .case-card {
@@ -313,6 +385,13 @@ body {
   font-size: 10.5px;
   color: color-mix(in srgb, var(--color-dark) 50%, var(--color-bg));
   margin-top: 8px;
+}
+
+/* 汎用版（総論）: 症例のハイライトを持たないニュートラル表示。全セル同じ重み。 */
+.rm-cell.rm-neutral-head {
+  font-weight: bold;
+  color: var(--color-accent5);
+  background: color-mix(in srgb, var(--color-accent6) 10%, var(--color-white));
 }
 
 /* ===== STEP (view C) ===== */
@@ -557,6 +636,14 @@ body {
   background: var(--color-accent3);
   color: var(--color-white);
 }
+/* 汎用版（総論）: 症例のハイライトを持たない、全ノード同じ重みのニュートラル表示 */
+.rf-node.rf-neutral {
+  border-color: color-mix(in srgb, var(--color-accent5) 30%, var(--color-white));
+  background: color-mix(in srgb, var(--color-accent6) 8%, var(--color-white));
+  color: var(--color-dark);
+  opacity: 1;
+}
+.rf-connector.rf-neutral { color: color-mix(in srgb, var(--color-dark) 45%, var(--color-bg)); }
 
 .rf-connector {
   display: flex;
@@ -686,9 +773,22 @@ body {
 <div class="container">
 
   <!-- ============================================================
+       [総論] 退院ゴールロードマップの読み方（症例選択より前に表示）
+       ============================================================ -->
+  <div class="view active" id="view-overview">
+    <div class="tool-title">高齢者退院ケーススタディ</div>
+    <p class="tool-lede">
+      症例を解く前に、まずこの総論で「退院ゴールロードマップ」の骨格を理解しましょう。
+      個々の判断ポイントの背景にある型を先に押さえることで、症例での学びが深まります。
+    </p>
+    <div id="overview-chapters"><!-- OVERVIEW_CONTENT から自動生成（05_overview_content.md 本文をそのまま流し込む） --></div>
+  </div>
+
+  <!-- ============================================================
        [A] 症例選択画面（ホーム）
        ============================================================ -->
-  <div class="view active" id="view-home">
+  <div class="view" id="view-home">
+    <button class="back-link" onclick="showView('overview')">← 総論を読み直す</button>
     <div class="tool-title">高齢者退院ケーススタディ</div>
     <p class="tool-lede">
       症例をたどりながら、退院調整の各場面で「最も適切な判断」を選ぶ、症例ベースの学習教材です。
@@ -841,6 +941,88 @@ function updateHeaderProgress() {
   }
 }
 
+/* ---------- [総論] 退院ゴールロードマップの読み方 ----------
+   05_overview_content.md の本文(1〜8章)をそのまま流し込む。
+   文中の3箇所の【図解: ...】は diagramAfter / facilityTable フィールドに対応させ、
+   renderMatrixGeneric / renderFlowchartGeneric の「症例なし・汎用版」で表示する。 */
+function renderFacilityTableHtml() {
+  const rows = FACILITY_TABLE.map(r =>
+    `<tr>
+       <td>${escapeHtml(r.no)}</td>
+       <td>${escapeHtml(r.category)}</td>
+       <td>${escapeHtml(r.insurance)}</td>
+       <td>${escapeHtml(r.purpose)}</td>
+       <td>${escapeHtml(r.goal)}</td>
+     </tr>`).join("");
+  return `
+    <div class="overview-table-wrap">
+      <table class="overview-table">
+        <thead>
+          <tr><th>#</th><th>カテゴリ</th><th>保険</th><th>主目的</th><th>典型的な Goal:Final</th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+function renderOverview() {
+  const el = document.getElementById("overview-chapters");
+  let html = "";
+
+  OVERVIEW_CONTENT.forEach(ch => {
+    html += `<div class="overview-chapter">`;
+    html += `<div class="overview-chapter-title">${escapeHtml(ch.title)}</div>`;
+    html += `<div class="overview-body">${richText(ch.body)}</div>`;
+
+    if (ch.facilityTable) {
+      html += renderFacilityTableHtml();
+    }
+
+    if (ch.subsections) {
+      ch.subsections.forEach(sub => {
+        html += `<div class="overview-subhead">${escapeHtml(sub.head)}</div>`;
+        html += `<div class="overview-body">${richText(sub.text)}</div>`;
+      });
+    }
+
+    if (ch.diagramAfter) {
+      const d = ch.diagramAfter;
+      html += `<div class="overview-diagram-slot">`;
+      if (d.type === "matrix") {
+        html += `<div class="roadmap-matrix" id="${d.targetId}"></div>`;
+      } else {
+        html += `<div class="roadmap-flow" id="${d.targetId}"></div>`;
+      }
+      if (d.caption) {
+        html += `<p style="font-size:12px;color:color-mix(in srgb, var(--color-dark) 55%, var(--color-bg));margin-top:8px;">${escapeHtml(d.caption)}</p>`;
+      }
+      html += `</div>`;
+    }
+
+    if (ch.bodyAfterTable) {
+      html += `<div class="overview-body">${richText(ch.bodyAfterTable)}</div>`;
+    }
+
+    if (ch.isLast) {
+      html += `<button class="btn-primary" onclick="showView('home')">症例を選ぶ →</button>`;
+    }
+
+    html += `</div>`;
+  });
+
+  el.innerHTML = html;
+
+  // 汎用版（症例のハイライトなし）の図を各スロットに描画
+  OVERVIEW_CONTENT.forEach(ch => {
+    if (!ch.diagramAfter) return;
+    if (ch.diagramAfter.type === "matrix") {
+      renderMatrixGeneric(ch.diagramAfter.targetId);
+    } else {
+      renderFlowchartGeneric(ch.diagramAfter.targetId);
+    }
+  });
+}
+
 /* ---------- [A] ホーム: 症例カード生成 ---------- */
 function renderHome() {
   const list = document.getElementById("case-list");
@@ -990,6 +1172,31 @@ function renderMatrix() {
      </div>
      <div class="rm-grid">${grid}</div>
      <div class="rm-note">縦: Medical(医療の濃さ) ／ 横: Goal:Final のグループ。判断が進むほど、現在地が絞り込まれます。</div>`;
+}
+
+/* ---------- 二軸マトリクス（総論: 汎用版・症例のハイライトなし） ----------
+   05_overview_content.md 第3章の図解指示に対応。既存の MATRIX_ROWS/COLS/CELLS を
+   再利用しつつ、行・セルのハイライトロジックは使わず、全セルを同じ重みで表示する。 */
+function renderMatrixGeneric(targetId) {
+  const el = document.getElementById(targetId);
+  if (!el) return;
+
+  let grid = `<div class="rm-cell rm-corner"></div>`;
+  MATRIX_COLS.forEach(col => { grid += `<div class="rm-cell rm-neutral-head">${col}</div>`; });
+
+  MATRIX_ROWS.forEach(row => {
+    grid += `<div class="rm-cell rm-neutral-head">${row}</div>`;
+    MATRIX_COLS.forEach(col => {
+      grid += `<div class="rm-cell">${MATRIX_CELLS[row][col]}</div>`;
+    });
+  });
+
+  el.innerHTML =
+    `<div class="rm-head">
+       <span class="rm-title">◆ 退院ゴールロードマップ(Medical × Goal:Final)</span>
+     </div>
+     <div class="rm-grid">${grid}</div>
+     <div class="rm-note">縦: Medical(医療の濃さ) ／ 横: Goal:Final のグループ。Medical の段階によって、選べる行き先の幅が変わります(症例ではここから現在地が絞り込まれます)。</div>`;
 }
 
 /* ---------- [C] Step 描画 ---------- */
@@ -1173,6 +1380,55 @@ function renderFlowchart() {
      <div class="rf-summary"><span class="rf-summary-head">◆ 通った経路のまとめ</span>${escapeHtml(rm.summaryLine)}</div>`;
 }
 
+/* ---------- フローチャート（総論: 汎用版・症例のハイライトなし） ----------
+   05_overview_content.md 第2章・第8章の図解指示に対応。5フェーズの骨格のみを示し、
+   全ノードを同じ重み(ニュートラル)で表示する（rf-on/rf-off の強調ロジックは使わない）。 */
+function renderFlowchartGeneric(targetId) {
+  const el = document.getElementById(targetId);
+  if (!el) return;
+
+  const node = (text) => `<div class="rf-node rf-neutral">${escapeHtml(text)}</div>`;
+  const connector = () => `<div class="rf-connector rf-neutral">▼</div>`;
+
+  let html = "";
+
+  html += `<div class="rf-phase-label">① 医療の濃さ判定(Medical)</div>`;
+  html += `<div class="rf-branches">`;
+  html += node("HIGH → 医療療養病床/介護医療院へ合流(省略ノード)");
+  html += node("MID");
+  html += node("LOW");
+  html += `</div>`;
+  html += connector();
+
+  html += `<div class="rf-phase-label">② 主目的(一次分岐)</div>`;
+  html += `<div class="rf-branches">`;
+  html += node("[A]医療保険(治療・機能回復に専念)");
+  html += node("[B]介護保険(生活を支える)");
+  html += `</div>`;
+  html += connector();
+
+  html += `<div class="rf-phase-label">③ ゴール(Goal:Now × Goal:Final)</div>`;
+  html += `<div class="rf-branches">`;
+  html += node("Goal:Now(直近) × Goal:Final(最終的な行き先)を2段階で言語化");
+  html += `</div>`;
+  html += connector();
+
+  html += `<div class="rf-phase-label">④ 施設選定</div>`;
+  html += `<div class="rf-branches">`;
+  html += node("ゴールから逆算して、施設10カテゴリの中から選ぶ");
+  html += `</div>`;
+  html += connector();
+
+  html += `<div class="rf-phase-label">⑤ 調整</div>`;
+  html += `<div class="rf-branches">`;
+  html += node("退院までのタイムラインに沿って、具体的な手配を進める");
+  html += `</div>`;
+
+  el.innerHTML =
+    `<div class="rf-sub">症例なしの汎用版です。特定の経路を通っていないため、全ノードを同じ重みで表示しています。</div>
+     <div class="rf-track">${html}</div>`;
+}
+
 function renderResult() {
   const c = currentCase();
   const total = c.steps.length;
@@ -1276,6 +1532,182 @@ function validateCases() {
     });
   });
 }
+
+/* =====================================================================
+   ===== OVERVIEW CONTENT =====
+   総論画面（症例選択より前に表示）のデータ。本文は 05_overview_content.md の
+   本文(1〜8章)をそのまま転記している(要約・改変なし)。
+   文中の `【図解: ...】` の配置指示は、各チャプターの `diagramAfter` フィールドで
+   対応する図(症例なしの汎用版: renderMatrixGeneric / renderFlowchartGeneric)を
+   段落の直後に挿入する形で実装している。
+   ===================================================================== */
+const OVERVIEW_CONTENT = [
+  {
+    id: "ov-1",
+    title: "1. 導入 — なぜこの型を学ぶのか",
+    body:
+`高齢の患者さんが入院し、治療が一段落したとき、必ず出てくる問いがあります。「この人は、次にどこへ行くのが一番よいのか」。
+
+この問いには、正解が一つに決まっているようで、実はそう単純ではありません。年齢、病名、家族構成、認知機能、経済状況——考慮すべき要素は多岐にわたり、しかも患者さんごとに組み合わせが違います。経験を積んだ医師や医療ソーシャルワーカー(MSW)は、こうした判断を頭の中で自然に整理できますが、その整理の仕方を言葉にして誰かに教えるのは、意外と難しいものです。
+
+この教材で扱う**「退院ゴールロードマップ」**は、そうした判断の道筋を型にしたものです。あらかじめお伝えしておきたいのですが、これは公式な医学用語でも、制度上決められた分類でもありません。**著者が、退院支援の現場での経験をもとに独自に体系化した、思考を整理するための枠組み**です。医療区分・要介護度・FIM(機能的自立度評価法)といった、法律や制度で定められた公的な基準とは性質が異なるものだとご理解ください。
+
+とはいえ、この型には大きな価値があります。退院調整という複雑な問題を、いくつかの問いに分解して、順番に考えられるようにしてくれるからです。具体的には、次のような問いの連なりです。
+
+- この患者さんに、いまどれくらいの医療が必要か
+- 治療なのか、生活を支えることなのか、主な目的はどちらか
+- 直近でやるべきことと、最終的に目指す場所は何か
+- その目的に合う施設・在宅サービスはどれか
+- 退院までに、具体的に何を手配すべきか
+
+この5つの問いを、順番に一つずつ考えていく——それが退院ゴールロードマップの骨格です。この総論では、この骨格を先に理解してもらい、そのあとの症例で「実際にこの型を使って判断してみる」という流れにしています。症例を解きながら「なぜその選択肢が正しいのか」に迷ったときは、ぜひこの総論に戻ってきてください。
+
+患者さん一人ひとりを診るだけでなく、退院調整という一連のプロセス全体を見通せる医師になること——それがこの教材を通じて目指すところです。`,
+  },
+  {
+    id: "ov-2",
+    title: "2. 一次分岐 — [A]医療保険(治療・機能回復)と[B]介護保険(生活を支える)",
+    body:
+`退院ゴールロードマップの最初の問いは、「この患者さんが次に必要としているのは、治療・機能回復なのか、それとも生活を支えることなのか」です。この問いへの答えによって、使う制度が医療保険か介護保険かが分かれます。
+
+- **[A] 医療保険**: 主目的が「治療・機能回復に専念すること」の場合。病院系の選択肢(医療療養病床・回復期リハビリテーション病棟・地域包括ケア病棟・地域包括医療病棟)が候補になります。
+- **[B] 介護保険**: 主目的が「生活を支えること」の場合。介護系の選択肢(介護医療院・老人保健施設・特別養護老人ホーム・有料老人ホームなど)が候補になります。
+
+ここで、研修医の多くがつまずきやすいポイントがあります。それは、**回復期リハビリテーション病棟や地域包括ケア病棟が、名前に「リハビリ」「ケア」とついているために、介護施設だと誤解されやすい**ことです。実際にはどちらも病院への入院が続いている状態であり、[A]医療保険の側に分類されます。「リハビリをして、いずれ家に帰りたい」という患者さんの希望は、[A]の入口に立っていることになります。
+
+判断の軸は年齢でも要介護度でもなく、**「いまこの患者さんが必要としているのは何か」**という一点です。高齢だから自動的に介護保険、という思い込みは避けたいところです。`,
+    // 【図解: ここにフローチャート(①医療の濃さ→②主目的→③ゴール→④施設選定→⑤調整)を配置。
+    //  このフローチャートの②主目的のステップが、本章で扱う一次分岐[A]/[B]に対応することを示す】
+    diagramAfter: { type: "flowchart", targetId: "overview-flow-ch2", caption: "フローチャート全体の②主目的のステップが、本章で扱う一次分岐[A]/[B]に対応します。" },
+  },
+  {
+    id: "ov-3",
+    title: "3. 医療の濃さ(Medical: HIGH / MID / LOW)の判定",
+    body:
+`一次分岐と並行して、もう一つ確認しておきたいことがあります。それが「医療の濃さ」です。退院ゴールロードマップでは、これを HIGH・MID・LOW の3段階で捉えます。
+
+- **HIGH**: 24時間に近い医療管理が必要な状態(頻回の吸引、人工呼吸器、中心静脈栄養など)。行き先は医療療養病床か介護医療院にほぼ限られます。
+- **MID**: 医療処置はあるものの、常時ではない状態。行き先はその患者さんのゴール次第で、老健・特養・住まい系サービスなどに分かれます。
+- **LOW**: 内服薬の管理が中心で、それ以外の医療処置がほぼ不要な状態。行き先はゴールと介護力(家族がどれだけ支えられるか)によって、在宅・特養・住まい系サービスなど、自由度高く選べます。
+
+ここで大切なのは、この判定を**年齢や診断名の印象で行わないこと**です。「高齢だから」「肺炎で入院したから」という理由で医療の濃さを高く見積もってしまうと、本来もっと自由に選べたはずの選択肢が不必要に狭まってしまいます。判定の基準はあくまで「退院後も実際に続く医療処置の種類と量」であり、これを一つずつ確認する姿勢が大切です。
+
+医療の濃さが LOW と判定できれば、それだけ行き先の選択肢は自由になり、次章で扱う「ゴール」を軸に考えを進めやすくなります。逆に HIGH であれば、行き先はかなり絞り込まれ、ゴールの検討よりも先に医療的な受け皿を確保することが優先されます。`,
+    // 【図解: ここに二軸マトリクス(Medical×Goal:Finalの3×3表)を配置。縦軸に Medical(HIGH/MID/LOW)、
+    //  横軸に Goal:Final の主要な型(HOME系/FACILITY系/TREAT継続)を置き、Medical の段階によって
+    //  選べる行き先の幅がどう変わるかを示す】
+    diagramAfter: { type: "matrix", targetId: "overview-matrix-ch3", caption: null },
+  },
+  {
+    id: "ov-4",
+    title: "4. ゴールの2段階言語化(Goal:Now × Goal:Final)",
+    body:
+`一次分岐と医療の濃さが見えてきたら、次は「ゴール」を言葉にする段階です。退院ゴールロードマップでは、ゴールを2段階に分けて考えます。
+
+- **Goal:Now(直近のゴール)**: いま取り組むべきことは何か。\`TREAT\`(治療継続)/ \`REHAB\`(リハビリ)/ \`COMFORT\`(症状緩和)/ \`UNDECIDED\`(未定)のいずれかで表します。
+- **Goal:Final(最終的な行き先)**: 最終的にどこを目指すのか。\`HOME\`(自宅)/ \`HOME_EOL\`(自宅で看取り)/ \`FACILITY\`(施設)/ \`FACILITY_EOL\`(施設で看取り)/ \`TREAT\`(治療の継続が必要な状態が続く)/ \`UNDECIDED\`(未定)のいずれかで表します。
+
+なぜ2段階に分けるのでしょうか。それは、「いまやっていること」と「目指す場所」を混同しないためです。たとえば、次のような組み合わせがよく見られます。
+
+- \`TREAT → HOME\`(肺炎の治療が終わり、そのまま自宅へ)
+- \`REHAB → HOME\`(回復期リハビリで歩行能力が改善し、自宅へ)
+- \`REHAB → FACILITY\`(リハビリを行っても自宅での生活が難しく、施設へ)
+- \`COMFORT → HOME_EOL\`(症状を和らげることに専念し、自宅で最期を迎える)
+
+ここで一つ、誤解しやすい点を挙げておきます。「リハビリをするなら家に帰る人」「施設に入るならリハビリは不要」という考え方は、必ずしも正しくありません。\`REHAB → FACILITY\`、つまり「施設で暮らすための準備としてのリハビリ」という組み合わせも十分にありえます。移乗やトイレ動作の自立度を上げることは、たとえ最終的な行き先が施設であっても、本人の尊厳や生活の質、そして施設側の受け入れやすさに直結する、価値のある取り組みです。
+
+また、\`Goal:Final\` を決める作業は、本人の意思決定支援と切り離せません。特に認知機能が低下している患者さんの場合、「家に帰りたい」という言葉をそのまま実行することが、必ずしも本人にとっての最善とは限りません。本人の価値観、認知機能の状態、家族の支援体制を総合的に考え、話し合いのプロセスを記録に残しながら、ゴールを決めていくことが大切です。
+
+ゴールを早い段階で言葉にして文書化しておくと、その後の施設選定や転院先への依頼がスムーズに進みます。逆に、ゴールが曖昧なまま調整を進めてしまうと、転院先の候補選びも、依頼文書の作成も、方向が定まらず時間だけが過ぎてしまいます。`,
+  },
+  {
+    id: "ov-5",
+    title: "5. 施設10カテゴリの比較",
+    body:
+`ゴールが見えてきたら、それを実現する具体的な行き先を検討します。退院ゴールロードマップでは、行き先を次の10カテゴリに整理しています。`,
+    // 【図解: 下表を、症例なしの汎用版の一覧表として配置】
+    facilityTable: true,
+    bodyAfterTable:
+`この表を眺めるだけでも気づくことがあると思います。同じ「介護保険」でも目的はさまざまで、同じ「自宅に帰る」ことを目指す施設でも、老健と回復期リハビリテーション病棟では役割が異なります。
+
+特に押さえておきたいのは、**老健は「在宅復帰の架け橋」という役割を持つ施設であり、終身で暮らす場所として設計されているわけではない**という点です。名前だけを見て「介護施設だから長く住める場所」と考えてしまうと、実際の役割とずれた選択をしてしまうことがあります。施設を選ぶときは、名前の印象ではなく、その施設が制度上どういう役割を担っているかで考えることが大切です。`,
+  },
+  {
+    id: "ov-6",
+    title: "6. 特殊条件 — 緩和・BPSD・透析",
+    body:
+`ここまでの流れ(医療の濃さ→主目的→ゴール→施設選定)は、多くの患者さんに当てはまる基本の型です。しかし、一部の患者さんには、この基本の流れをそのまま適用できない事情があります。退院ゴールロードマップでは、これを「特殊条件」と呼び、該当する場合は最優先で考慮します。代表的なものを3つ紹介します。`,
+    subsections: [
+      {
+        head: "緩和(COMFORT)",
+        text: "症状を和らげることを主眼とする場合、回復期リハビリテーション病棟や、在宅復帰を目的とした老健は、目的が合わないため候補になりにくいです。また、自宅で看取りを行う `HOME_EOL` は、統計上「在宅復帰」の実績としてカウントされる点も知っておくとよいでしょう。",
+      },
+      {
+        head: "BPSD(認知症に伴う行動・心理症状)",
+        text: "BPSD の程度によって、選べる施設の範囲が大きく変わります。軽度から中等度であれば、特養・老健・グループホームでの受け入れが可能な範囲に収まることが多いです。一方、激しい興奮や暴力行為などを伴う重度の場合は、認知症治療病棟(精神科)や療養病棟レベルの対応が必要になります。また、症状が急激に変動する場合は、認知症ではなく「せん妄」(意識の混乱で、原因となっている疾患を治療すれば改善が見込める状態)である可能性を考え、施設探しより先に原因の治療を優先することが大切です。",
+      },
+      {
+        head: "透析",
+        text: "定期的な透析が必要な患者さんは、実質的に医療の濃さが HIGH に近い状態と考えます。回復期リハビリテーション病棟は原則として対象外になります。また、「施設に入所すれば透析も任せられる」というのは誤解で、多くの場合、透析は入所後も通院で続ける形になります。",
+      },
+    ],
+    bodyAfterTable:
+`これらの特殊条件は、通常の判断の流れを「上書き」するものだと捉えてください。まず基本の型で考え、その上で該当する特殊条件がないかを必ず確認する、という順番が安全です。`,
+  },
+  {
+    id: "ov-7",
+    title: "7. よくある落とし穴",
+    body:
+`最後に、退院調整の現場でよく見られる、判断の落とし穴をまとめておきます。症例に取り組む際、誤った選択肢の多くはこれらの落とし穴をもとに作られています。あらかじめ知っておくことで、同じ間違いを避けやすくなります。
+
+- **在宅復帰率という指標を見落とす**: 回復期リハビリテーション病棟や地域包括ケア病棟は、「在宅復帰率」が施設の評価指標になっています。そのため、最終的な行き先が施設(FACILITY)に決まっている患者さんは、この指標にカウントされないという理由で、転院の打診自体を断られやすいという実務上の事情があります。
+- **地域包括ケア病棟を「とりあえずの入院先」として使ってしまう**: 地域包括ケア病棟には最長60日という期限があります。ゴールを決めないまま「とりあえず入院」させてしまうと、期限が近づいても行き先が決まらず、調整が行き詰まってしまいます。入院した時点でゴールを設定しておくことが必須です。
+- **薬剤費の負担方法を確認しない**: 老健や介護医療院では、薬剤費が施設側の負担(包括払い)になる仕組みがあります。高額な薬を使っている患者さんの場合、これが受け入れの障害になることがあります。
+- **特養の入所要件と待機期間を軽視する**: 特養は原則として要介護3以上が入所の要件です。また、申し込みから入所までの待機期間が長いことが多いため、方針が決まったらできるだけ早く申し込むことが望ましいです。
+- **依頼文書での情報の記載漏れ**: MDRO(MRSA・ESBL・CPE などの薬剤耐性菌)の保菌情報や、透析のスケジュールなどを診療情報提供書に書き忘れると、転院・入所の打診をした後になって受け入れを断られるリスクが高まります。同様に、BPSD の程度を実際より軽く書いてしまうと、入所後に「聞いていた話と違う」という事態を招きやすくなります。不利に見える情報ほど、正確に、対応方法とセットで伝えることが、結果的に受け入れへの近道になります。
+
+これらの落とし穴に共通しているのは、**「急いでいるときほど、確認すべき情報を後回しにしてしまう」**という構造です。退院調整には期限があることが多く、焦る気持ちはよく分かりますが、急ぐときこそ、基本に立ち返って一つずつ確認する姿勢が大切です。`,
+  },
+  {
+    id: "ov-8",
+    title: "8. まとめ — では、症例で実践してみましょう",
+    body:
+`ここまで、退院ゴールロードマップの骨格を順番に見てきました。振り返ると、次のような流れになっています。
+
+1. **医療の濃さ**(HIGH/MID/LOW)を、処置の種類と量から判定する
+2. **一次分岐**([A]医療保険か[B]介護保険か)を、主目的から見極める
+3. **ゴール**(Goal:Now と Goal:Final)を、2段階に分けて言語化する
+4. **施設**を、ゴールから逆算して選ぶ(名前ではなく制度上の役割で判断する)
+5. **特殊条件**(緩和・BPSD・透析など)がないか、必ず確認する
+6. **落とし穴**を知っておき、確認すべき情報を後回しにしない`,
+    // 【図解: ここにフローチャート(①医療の濃さ→②主目的→③ゴール→④施設選定→⑤調整)を、
+    //  まとめとして再掲。第2章で示した図と同一のものでよい】
+    diagramAfter: { type: "flowchart", targetId: "overview-flow-ch8", caption: null },
+    bodyAfterTable:
+`繰り返しになりますが、この型は公式な分類ではなく、判断を整理するための道具です。目の前の患者さんに当てはめるときは、この型を機械的になぞるのではなく、一人ひとりの事情に合わせて柔軟に使ってください。
+
+ここから先は、実際の症例を通じて、この型を使う練習をしていきます。同じ「高齢者の退院調整」というテーマでも、患者さんの状況が変われば、たどり着く結論もまったく違ったものになります。その違いを味わいながら、判断の型を自分のものにしていってください。
+
+それでは、症例を選んで始めましょう。`,
+    isLast: true,
+  },
+];
+
+// 施設10カテゴリ表（第5章。05_overview_content.md の表をそのまま転記）
+const FACILITY_TABLE = [
+  { no: "0",   category: "自宅直接退院", insurance: "医療+介護", purpose: "自宅での生活/看取り", goal: "HOME / HOME_EOL" },
+  { no: "1",   category: "医療療養病床", insurance: "医療", purpose: "治療・静養", goal: "TREAT / HOME_EOL / FACILITY_EOL" },
+  { no: "2",   category: "介護医療院", insurance: "介護", purpose: "長期療養・生活", goal: "FACILITY / FACILITY_EOL" },
+  { no: "3",   category: "老人保健施設(老健)", insurance: "介護", purpose: "在宅復帰の架け橋", goal: "HOME(典型)" },
+  { no: "4",   category: "特別養護老人ホーム(特養)", insurance: "介護", purpose: "生活(終身)", goal: "FACILITY / FACILITY_EOL" },
+  { no: "4-2", category: "グループホーム", insurance: "介護", purpose: "認知症の方の共同生活", goal: "FACILITY / FACILITY_EOL" },
+  { no: "5",   category: "有料老人ホーム/サービス付き高齢者向け住宅", insurance: "介護", purpose: "自分らしい暮らし", goal: "FACILITY / FACILITY_EOL" },
+  { no: "6",   category: "ケアハウス/軽費老人ホーム", insurance: "介護", purpose: "公的な住まい", goal: "FACILITY" },
+  { no: "7",   category: "回復期リハビリテーション病棟", insurance: "医療", purpose: "集中的なリハビリ", goal: "HOME(典型)" },
+  { no: "8",   category: "地域包括ケア病棟", insurance: "医療", purpose: "在宅復帰の準備・話し合い(最長60日)", goal: "HOME / FACILITY / UNDECIDED" },
+  { no: "9",   category: "地域包括医療病棟(2024年新設)", insurance: "医療", purpose: "急性期治療と早期リハビリの一体的な提供", goal: "HOME(典型)" },
+];
+/* ===== /OVERVIEW CONTENT ===== */
 
 /* =====================================================================
    ===== CASE DATA =====
@@ -1818,8 +2250,9 @@ MSW からは「地域包括ケア病棟(最長60日)なら受け入れ可能な
 
 /* ---------- 起動 ---------- */
 validateCases();
+renderOverview();
 renderHome();
-showView("home");
+showView("overview");
 </script>
 </body>
 </html>
