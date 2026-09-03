@@ -1,15 +1,15 @@
 /* Auto-generated from desks.json / news.json — do not edit by hand. */
 window.PORTAL_MANIFEST = {
-  "version": "1.6.0",
+  "version": "1.6.1",
   "updated": "2026-09-03",
-  "changelogNote": "予防医療ツールに各論（疾患別）の入り口を追加",
+  "changelogNote": "予防医療ツールの各論セクションから「（学習用）」の表示を外した",
   "desks": [
     {
       "id": "desk-prevention",
       "roleLabel": "Clinical desk",
       "nameEn": "Preventive Care",
       "name": "予防医療・ヘルスメンテナンス",
-      "lede": "患者背景から次の検診・ワクチン・フォロー計画を組み立てる。疾患ごとの各論から学習用に引くこともできる。",
+      "lede": "患者背景から次の検診・ワクチン・フォロー計画を組み立てる。疾患ごとの各論からも引ける。",
       "keywords": [
         "予防医療",
         "ヘルスメンテナンス",
@@ -20,14 +20,13 @@ window.PORTAL_MANIFEST = {
         "ACIP",
         "ACP",
         "各論",
-        "学習",
         "疾患別"
       ],
       "tools": [
         {
           "href": "../予防医療_ACP/予防医療_ACP_ヘルスメンテナンス計画ツール.html",
           "title": "予防医療・ヘルスメンテナンス計画ツール（ACP／USPSTF・ACIP）",
-          "desc": "背景・検査値・接種歴・検診歴を入力→全41項目の次アクションと日米差分。疾患別の各論12テーマからも引ける（学習用）",
+          "desc": "背景・検査値・接種歴・検診歴を入力→全41項目の次アクションと日米差分。疾患別の各論12テーマからも引ける",
           "keywords": [
             "予防医療",
             "ヘルスメンテナンス",
@@ -140,7 +139,6 @@ window.PORTAL_MANIFEST = {
             "紹介基準",
             "甲状腺結節",
             "各論",
-            "学習",
             "疾患別",
             "慢性腎臓病",
             "免疫不全",
