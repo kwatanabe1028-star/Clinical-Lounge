@@ -1,0 +1,65 @@
+name: Deploy Clinical Lounge (GitHub Pages)
+
+# main へ push すると、リポジトリ直下をサイトのルートとして公開する。
+# サイトに含めないもの（.git / .github / README.md など）は build ジョブで落とす。
+# 手動で流したいときは Actions タブから "Run workflow"（workflow_dispatch）。
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Pages への書き込みに必要な権限。リポジトリの既定は read なのでここで明示する。
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 連続で push したときに、古いデプロイが新しいものを上書きしないようにする。
+# 実行中のものは最後まで走らせる（in_progress を落とすとサイトが壊れることがある）。
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: リポジトリを取得
+        uses: actions/checkout@v7
+
+      - name: Pages の設定を読み込む
+        uses: actions/configure-pages@v6
+
+      - name: 公開するファイルだけを _site に集める
+        run: |
+          mkdir -p _site
+          rsync -a ./ _site/ \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude '_site' \
+            --exclude '.gitignore' \
+            --exclude 'README.md' \
+            --exclude '思考アウトプット.md' \
+            --exclude '.DS_Store' \
+            --exclude 'Thumbs.db'
+          # .nojekyll は残す（Jekyll のビルドを止め、_ 始まりのパスも配信させるため）
+          test -f _site/.nojekyll || touch _site/.nojekyll
+          echo "--- 公開されるトップレベル ---"
+          ls -A _site
+
+      - name: 成果物をアップロード
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Pages へデプロイ
+        id: deployment
+        uses: actions/deploy-pages@v5
