@@ -1,31 +1,38 @@
 # クリニカルラウンジ（GitHub Pages）
 
-## いまの Vault 構成（`06_product` リポジトリ）
+## 公開のしくみ
 
-このフォルダは **`06_product` Git リポジトリの一部**です。GitHub Pages 用のワークフローは **リポジトリルート** の次にあります。
+このフォルダは **独立した Git リポジトリのルート**です（`Clinical-Lounge`）。
+GitHub Pages 用のワークフローはこのフォルダの中にあります。
 
-`../.github/workflows/deploy-pages.yml`（名前: **Deploy Clinical Lounge (GitHub Pages)**）
+`.github/workflows/deploy-pages.yml`（名前: **Deploy Clinical Lounge (GitHub Pages)**）
 
-`main` へ push すると、`クリニカルラウンジ/` の中身だけがサイトのルートとして公開されます（`README.md` はサイトには含めません）。
+`main` へ push すると、リポジトリ直下がサイトのルートとして公開されます。
+`rsync` で `_site` に集める際、次のものは**サイトに含めません**。
 
-### 初回（GitHub 側）
+`.git` / `.github` / `README.md` / `思考アウトプット.md` / `.gitignore`
 
-1. リポジトリ **Settings → Pages** を開く。
-2. **Source** で **GitHub Actions** を選ぶ。
-3. **Actions** で「Deploy Clinical Lounge (GitHub Pages)」が成功したら、表示された URL を開く。
+公開 URL:
 
-公開 URLの例（プロジェクトサイト）:
-
-`https://<YOUR_USER>.github.io/<REPO>/`  
+`https://kwatanabe1028-star.github.io/Clinical-Lounge/`  
 → ルートの `index.html` から `portal/index.html` にリダイレクトされます。
 
----
+### 公開されたかの確かめ方
 
-## このフォルダだけを別リポジトリにしたい場合
+```sh
+gh run list --limit 1
+curl -s https://kwatanabe1028-star.github.io/Clinical-Lounge/portal/desks.json | head -3
+```
 
-1. 新規リポジトリのルートに、この `クリニカルラウンジ` の中身をそのまま置く。
-2. ルートに `.github/workflows/deploy-pages.yml` を置く（`rsync` のソースを `./` にした版に差し替える）。
-3. 上記と同様に Pages の Source を **GitHub Actions** にする。
+`desks.json` の `version` が上がっていれば反映済みです。
+
+### 注意（過去にここで事故があった）
+
+- Pages の **Source は「GitHub Actions」**（Settings → Pages）。
+  この設定のままワークフローを消すと、**push しても何も公開されないまま無言で止まります**。
+  実際 2026-05-28 から 09-03 まで、この状態で公開が止まっていました。
+- ワークフローの `permissions:` にある `pages: write` と `id-token: write` を消さないこと。
+  リポジトリ既定のワークフロー権限が `read` のため、ここで明示しないとデプロイが権限エラーで落ちます。
 
 ## デザイン（共通）
 
