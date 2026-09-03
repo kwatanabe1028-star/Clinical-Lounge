@@ -3,466 +3,628 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Clinical Lounge</title>
+  <title>Clinical Lounge — 臨床補助ツールの入口</title>
+  <meta name="description" content="役割・分野ごとの Clinical desk から、臨床の判断を助ける小さな道具を選ぶ入口です。" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/lounge.css" />
+
   <style>
-    :root {
-      --color-bg:      #D6D1C2;
-      --color-dark:    #1C3530;
-      --color-accent1: #4E7868;
-      --color-accent2: #3A6E5E;
-      --color-accent3: #286858;
-      --color-accent4: #1E6068;
-      --color-accent5: #1C5A72;
-      --color-accent6: #196E96;
-      --color-warning: #B86018;
-      --color-white:   #FFFFFF;
-    }
-    html {
-      --border-ui: color-mix(in srgb, var(--color-dark) 18%, var(--color-white));
-      --text-muted: color-mix(in srgb, var(--color-dark) 75%, var(--color-bg));
-      --text-subtle: color-mix(in srgb, var(--color-dark) 58%, var(--color-bg));
-      --shadow-paper: 0 10px 28px color-mix(in srgb, var(--color-dark) 22%, transparent);
-    }
-    * {
-      box-sizing: border-box;
-    }
-    *:focus-visible {
-      outline: 2px solid var(--color-accent6);
-      outline-offset: 2px;
-    }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
-      font-size: 16px;
-      line-height: 1.55;
-      letter-spacing: 0.02em;
-      color: var(--color-dark);
-      background: var(--color-bg);
-      -webkit-font-smoothing: antialiased;
+    /* ---------------------------------------------------------------
+       ポータル固有の見た目。共通部品は ../assets/lounge.css
+       --------------------------------------------------------------- */
+
+    /* ヒーロー ------------------------------------------------------ */
+    .hero {
       position: relative;
-    }
-    /* 大きな色面＋細帯（セクション9） */
-    .scene {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
       overflow: hidden;
+      padding-block: clamp(72px, 13vw, 148px) clamp(64px, 11vw, 128px);
     }
-    .scene__plane--lime {
+    /* 大きな色面。旧ベージュを右上に、深緑の淡い面を左下に置く */
+    .hero__plane-a,
+    .hero__plane-b {
       position: absolute;
-      width: min(125vw, 52rem);
-      height: 46vh;
-      top: -8%;
-      left: -22%;
-      background: color-mix(in srgb, var(--color-accent1) 24%, var(--color-bg));
-      transform: rotate(-4deg);
-    }
-    .scene__plane--green {
-      position: absolute;
-      width: 58vw;
-      max-width: 26rem;
-      height: min(72vh, 28rem);
-      bottom: -14%;
-      right: -18%;
-      background: color-mix(in srgb, var(--color-dark) 14%, var(--color-bg));
-      transform: rotate(5deg);
-      border-radius: 0 0 0 18%;
-    }
-    .scene__band {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: var(--color-accent6);
-    }
-    .wrap {
-      position: relative;
       z-index: 0;
-      max-width: min(44rem, 100%);
-      margin: 0 auto;
-      padding: 2rem 1.35rem 3rem;
+      pointer-events: none;
     }
-    header.site-header {
-      margin: 0 0 2.25rem;
-      padding: 0 0 1.5rem;
-      border-bottom: 3px solid var(--color-dark);
+    .hero__plane-a {
+      top: -22%;
+      right: -10%;
+      width: min(58vw, 40rem);
+      aspect-ratio: 5 / 4;
+      background: color-mix(in srgb, var(--lg-beige) 55%, var(--lg-paper));
+      border-radius: 46% 54% 40% 60% / 52% 40% 60% 48%;
     }
-    .site-header__eyebrow {
-      margin: 0 0 0.5rem;
-      font-size: 0.625rem;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      color: var(--text-subtle);
+    /* 左下は「地の続き」に見える程度まで淡くし、指標帯に干渉させない */
+    .hero__plane-b {
+      bottom: -58%;
+      left: -22%;
+      width: min(42vw, 26rem);
+      aspect-ratio: 1;
+      background: color-mix(in srgb, var(--lg-green) 5%, var(--lg-paper));
+      border-radius: 50%;
     }
-    /* タイトル（Lounge）：上位階層 — ティール〜シアン寄りのクールな緑 */
-    h1.site-header__title {
-      margin: 0 0 0.75rem;
-      position: relative;
-      display: inline-flex;
-      align-items: stretch;
-      gap: 0;
-      font-family: system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
-      font-size: clamp(1.7rem, 5vw, 2.45rem);
-      font-weight: 800;
-      line-height: 1.05;
-      letter-spacing: 0.03em;
-      color: var(--color-white);
-      isolation: isolate;
-    }
-    h1.site-header__title::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0.12em;
-      bottom: 0.12em;
-      width: 4px;
-      background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--color-white) 82%, var(--color-accent6)) 0%,
-        var(--color-white) 45%,
-        color-mix(in srgb, var(--color-white) 70%, var(--color-accent4)) 100%
-      );
-      clip-path: polygon(0 0, 100% 6%, 100% 94%, 0 100%);
-      transform: skewY(-8deg);
-      transform-origin: center left;
-      z-index: 1;
-      box-shadow: 2px 0 0 color-mix(in srgb, var(--color-dark) 45%, transparent);
-    }
-    .site-header__title-core {
-      display: inline-flex;
-      align-items: baseline;
-      flex-wrap: wrap;
-      gap: 0.18em 0.5em;
-      padding: 0.48rem 1rem 0.52rem 1rem;
-      margin-left: 0.72rem;
-      background: linear-gradient(
-        118deg,
-        color-mix(in srgb, var(--color-dark) 50%, var(--color-accent3)) 0%,
-        color-mix(in srgb, var(--color-accent3) 55%, var(--color-accent4)) 32%,
-        color-mix(in srgb, var(--color-accent4) 50%, var(--color-accent5)) 68%,
-        color-mix(in srgb, var(--color-accent5) 42%, var(--color-accent6)) 100%
-      );
-      border: 1px solid color-mix(in srgb, var(--color-dark) 28%, var(--color-accent4));
-      box-shadow:
-        inset 0 1px 0 color-mix(in srgb, var(--color-white) 28%, transparent),
-        0 2px 0 color-mix(in srgb, var(--color-dark) 22%, transparent),
-        0 10px 28px color-mix(in srgb, var(--color-dark) 18%, transparent);
-      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
-    }
-    .site-header__title-core em.site-header__title-wa {
-      margin: 0;
-      font-style: normal;
-      font-weight: 700;
-      font-size: 0.5em;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: color-mix(in srgb, var(--color-white) 78%, var(--color-accent6));
-      line-height: 1;
-      border-bottom: 1px solid color-mix(in srgb, var(--color-white) 34%, var(--color-accent5));
-      padding-bottom: 0.18em;
-    }
-    .site-header__title-core strong.site-header__title-wb {
-      font-weight: 900;
-      letter-spacing: 0.04em;
-      text-transform: none;
-      background: linear-gradient(
-        168deg,
-        var(--color-white) 0%,
-        color-mix(in srgb, var(--color-white) 86%, var(--color-accent4)) 42%,
-        color-mix(in srgb, var(--color-white) 68%, var(--color-accent6)) 100%
-      );
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      -webkit-text-fill-color: transparent;
-    }
-    @supports not (background-clip: text) {
-      .site-header__title-core strong.site-header__title-wb {
-        color: var(--color-white);
-        -webkit-text-fill-color: unset;
-        background: none;
-      }
-    }
-    .lede {
-      margin: 0;
-      max-width: 36em;
-      font-size: 0.875rem;
-      line-height: 1.55;
-      color: var(--text-muted);
-    }
-    main {
+    .hero__inner { position: relative; z-index: 1; }
+
+    .hero__eyebrow {
       display: flex;
-      flex-direction: column;
-      gap: 2rem;
+      align-items: center;
+      gap: .9em;
+      margin: 0 0 1.5rem;
+      font-family: var(--lg-en);
+      font-size: .8125rem;
+      font-weight: 600;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--lg-green-lt);
     }
-    .desk {
+    .hero__eyebrow::after {
+      content: "";
+      flex: none;
+      width: clamp(40px, 8vw, 96px);
+      height: 1px;
+      background: color-mix(in srgb, var(--lg-green-lt) 45%, transparent);
+    }
+
+    .hero__wordmark {
       margin: 0;
+      font-family: var(--lg-en);
+      font-size: clamp(3.2rem, 12vw, 7.5rem);
+      font-weight: 500;
+      line-height: .96;
+      letter-spacing: .05em;
+      color: var(--lg-ink);
     }
-    /* デスク見出し：下位階層 — オリーブ〜ライム寄りのウォームな緑（Lounge より黄緑寄り） */
-    h2.desk-title {
-      margin: 0 0 0.45rem;
-      position: relative;
-      display: inline-flex;
+    .hero__wordmark span { display: block; }
+    .hero__wordmark span:last-child {
+      margin-left: clamp(0px, 3vw, 2.6rem);
+      color: var(--lg-green);
+    }
+
+    .hero__jp {
+      margin: clamp(1.6rem, 4vw, 2.6rem) 0 0;
+      font-family: var(--lg-mincho);
+      font-size: clamp(1.1rem, 3.4vw, 1.5rem);
+      font-weight: 700;
+      letter-spacing: .1em;
+      line-height: 1.6;
+      color: var(--lg-ink);
+    }
+    .hero__lede {
+      margin: 1.1rem 0 0;
+      max-width: 34em;
+      font-size: .875rem;
+      line-height: 2;
+      color: var(--lg-text-sub);
+    }
+    .hero__lede em {
+      font-style: normal;
+      font-family: var(--lg-en);
+      font-weight: 600;
+      letter-spacing: .06em;
+      color: var(--lg-green);
+    }
+
+    /* ヒーロー内の検索 ---------------------------------------------- */
+    .hero__search {
+      display: flex;
+      gap: 10px;
       align-items: stretch;
-      max-width: 100%;
-      font-size: clamp(0.95rem, 2.8vw, 1.125rem);
-      font-weight: 800;
-      line-height: 1.12;
-      letter-spacing: 0.02em;
-      color: var(--color-white);
-      isolation: isolate;
+      max-width: 34rem;
+      margin: clamp(1.8rem, 4vw, 2.6rem) 0 0;
     }
-    h2.desk-title::before {
+    .hero__search-field { position: relative; flex: 1; min-width: 0; }
+    .hero__search-field::before {
       content: "";
       position: absolute;
-      left: 0;
-      top: 0.1em;
-      bottom: 0.1em;
-      width: 3px;
-      background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--color-white) 78%, var(--color-accent1)) 0%,
-        var(--color-white) 48%,
-        color-mix(in srgb, var(--color-white) 72%, var(--color-accent2)) 100%
-      );
-      clip-path: polygon(0 0, 100% 6%, 100% 94%, 0 100%);
-      transform: skewY(-8deg);
-      transform-origin: center left;
-      z-index: 1;
-      box-shadow: 2px 0 0 color-mix(in srgb, var(--color-dark) 45%, transparent);
+      left: 1.15rem;
+      top: 50%;
+      width: 13px;
+      height: 13px;
+      margin-top: -8px;
+      border: 1.5px solid var(--lg-text-faint);
+      border-radius: 50%;
+      pointer-events: none;
     }
-    .desk-title__core {
-      display: inline-flex;
-      align-items: baseline;
-      flex-wrap: wrap;
-      gap: 0.2em 0.55em;
-      padding: 0.38rem 0.85rem 0.42rem 0.85rem;
-      margin-left: 0.65rem;
-      max-width: 100%;
-      background: linear-gradient(
-        128deg,
-        color-mix(in srgb, var(--color-dark) 58%, var(--color-accent2)) 0%,
-        color-mix(in srgb, var(--color-dark) 22%, var(--color-accent2)) 28%,
-        color-mix(in srgb, var(--color-accent2) 75%, var(--color-accent1)) 62%,
-        color-mix(in srgb, var(--color-accent1) 58%, var(--color-bg)) 100%
-      );
-      border: 1px solid color-mix(in srgb, var(--color-dark) 38%, var(--color-accent2));
-      box-shadow:
-        inset 0 1px 0 color-mix(in srgb, var(--color-white) 26%, transparent),
-        0 2px 0 color-mix(in srgb, var(--color-dark) 22%, transparent),
-        0 8px 22px color-mix(in srgb, var(--color-dark) 16%, transparent);
-      clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+    .hero__search-field::after {
+      content: "";
+      position: absolute;
+      left: 2.02rem;
+      top: 50%;
+      width: 6px;
+      height: 1.5px;
+      margin-top: 4px;
+      background: var(--lg-text-faint);
+      transform: rotate(45deg);
+      transform-origin: left center;
+      pointer-events: none;
     }
-    h2.desk-title em.desk-title__type {
-      margin: 0;
-      font-style: normal;
-      font-family: system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    .hero__search input[type="search"] {
+      width: 100%;
+      min-height: 52px;
+      padding: .6em 1.1em .6em 3rem;
+      font-family: var(--lg-gothic);
+      font-size: .9375rem;
+      letter-spacing: .03em;
+      color: var(--lg-text);
+      background: var(--lg-white);
+      border: 1px solid var(--lg-line);
+      border-radius: 100vmax;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      transition: border-color var(--lg-ease), box-shadow var(--lg-ease);
+    }
+    .hero__search input[type="search"]::placeholder { color: var(--lg-text-faint); }
+    .hero__search input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
+    .hero__search input[type="search"]:focus {
+      border-color: var(--lg-green);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--lg-green) 16%, transparent);
+    }
+    .hero__search button {
+      flex: none;
+      min-height: 52px;
+      padding: 0 2em;
+      font-family: var(--lg-gothic);
+      font-size: .875rem;
       font-weight: 700;
-      font-size: 0.58em;
-      letter-spacing: 0.16em;
+      letter-spacing: .1em;
+      color: var(--lg-white);
+      background: var(--lg-green);
+      border: 1px solid var(--lg-green);
+      border-radius: 100vmax;
+      cursor: pointer;
+      transition: background var(--lg-ease), border-color var(--lg-ease), box-shadow var(--lg-ease);
+    }
+    .hero__search button:hover {
+      background: var(--lg-ink);
+      border-color: var(--lg-ink);
+      box-shadow: var(--lg-shadow);
+    }
+
+    /* ヒーロー下の指標帯 -------------------------------------------- */
+    .hero__stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      margin: clamp(2.4rem, 6vw, 3.6rem) 0 0;
+      border-top: 1px solid var(--lg-line);
+    }
+    .hero__stat {
+      flex: 1 1 8rem;
+      padding: 1.15rem 1.4rem 1.15rem 0;
+    }
+    .hero__stat + .hero__stat {
+      padding-left: 1.4rem;
+      border-left: 1px solid var(--lg-line);
+    }
+    .hero__stat dt {
+      margin: 0 0 .2em;
+      font-family: var(--lg-en);
+      font-size: .6875rem;
+      font-weight: 600;
+      letter-spacing: .16em;
       text-transform: uppercase;
-      color: color-mix(in srgb, var(--color-white) 80%, var(--color-accent1));
-      line-height: 1;
-      border-bottom: 1px solid color-mix(in srgb, var(--color-white) 32%, var(--color-accent2));
-      padding-bottom: 0.15em;
+      color: var(--lg-text-faint);
     }
-    h2.desk-title strong.desk-title__name {
-      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
-      font-weight: 900;
-      letter-spacing: 0.03em;
-      font-size: 1.05em;
-      background: linear-gradient(
-        168deg,
-        var(--color-white) 0%,
-        color-mix(in srgb, var(--color-white) 90%, var(--color-accent1)) 50%,
-        color-mix(in srgb, var(--color-white) 72%, var(--color-accent2)) 100%
-      );
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      -webkit-text-fill-color: transparent;
-    }
-    @supports not (background-clip: text) {
-      h2.desk-title strong.desk-title__name {
-        color: var(--color-white);
-        -webkit-text-fill-color: unset;
-        background: none;
-      }
-    }
-    .desk-lede {
-      margin: 0 0 0.6rem;
-      padding-left: 0;
-      font-size: 0.8125rem;
-      color: var(--text-muted);
-      line-height: 1.45;
-    }
-    .tool-panel {
+    .hero__stat dd {
       margin: 0;
-      border: 1px solid var(--border-ui);
-      background: var(--color-white);
-      border-radius: 10px;
-      box-shadow: var(--shadow-paper);
-      overflow: hidden;
+      font-family: var(--lg-en);
+      font-size: 1.7rem;
+      font-weight: 500;
+      line-height: 1.1;
+      letter-spacing: .04em;
+      color: var(--lg-ink);
     }
-    .tool-list {
+    .hero__stat dd small {
+      font-family: var(--lg-gothic);
+      font-size: .6875rem;
+      font-weight: 500;
+      letter-spacing: .08em;
+      color: var(--lg-text-sub);
+      margin-left: .5em;
+    }
+
+    /* デスクカード -------------------------------------------------- */
+    .desks { display: grid; gap: 28px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    /* エラー表示 ---------------------------------------------------- */
+    .portal-error {
+      grid-column: 1 / -1;
+      border-radius: var(--lg-r);
+      padding: 22px 26px;
+      background: color-mix(in srgb, var(--lg-amber) 9%, var(--lg-white));
+      border: 1px solid color-mix(in srgb, var(--lg-amber) 26%, var(--lg-white));
+    }
+    .portal-error__title {
+      margin: 0 0 .5em;
+      font-family: var(--lg-mincho);
+      font-size: 1.0625rem;
+      font-weight: 700;
+      color: var(--lg-ink);
+    }
+    .portal-error__body { margin: 0; font-size: .8125rem; line-height: 1.8; color: var(--lg-text-sub); }
+
+    /* 見出し行 ＋ 絞り込み状態 ---------------------------------------- */
+    .desks-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px 20px;
+    }
+    .desks-head .lg-secttl { margin-bottom: 0; }
+    .filter-state {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: .3rem;
+      font-size: .8125rem;
+      color: var(--lg-text-sub);
+    }
+    .filter-state.is-on { display: flex; }
+    .filter-state__count strong {
+      font-family: var(--lg-en);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--lg-green);
+      margin: 0 .15em;
+    }
+    .filter-clear {
+      display: inline-flex;
+      align-items: center;
+      gap: .45em;
+      min-height: 32px;
+      padding: 0 1.1em;
+      font-family: var(--lg-gothic);
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      color: var(--lg-text-sub);
+      background: transparent;
+      border: 1px solid var(--lg-line);
+      border-radius: 100vmax;
+      cursor: pointer;
+      transition: background var(--lg-ease), color var(--lg-ease);
+    }
+    .filter-clear:hover { background: var(--lg-white); color: var(--lg-ink); }
+
+    /* 該当なし ------------------------------------------------------- */
+    .no-hit {
+      grid-column: 1 / -1;
+      padding: 40px 32px;
+      text-align: center;
+      background: var(--lg-white);
+      border: 1px solid var(--lg-line-soft);
+      border-radius: var(--lg-r);
+    }
+    .no-hit__ttl {
+      margin: 0 0 .6rem;
+      font-family: var(--lg-mincho);
+      font-size: 1.0625rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      color: var(--lg-ink);
+    }
+    .no-hit__body { margin: 0 0 1.4rem; font-size: .8125rem; line-height: 1.9; color: var(--lg-text-sub); }
+
+    /* お知らせ -------------------------------------------------------- */
+    .news-list {
       list-style: none;
       margin: 0;
       padding: 0;
+      border-top: 1px solid var(--lg-line);
     }
-    .tool-list li {
-      margin: 0;
-      border-top: 1px solid var(--border-ui);
-    }
-    .tool-list li:first-child {
-      border-top: 0;
-    }
-    a.tool-link {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem 1rem;
-      min-height: 3.35rem;
-      padding: 0.7rem 1rem 0.7rem 0.85rem;
+    .news-list li { border-bottom: 1px solid var(--lg-line); }
+    .news-item {
+      display: grid;
+      grid-template-columns: 7.5rem 7rem 1fr auto;
+      align-items: baseline;
+      gap: 4px 20px;
+      padding: 22px 4px;
       text-decoration: none;
       color: inherit;
-      border-left: 3px solid transparent;
-      background: var(--color-white);
-      transition: background-color 0.12s ease, border-left-color 0.12s ease;
     }
-    a.tool-link:hover {
-      background: color-mix(in srgb, var(--color-accent1) 10%, var(--color-white));
-      border-left-color: var(--color-accent1);
+    .news-item__date {
+      font-family: var(--lg-en);
+      font-size: .875rem;
+      font-weight: 600;
+      letter-spacing: .09em;
+      color: var(--lg-text-faint);
+      white-space: nowrap;
     }
-    .tool-link__body {
-      min-width: 0;
-      flex: 1;
-    }
-    .tool-link__title {
-      margin: 0 0 0.15rem;
+    .news-item__cat { justify-self: start; }
+    .news-item__body { min-width: 0; }
+    .news-item__ttl {
+      margin: 0;
+      font-family: var(--lg-mincho);
       font-size: 1rem;
       font-weight: 700;
-      letter-spacing: 0.02em;
-      color: var(--color-dark);
-      line-height: 1.3;
+      letter-spacing: .04em;
+      line-height: 1.65;
+      color: var(--lg-ink);
+      transition: color var(--lg-ease);
     }
-    .tool-link__desc {
-      margin: 0;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      line-height: 1.4;
+    .news-item__desc {
+      margin: .45rem 0 0;
+      font-size: .78125rem;
+      line-height: 1.85;
+      color: var(--lg-text-sub);
     }
-    .tool-link__mark {
-      flex-shrink: 0;
-      font-size: 0.875rem;
+    .news-item .lg-arrow { align-self: center; }
+    a.news-item:hover .news-item__ttl { color: var(--lg-green); }
+
+    .news-more { margin: 28px 0 0; text-align: center; }
+
+    /* このサイトについて -------------------------------------------- */
+    .about__grid {
+      display: grid;
+      gap: 28px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .about__item { }
+    .about__item h3 {
+      font-family: var(--lg-mincho);
+      font-size: 1.0625rem;
       font-weight: 700;
-      color: var(--text-subtle);
+      letter-spacing: .05em;
+      margin: 0 0 .6rem;
     }
-    a.tool-link:hover .tool-link__mark {
-      color: var(--color-accent6);
+    .about__item h3 span {
+      display: block;
+      font-family: var(--lg-en);
+      font-size: .6875rem;
+      font-weight: 600;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--lg-green-lt);
+      margin-bottom: .35em;
     }
-    .portal-error {
-      margin: 0;
-      padding: 1rem 1rem 1.05rem;
-      border: 1px solid var(--border-ui);
-      background: color-mix(in srgb, var(--color-warning) 12%, var(--color-white));
-      border-radius: 10px;
-      box-shadow: var(--shadow-paper);
-      color: var(--color-dark);
+    .about__item p { margin: 0; font-size: .8125rem; line-height: 1.9; color: var(--lg-text-sub); }
+    .about__item code {
+      background: var(--lg-white);
+      border: 1px solid var(--lg-line);
+      border-radius: var(--lg-r-xs);
+      padding: .1em .4em;
     }
-    .portal-error__title {
-      margin: 0 0 0.5rem;
-      font-size: 0.9375rem;
-      font-weight: 800;
+
+    @media (max-width: 900px) {
+      .desks { grid-template-columns: minmax(0, 1fr); }
+      .about__grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
     }
-    .portal-error__body {
-      margin: 0;
-      font-size: 0.8125rem;
-      line-height: 1.5;
-      color: var(--text-muted);
-    }
-    .footer-meta {
-      margin: 0.35rem 0 0;
-    }
-    footer {
-      margin-top: 2.5rem;
-      padding-top: 0.85rem;
-      border-top: 1px solid var(--border-ui);
-      font-size: 0.6875rem;
-      color: var(--text-subtle);
-      line-height: 1.5;
-    }
-    footer code {
-      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-      font-size: 0.8125em;
-      padding: 0.08em 0.3em;
-      border-radius: 0;
-      background: color-mix(in srgb, var(--color-dark) 5%, var(--color-white));
-      border: 1px solid var(--border-ui);
-      color: var(--color-dark);
+    @media (max-width: 767px) {
+      .desks { gap: 18px; }
+      .hero__search { flex-direction: column; gap: 8px; max-width: none; }
+      .hero__search button { width: 100%; }
+      .news-item {
+        grid-template-columns: 1fr auto;
+        gap: 8px 14px;
+        padding: 18px 2px;
+      }
+      .news-item__date { grid-column: 1; font-size: .8125rem; }
+      .news-item__cat  { grid-column: 1; }
+      .news-item__body { grid-column: 1 / -1; }
+      .news-item .lg-arrow { grid-column: 2; grid-row: 1 / span 2; }
+      .hero__stat { flex-basis: 6.5rem; padding-right: 1rem; }
+      .hero__stat + .hero__stat { padding-left: 1rem; }
+      .hero__stat dd { font-size: 1.4rem; }
     }
   </style>
 </head>
-<body>
-  <div class="scene" aria-hidden="true">
-    <div class="scene__plane scene__plane--lime"></div>
-    <div class="scene__plane scene__plane--green"></div>
-    <div class="scene__band"></div>
-  </div>
-  <div class="wrap">
-    <header class="site-header">
-      <p class="site-header__eyebrow">臨床補助ツールの入口</p>
-      <h1 class="site-header__title" lang="en" aria-label="Clinical Lounge">
-        <span class="site-header__title-core">
-          <em class="site-header__title-wa">Clinical</em>
-          <strong class="site-header__title-wb">Lounge</strong>
-        </span>
-      </h1>
-      <p class="lede">役割・分野ごとの<strong lang="en">Clinical desk</strong>からツールを選びます。</p>
-    </header>
-    <main id="portal-main" aria-live="polite"></main>
-    <footer>
-      <p>場所: <code>06_product/クリニカルラウンジ/portal/index.html</code> — 入口としてブックマークできます。</p>
-      <p id="footer-meta" class="footer-meta"></p>
-      <p>変更の一覧: ひとつ上のフォルダの <code>CHANGELOG.md</code></p>
-    </footer>
-  </div>
+
+<body data-lg-home="1" data-lg-root="..">
+  <div id="lg-header"></div>
+
+  <main>
+    <!-- ================= ヒーロー ================= -->
+    <section class="hero">
+      <div class="hero__plane-a" aria-hidden="true"></div>
+      <div class="hero__plane-b" aria-hidden="true"></div>
+
+      <div class="lg-inner-lg hero__inner">
+        <p class="hero__eyebrow" lang="en">Clinical Support Tools</p>
+
+        <h1 class="hero__wordmark" lang="en" aria-label="Clinical Lounge">
+          <span>Clinical</span>
+          <span>Lounge</span>
+        </h1>
+
+        <p class="hero__jp">臨床補助ツールの入口</p>
+        <p class="hero__lede">
+          役割・分野ごとの <em>Clinical desk</em> に、判断を助ける小さな道具をまとめています。
+          ブックマークして、必要なときに必要なデスクから開いてください。
+        </p>
+
+        <form class="hero__search" role="search" id="tool-search-form">
+          <label class="lg-vis-hidden" for="tool-search">ツールを検索</label>
+          <span class="hero__search-field">
+            <input type="search" id="tool-search" name="q"
+                   placeholder="ツールを探す（例: 換算、MELD、PHQ）"
+                   autocomplete="off" spellcheck="false" />
+          </span>
+          <button type="submit">検索</button>
+        </form>
+
+        <dl class="hero__stats">
+          <div class="hero__stat">
+            <dt lang="en">Desks</dt>
+            <dd><span id="stat-desks">—</span><small>分野</small></dd>
+          </div>
+          <div class="hero__stat">
+            <dt lang="en">Tools</dt>
+            <dd><span id="stat-tools">—</span><small>本</small></dd>
+          </div>
+          <div class="hero__stat">
+            <dt lang="en">Updated</dt>
+            <dd><span id="stat-updated">—</span></dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ================= 診療デスク ================= -->
+    <section id="desks" class="lg-section lg-band">
+      <div class="lg-inner-lg">
+        <div class="desks-head lg-mb40">
+          <h2 class="lg-secttl lg-reveal">
+            <span class="lg-secttl__en" lang="en">Clinical Desks</span>
+            <span class="lg-secttl__jp">診療デスク</span>
+          </h2>
+          <div class="filter-state" id="filter-state">
+            <span class="filter-state__count" id="filter-count"></span>
+            <button type="button" class="filter-clear" id="filter-clear">
+              <span aria-hidden="true">×</span>絞り込みを解除
+            </button>
+          </div>
+        </div>
+        <div id="portal-main" class="desks" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ================= お知らせ ================= -->
+    <!-- news.json（file:// では manifest.js の PORTAL_NEWS）が読めたときだけ表示する -->
+    <section id="news" class="lg-section" hidden>
+      <div class="lg-inner-lg">
+        <h2 class="lg-secttl lg-reveal">
+          <span class="lg-secttl__en" lang="en">News &amp; Updates</span>
+          <span class="lg-secttl__jp">お知らせ</span>
+        </h2>
+        <ul class="news-list lg-reveal" id="news-list"></ul>
+        <p class="news-more" id="news-more" hidden>
+          <button type="button" class="lg-btn lg-btn--ghost lg-btn--sm" id="news-more-btn"></button>
+        </p>
+      </div>
+    </section>
+
+    <!-- ================= このサイトについて ================= -->
+    <section id="about" class="lg-section">
+      <div class="lg-inner-lg">
+        <h2 class="lg-secttl lg-reveal">
+          <span class="lg-secttl__en" lang="en">About This Site</span>
+          <span class="lg-secttl__jp">このサイトについて</span>
+        </h2>
+
+        <div class="about__grid lg-reveal">
+          <div class="about__item">
+            <h3><span lang="en">Purpose</span>使い方</h3>
+            <p>
+              各デスクのカードから目的のツールを開きます。ツール側からはヘッダーの
+              「デスク一覧へ」でいつでもここに戻れます。この入口をブックマークしておくと便利です。
+            </p>
+          </div>
+          <div class="about__item">
+            <h3><span lang="en">Scope</span>位置づけ</h3>
+            <p>
+              いずれのツールも<strong>診療の代替ではありません</strong>。判断の材料を整理するための
+              補助であり、最終的な判断は担当医が行ってください。
+            </p>
+          </div>
+          <div class="about__item">
+            <h3><span lang="en">Privacy</span>個人情報</h3>
+            <p>
+              入力内容はブラウザの中だけで処理され、どこにも送信・保存されません。
+              患者が特定される情報は入力しないでください。
+            </p>
+          </div>
+        </div>
+
+        <p class="lg-note lg-mb0" style="margin-top:32px;">
+          <span class="lg-note__ttl">更新について</span>
+          ツールの追加・変更は <code>portal/desks.json</code> を編集して反映します。
+          変更の一覧はリポジトリの <code>CHANGELOG.md</code> にあります。
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <div id="lg-footer"></div>
+
+  <script src="../assets/lounge.js"></script>
   <script>
     (function () {
-      var mainEl = document.getElementById("portal-main");
-      var footerMeta = document.getElementById("footer-meta");
+      "use strict";
 
+      var mainEl = document.getElementById("portal-main");
+      var manifest = null;   // 読み込んだデスク一覧を保持し、絞り込みのたびに再描画する
+
+      /* ==========================================================
+         検索：日本語で実用になるよう、検索語も対象も同じ形に均す
+         ① NFKC 正規化      「ＭＥＬＤ」→「MELD」
+         ② 小文字化          「Meld」→「meld」
+         ③ ひらがな→カタカナ 「じあぜぱむ」→「ジアゼパム」
+         ========================================================== */
+      function normalizeText(value) {
+        var s = String(value == null ? "" : value);
+        if (typeof s.normalize === "function") { s = s.normalize("NFKC"); }
+        s = s.toLowerCase();
+        return s.replace(/[\u3041-\u3096]/g, function (ch) {
+          return String.fromCharCode(ch.charCodeAt(0) + 0x60);
+        });
+      }
+
+      // 検索語を空白（半角・全角）で分割。すべて含むもの＝AND 一致
+      function parseQuery(raw) {
+        return normalizeText(raw).split(/[\s\u3000]+/).filter(function (t) { return t !== ""; });
+      }
+
+      // ツール1本の検索対象文字列（デスクの情報も含めて引けるようにする）
+      function haystackFor(desk, tool) {
+        return normalizeText([
+          desk.name, desk.nameEn, desk.roleLabel, desk.lede,
+          (desk.keywords || []).join(" "),
+          tool.title, tool.desc,
+          (tool.keywords || []).join(" ")
+        ].join(" "));
+      }
+
+      function toolMatches(desk, tool, terms) {
+        if (!terms.length) { return true; }
+        var hay = haystackFor(desk, tool);
+        return terms.every(function (t) { return hay.indexOf(t) !== -1; });
+      }
+
+      // 絞り込み後のデスク配列を返す（残るツールが 0 のデスクは落とす）
+      function filterDesks(desks, terms) {
+        if (!terms.length) { return desks.slice(); }
+        var out = [];
+        desks.forEach(function (desk) {
+          var tools = (desk.tools || []).filter(function (tool) {
+            return toolMatches(desk, tool, terms);
+          });
+          if (tools.length) {
+            var copy = {};
+            Object.keys(desk).forEach(function (k) { copy[k] = desk[k]; });
+            copy.tools = tools;
+            out.push(copy);
+          }
+        });
+        return out;
+      }
+
+      /* ---- マニフェストの取得（file:// では manifest.js に退避） ---- */
       function loadScript(src) {
         return new Promise(function (resolve, reject) {
           var s = document.createElement("script");
           s.src = src;
           s.async = true;
-          s.onload = function () {
-            resolve();
-          };
-          s.onerror = function () {
-            reject(new Error("script load failed: " + src));
-          };
+          s.onload = function () { resolve(); };
+          s.onerror = function () { reject(new Error("script load failed: " + src)); };
           document.head.appendChild(s);
         });
       }
 
       function fetchManifest() {
         return fetch("desks.json", { cache: "no-store" }).then(function (res) {
-          if (!res.ok) {
-            throw new Error("desks.json HTTP " + res.status);
-          }
+          if (!res.ok) { throw new Error("desks.json HTTP " + res.status); }
           return res.json();
         });
       }
 
       function loadManifestWithFallback() {
         return fetchManifest().catch(function () {
-          if (window.PORTAL_MANIFEST) {
-            return Promise.resolve(window.PORTAL_MANIFEST);
-          }
+          if (window.PORTAL_MANIFEST) { return Promise.resolve(window.PORTAL_MANIFEST); }
           return loadScript("manifest.js").then(function () {
             if (!window.PORTAL_MANIFEST) {
               throw new Error("PORTAL_MANIFEST missing after manifest.js");
@@ -473,23 +635,15 @@
       }
 
       function validateManifest(data) {
-        if (!data || typeof data !== "object") {
-          return "マニフェストの形式が不正です。";
-        }
-        if (!Array.isArray(data.desks)) {
-          return "desks が配列ではありません。";
-        }
+        if (!data || typeof data !== "object") { return "マニフェストの形式が不正です。"; }
+        if (!Array.isArray(data.desks)) { return "desks が配列ではありません。"; }
         for (var i = 0; i < data.desks.length; i++) {
           var d = data.desks[i];
           if (!d || typeof d.id !== "string" || !d.id.trim()) {
             return "デスク " + i + " の id が不正です。";
           }
-          if (typeof d.name !== "string") {
-            return "デスク " + i + " の name が不正です。";
-          }
-          if (!Array.isArray(d.tools)) {
-            return "デスク " + i + " の tools が配列ではありません。";
-          }
+          if (typeof d.name !== "string") { return "デスク " + i + " の name が不正です。"; }
+          if (!Array.isArray(d.tools)) { return "デスク " + i + " の tools が配列ではありません。"; }
           for (var j = 0; j < d.tools.length; j++) {
             var t = d.tools[j];
             if (!t || typeof t.href !== "string" || !t.href.trim()) {
@@ -503,13 +657,24 @@
         return null;
       }
 
-      function setFooterMeta(data) {
-        if (!footerMeta) {
-          return;
+      /* ---- 見出し帯の指標とフッターの版情報 ---- */
+      function setMeta(data) {
+        var deskCount = data.desks.length;
+        var toolCount = data.desks.reduce(function (n, d) {
+          return n + (Array.isArray(d.tools) ? d.tools.length : 0);
+        }, 0);
+        var updated = data.updated != null ? String(data.updated) : "—";
+
+        document.getElementById("stat-desks").textContent = String(deskCount);
+        document.getElementById("stat-tools").textContent = String(toolCount);
+        document.getElementById("stat-updated").textContent = updated.replace(/-/g, ".");
+
+        if (window.Lounge) {
+          window.Lounge.setFooterMeta(
+            "マニフェスト 版 " + (data.version != null ? data.version : "—") +
+            "（更新日 " + updated + "）"
+          );
         }
-        var v = data.version != null ? String(data.version) : "—";
-        var u = data.updated != null ? String(data.updated) : "—";
-        footerMeta.textContent = "マニフェスト: 版 " + v + "（更新日: " + u + "）";
       }
 
       function renderError(message) {
@@ -528,95 +693,311 @@
         mainEl.appendChild(box);
       }
 
-      function renderDesks(data) {
+      /* ---- デスクカードの描画（絞り込み対応） ---- */
+      function renderDesks(desks) {
         mainEl.innerHTML = "";
-        data.desks.forEach(function (desk) {
-          var section = document.createElement("section");
-          section.className = "desk";
-          section.setAttribute("aria-labelledby", desk.id);
 
-          var h2 = document.createElement("h2");
-          h2.id = desk.id;
-          h2.className = "desk-title";
-          var label = (desk.roleLabel || "Clinical desk").trim() || "Clinical desk";
-          h2.setAttribute("aria-label", label + " — " + desk.name);
+        desks.forEach(function (desk, index) {
+          var card = document.createElement("section");
+          card.className = "lg-card lg-reveal";
+          card.setAttribute("aria-labelledby", desk.id);
+          card.style.transitionDelay = (index % 2) * 0.08 + "s";
 
-          var core = document.createElement("span");
-          core.className = "desk-title__core";
+          // 番号 ＋ 欧文キッカー
+          var head = document.createElement("div");
+          head.className = "lg-card__head";
 
-          var role = document.createElement("em");
-          role.className = "desk-title__type";
-          role.setAttribute("lang", "en");
-          role.textContent = label;
+          var no = document.createElement("span");
+          no.className = "lg-card__no";
+          no.setAttribute("aria-hidden", "true");
+          no.setAttribute("lang", "en");
+          // 絞り込んでも番号が変わらないよう、読み込み時に振った通し番号を使う
+          no.textContent = desk.__no || ("0" + (index + 1)).slice(-2);
 
-          var name = document.createElement("strong");
-          name.className = "desk-title__name";
-          name.textContent = desk.name;
+          var en = document.createElement("span");
+          en.className = "lg-card__en";
+          en.setAttribute("lang", "en");
+          en.textContent = desk.nameEn || desk.roleLabel || "Clinical desk";
 
-          core.appendChild(role);
-          core.appendChild(name);
-          h2.appendChild(core);
+          head.appendChild(no);
+          head.appendChild(en);
+
+          // デスク名・リード
+          var ttl = document.createElement("h3");
+          ttl.className = "lg-card__ttl";
+          ttl.id = desk.id;
+          ttl.textContent = desk.name;
 
           var lede = document.createElement("p");
-          lede.className = "desk-lede";
+          lede.className = "lg-card__lede";
           lede.textContent = desk.lede || "";
 
-          var panel = document.createElement("div");
-          panel.className = "tool-panel";
+          // ツール一覧
           var ul = document.createElement("ul");
-          ul.className = "tool-list";
+          ul.className = "lg-links";
 
           (desk.tools || []).forEach(function (tool) {
             var li = document.createElement("li");
             var a = document.createElement("a");
-            a.className = "tool-link";
+            a.className = "lg-link";
             a.href = tool.href;
 
             var body = document.createElement("div");
-            body.className = "tool-link__body";
+            body.className = "lg-link__body";
+
             var pt = document.createElement("p");
-            pt.className = "tool-link__title";
+            pt.className = "lg-link__ttl";
             pt.textContent = tool.title;
+
             var pd = document.createElement("p");
-            pd.className = "tool-link__desc";
+            pd.className = "lg-link__desc";
             pd.textContent = tool.desc || "";
+
             body.appendChild(pt);
             body.appendChild(pd);
 
-            var mark = document.createElement("span");
-            mark.className = "tool-link__mark";
-            mark.setAttribute("aria-hidden", "true");
-            mark.textContent = "→";
+            var arrow = document.createElement("span");
+            arrow.className = "lg-arrow";
+            arrow.setAttribute("aria-hidden", "true");
 
             a.appendChild(body);
-            a.appendChild(mark);
+            a.appendChild(arrow);
             li.appendChild(a);
             ul.appendChild(li);
           });
 
-          panel.appendChild(ul);
-          section.appendChild(h2);
-          section.appendChild(lede);
-          section.appendChild(panel);
-          mainEl.appendChild(section);
+          card.appendChild(head);
+          card.appendChild(ttl);
+          card.appendChild(lede);
+          card.appendChild(ul);
+          mainEl.appendChild(card);
         });
+
+        // 後から差し込んだカードにもフェードアップを効かせる
+        if (window.Lounge) { window.Lounge.revealAll(); }
       }
 
+      /* ---- 該当なしの表示 ---- */
+      function renderNoHit(rawQuery) {
+        mainEl.innerHTML = "";
+        var box = document.createElement("div");
+        box.className = "no-hit";
+
+        var h = document.createElement("p");
+        h.className = "no-hit__ttl";
+        h.textContent = "「" + rawQuery + "」に該当するツールはありませんでした";
+
+        var body = document.createElement("p");
+        body.className = "no-hit__body";
+        body.textContent = "別の言い方でお試しください。薬剤名・略語・分野名でも探せます（例: デパス、MELD、PHQ、退院）。";
+
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "lg-btn lg-btn--ghost lg-btn--sm";
+        btn.textContent = "検索条件をクリア";
+        btn.addEventListener("click", clearSearch);
+
+        box.appendChild(h);
+        box.appendChild(body);
+        box.appendChild(btn);
+        mainEl.appendChild(box);
+      }
+
+      /* ==========================================================
+         検索フォームの配線
+         ========================================================== */
+      var searchForm  = document.getElementById("tool-search-form");
+      var searchInput = document.getElementById("tool-search");
+      var filterState = document.getElementById("filter-state");
+      var filterCount = document.getElementById("filter-count");
+      var filterClear = document.getElementById("filter-clear");
+
+      function applySearch() {
+        if (!manifest) { return; }
+        var raw = searchInput ? searchInput.value.trim() : "";
+        var terms = parseQuery(raw);
+        var desks = filterDesks(manifest.desks, terms);
+        var hits = desks.reduce(function (n, d) { return n + d.tools.length; }, 0);
+
+        if (terms.length && !desks.length) {
+          renderNoHit(raw);
+        } else {
+          renderDesks(desks);
+        }
+
+        // 絞り込み中だけ件数とクリアボタンを見せる
+        if (terms.length) {
+          filterState.classList.add("is-on");
+          filterCount.innerHTML = "";
+          filterCount.appendChild(document.createTextNode("該当"));
+          var strong = document.createElement("strong");
+          strong.textContent = String(hits);
+          filterCount.appendChild(strong);
+          filterCount.appendChild(document.createTextNode("件"));
+        } else {
+          filterState.classList.remove("is-on");
+          filterCount.textContent = "";
+        }
+      }
+
+      function clearSearch() {
+        if (searchInput) {
+          searchInput.value = "";
+          searchInput.focus();
+        }
+        applySearch();
+      }
+
+      if (searchForm) {
+        // 送信でページ遷移させない（絞り込みは入力のたびに走っている）
+        searchForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          applySearch();
+        });
+      }
+      if (searchInput) {
+        searchInput.addEventListener("input", applySearch);
+        searchInput.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") { clearSearch(); }
+        });
+      }
+      if (filterClear) { filterClear.addEventListener("click", clearSearch); }
+
+      /* ==========================================================
+         お知らせ
+         ========================================================== */
+      var NEWS_INITIAL = 5;
+      var CATEGORY_CLASS = {
+        "新ツール": "lg-badge",
+        "更新":     "lg-badge lg-badge--info",
+        "サイト":   "lg-badge lg-badge--mute"
+      };
+
+      function loadNewsWithFallback() {
+        return fetch("news.json", { cache: "no-store" })
+          .then(function (res) {
+            if (!res.ok) { throw new Error("news.json HTTP " + res.status); }
+            return res.json();
+          })
+          .catch(function () {
+            // file:// では manifest.js が PORTAL_NEWS を持っている（無ければ諦める）
+            if (window.PORTAL_NEWS) { return window.PORTAL_NEWS; }
+            return loadScript("manifest.js").then(function () {
+              if (!window.PORTAL_NEWS) { throw new Error("PORTAL_NEWS missing"); }
+              return window.PORTAL_NEWS;
+            });
+          });
+      }
+
+      // "2026-09-03" → "2026.09.03"
+      function formatDate(value) {
+        return String(value == null ? "" : value).replace(/-/g, ".");
+      }
+
+      function buildNewsItem(item) {
+        var hasLink = typeof item.href === "string" && item.href.trim() !== "";
+        var row = document.createElement(hasLink ? "a" : "div");
+        row.className = "news-item";
+        if (hasLink) { row.href = item.href; }
+
+        var date = document.createElement("time");
+        date.className = "news-item__date";
+        date.setAttribute("lang", "en");
+        if (item.date) { date.setAttribute("datetime", item.date); }
+        date.textContent = formatDate(item.date);
+
+        var cat = document.createElement("span");
+        cat.className = (CATEGORY_CLASS[item.category] || "lg-badge lg-badge--mute") + " news-item__cat";
+        cat.textContent = item.category || "お知らせ";
+
+        var body = document.createElement("div");
+        body.className = "news-item__body";
+        var ttl = document.createElement("p");
+        ttl.className = "news-item__ttl";
+        ttl.textContent = item.title || "";
+        body.appendChild(ttl);
+        if (item.body) {
+          var desc = document.createElement("p");
+          desc.className = "news-item__desc";
+          desc.textContent = item.body;
+          body.appendChild(desc);
+        }
+
+        row.appendChild(date);
+        row.appendChild(cat);
+        row.appendChild(body);
+
+        if (hasLink) {
+          var arrow = document.createElement("span");
+          arrow.className = "lg-arrow";
+          arrow.setAttribute("aria-hidden", "true");
+          row.appendChild(arrow);
+        }
+        return row;
+      }
+
+      function renderNews(data) {
+        var items = (data && Array.isArray(data.news)) ? data.news : [];
+        if (!items.length) { return; }
+
+        var section = document.getElementById("news");
+        var list    = document.getElementById("news-list");
+        var moreBox = document.getElementById("news-more");
+        var moreBtn = document.getElementById("news-more-btn");
+        var expanded = false;
+
+        function draw() {
+          var shown = expanded ? items : items.slice(0, NEWS_INITIAL);
+          list.innerHTML = "";
+          shown.forEach(function (item) {
+            var li = document.createElement("li");
+            li.appendChild(buildNewsItem(item));
+            list.appendChild(li);
+          });
+          if (items.length > NEWS_INITIAL) {
+            moreBox.hidden = false;
+            moreBtn.textContent = expanded
+              ? "最新の " + NEWS_INITIAL + " 件だけ表示"
+              : "もっと見る（全 " + items.length + " 件）";
+            moreBtn.setAttribute("aria-expanded", expanded ? "true" : "false");
+          } else {
+            moreBox.hidden = true;
+          }
+        }
+
+        moreBtn.addEventListener("click", function () {
+          expanded = !expanded;
+          draw();
+          if (window.Lounge) { window.Lounge.revealAll(); }
+        });
+
+        section.hidden = false;
+        draw();
+      }
+
+      /* ==========================================================
+         起動
+         ========================================================== */
       loadManifestWithFallback()
         .then(function (data) {
           var err = validateManifest(data);
-          if (err) {
-            renderError(err);
-            return;
-          }
-          setFooterMeta(data);
-          renderDesks(data);
+          if (err) { renderError(err); return; }
+          manifest = data;
+          // デスクの通し番号は元の並び順で固定する（絞り込みで振り直さない）
+          manifest.desks.forEach(function (desk, i) {
+            desk.__no = ("0" + (i + 1)).slice(-2);
+          });
+          setMeta(data);
+          applySearch();   // 初回は検索語なし = 全件描画
         })
         .catch(function () {
           renderError(
             "desks.json の取得に失敗し、manifest.js も読み込めませんでした。portal フォルダに desks.json と manifest.js があるか確認してください。"
           );
         });
+
+      // お知らせは読めたときだけ出す（失敗してもツール一覧の邪魔をしない）
+      loadNewsWithFallback().then(renderNews).catch(function () {});
     })();
   </script>
 </body>

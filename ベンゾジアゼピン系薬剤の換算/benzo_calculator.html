@@ -4,391 +4,475 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ベンゾジアゼピン系薬剤 ジアゼパム換算計算ツール</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/lounge.css">
+
   <style>
-    :root {
-      --color-bg:      #D6D1C2;
-      --color-dark:    #1C3530;
-      --color-accent1: #4E7868;
-      --color-accent2: #3A6E5E;
-      --color-accent3: #286858;
-      --color-accent4: #1E6068;
-      --color-accent5: #1C5A72;
-      --color-accent6: #196E96;
-      --color-warning: #B86018;
-      --color-white:   #FFFFFF;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    *:focus-visible {
-      outline: 2px solid var(--color-accent6);
-      outline-offset: 2px;
-    }
-
-    body {
-      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
-      background: var(--color-bg);
-      color: var(--color-dark);
-      font-size: 14px;
-      line-height: 1.6;
-      position: relative;
-    }
-
-    .page-planes {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      overflow: hidden;
-    }
-    .page-planes .pp-a {
-      position: absolute;
-      width: min(130vw, 900px);
-      height: 44vh;
-      top: -6%;
-      left: -20%;
-      background: color-mix(in srgb, var(--color-accent1) 24%, var(--color-bg));
-      transform: rotate(-4deg);
-    }
-    .page-planes .pp-b {
-      position: absolute;
-      width: 52vw;
-      max-width: 24rem;
-      height: min(68vh, 480px);
-      bottom: -12%;
-      right: -16%;
-      background: color-mix(in srgb, var(--color-dark) 14%, var(--color-bg));
-      transform: rotate(4deg);
-      border-radius: 0 0 0 16%;
-    }
-    .page-planes .pp-band {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: var(--color-accent6);
-    }
-
-    header {
-      background: var(--color-dark);
-      color: var(--color-white);
-      padding: 20px 24px;
-      box-shadow: 0 10px 24px color-mix(in srgb, var(--color-dark) 16%, transparent);
-    }
-    header h1 { font-size: 20px; font-weight: bold; margin-bottom: 4px; }
-    header p { font-size: 12px; opacity: 0.85; }
+    /* ---------------------------------------------------------------
+       このページ固有の見た目。共通部品は ../assets/lounge.css
+       クラス名は JS が参照しているため一切変更していない。
+       --------------------------------------------------------------- */
 
     .container {
-      max-width: 1100px;
+      width: min(100% - 3rem, var(--lg-inner-lg));
       margin: 0 auto;
-      padding: 20px 16px;
+      padding-bottom: 8px;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      gap: 28px;
+      align-items: start;
     }
 
-    @media (max-width: 700px) {
-      .container { grid-template-columns: 1fr; }
-    }
-
+    /* ---- カード（= .lg-panel 相当） ---- */
     .card {
-      background: var(--color-white);
-      border-radius: 10px;
-      box-shadow: 0 10px 24px color-mix(in srgb, var(--color-dark) 16%, transparent);
+      background: var(--lg-white);
+      border: 1px solid var(--lg-line-soft);
+      border-radius: var(--lg-r);
+      box-shadow: var(--lg-shadow);
       overflow: hidden;
     }
 
     .card-header {
-      background: var(--color-dark);
-      color: var(--color-white);
-      padding: 12px 16px;
-      font-size: 15px;
-      font-weight: bold;
+      padding: 16px 24px;
+      font-family: var(--lg-mincho);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      color: var(--lg-ink);
+      background: color-mix(in srgb, var(--lg-beige) 24%, var(--lg-white));
+      border-bottom: 1px solid var(--lg-line-soft);
     }
 
-    .card-body { padding: 16px; }
+    .card-body { padding: 24px; }
 
+    /* ---- 入力 ---- */
     .input-group {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-bottom: 14px;
+      gap: 14px;
+      margin-bottom: 18px;
     }
 
     label {
-      font-size: 12px;
-      color: color-mix(in srgb, var(--color-dark) 65%, var(--color-bg));
-      margin-bottom: 2px;
       display: block;
+      margin-bottom: .4em;
+      font-size: .78125rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      color: var(--lg-ink);
     }
 
     select, input[type="number"] {
       width: 100%;
-      padding: 8px 10px;
-      border: 1px solid color-mix(in srgb, var(--color-dark) 16%, var(--color-white));
-      border-radius: 6px;
-      font-size: 14px;
-      font-family: inherit;
-      color: var(--color-dark);
-      background: var(--color-white);
+      min-height: 44px;
+      padding: .5em .85em;
+      font-family: var(--lg-gothic);
+      font-size: .9375rem;
+      line-height: 1.6;
+      color: var(--lg-text);
+      background: var(--lg-white);
+      border: 1px solid var(--lg-line);
+      border-radius: var(--lg-r-sm);
       outline: none;
-      transition: border-color 0.2s;
+      transition: border-color var(--lg-ease), box-shadow var(--lg-ease);
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    select {
+      background-image: linear-gradient(45deg, transparent 50%, var(--lg-green) 50%),
+                        linear-gradient(135deg, var(--lg-green) 50%, transparent 50%);
+      background-position: right 1.1em center, right .78em center;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+      padding-right: 2.4em;
     }
     select:focus, input[type="number"]:focus {
-      border-color: color-mix(in srgb, var(--color-accent2) 55%, var(--color-dark));
+      border-color: var(--lg-green);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--lg-green) 16%, transparent);
     }
 
     .dose-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 14px;
     }
 
+    /* 薬剤情報。左辺の太バーは使わず淡い塗りで示す */
     .drug-info-box {
-      background: color-mix(in srgb, var(--color-accent6) 14%, var(--color-white));
-      border-left: 3px solid var(--color-accent5);
-      border-radius: 4px;
-      padding: 8px 10px;
-      font-size: 12px;
-      color: var(--color-dark);
-      margin-bottom: 10px;
-      min-height: 36px;
+      background: color-mix(in srgb, var(--lg-blue) 7%, var(--lg-white));
+      border: 1px solid color-mix(in srgb, var(--lg-blue) 20%, var(--lg-white));
+      border-radius: var(--lg-r-sm);
+      padding: 12px 14px;
+      font-size: .78125rem;
+      line-height: 1.75;
+      color: var(--lg-text);
+      min-height: 40px;
     }
     .drug-info-box span { display: block; }
 
+    /* ---- ボタン ---- */
     button.add-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       width: 100%;
-      background: var(--color-accent3);
-      color: var(--color-white);
-      border: none;
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: bold;
+      min-height: 46px;
+      padding: .55em 1.6em;
+      font-family: var(--lg-gothic);
+      font-size: .875rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      color: var(--lg-white);
+      background: var(--lg-green);
+      border: 1px solid var(--lg-green);
+      border-radius: 100vmax;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background var(--lg-ease), border-color var(--lg-ease), box-shadow var(--lg-ease);
     }
-    button.add-btn:hover { background: var(--color-accent4); }
+    button.add-btn:hover {
+      background: var(--lg-ink);
+      border-color: var(--lg-ink);
+      box-shadow: var(--lg-shadow);
+    }
 
-    .drug-list {
-      margin-top: 14px;
+    button.clear-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 12px;
+      width: 100%;
+      min-height: 40px;
+      padding: .4em 1.2em;
+      font-family: var(--lg-gothic);
+      font-size: .8125rem;
+      font-weight: 700;
+      letter-spacing: .07em;
+      color: var(--lg-text-sub);
+      background: transparent;
+      border: 1px solid var(--lg-line);
+      border-radius: 100vmax;
+      cursor: pointer;
+      transition: background var(--lg-ease), color var(--lg-ease);
     }
+    button.clear-btn:hover {
+      background: var(--lg-paper2);
+      color: var(--lg-ink);
+    }
+
+    /* ---- 追加済みリスト ---- */
+    .drug-list { margin-top: 22px; }
 
     .drug-list-header {
       display: grid;
       grid-template-columns: 2fr 1fr 1fr auto;
-      gap: 6px;
-      font-size: 11px;
-      color: color-mix(in srgb, var(--color-dark) 60%, var(--color-bg));
-      padding: 4px 0;
-      border-bottom: 1px solid color-mix(in srgb, var(--color-dark) 15%, var(--color-white));
-      margin-bottom: 6px;
+      gap: 8px;
+      padding: 0 4px 8px;
+      font-family: var(--lg-en);
+      font-size: .6875rem;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--lg-text-faint);
+      border-bottom: 1px solid var(--lg-line);
     }
 
     .drug-list-item {
       display: grid;
       grid-template-columns: 2fr 1fr 1fr auto;
-      gap: 6px;
+      gap: 8px;
       align-items: center;
-      padding: 7px 4px;
-      border-bottom: 1px dashed color-mix(in srgb, var(--color-dark) 12%, var(--color-white));
-      font-size: 13px;
-      animation: fadeIn 0.2s ease;
+      padding: 12px 4px;
+      border-bottom: 1px solid var(--lg-line-soft);
+      font-size: .8125rem;
+      animation: fadeIn .25s ease;
     }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 
-    .drug-list-item .name { font-weight: bold; }
-    .drug-list-item .dose {
-      color: color-mix(in srgb, var(--color-dark) 60%, var(--color-bg));
-      font-size: 12px;
+    .drug-list-item .name {
+      font-family: var(--lg-mincho);
+      font-size: .9375rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      color: var(--lg-ink);
     }
-    .drug-list-item .eq { color: var(--color-accent3); font-weight: bold; }
+    .drug-list-item .dose {
+      font-size: .71875rem;
+      line-height: 1.65;
+      color: var(--lg-text-faint);
+    }
+    .drug-list-item .eq {
+      font-family: var(--lg-en);
+      font-size: 1.0625rem;
+      font-weight: 600;
+      letter-spacing: .03em;
+      color: var(--lg-green);
+    }
 
     button.remove-btn {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
       background: none;
-      border: none;
-      color: var(--color-warning);
+      border: 1px solid transparent;
+      border-radius: 50%;
+      color: var(--lg-text-faint);
       cursor: pointer;
-      font-size: 16px;
-      padding: 2px 4px;
-      border-radius: 4px;
-      transition: background 0.15s;
+      font-size: 15px;
+      line-height: 1;
+      transition: background var(--lg-ease), color var(--lg-ease), border-color var(--lg-ease);
     }
     button.remove-btn:hover {
-      background: color-mix(in srgb, var(--color-warning) 14%, var(--color-white));
+      background: color-mix(in srgb, var(--lg-danger) 10%, var(--lg-white));
+      border-color: color-mix(in srgb, var(--lg-danger) 28%, var(--lg-white));
+      color: var(--lg-danger);
     }
 
+    /* ---- 合計（判定によって色が変わる。JS が level-* を付け替える） ---- */
     .total-box {
-      margin-top: 14px;
-      border-radius: 8px;
-      padding: 14px 16px;
+      margin-top: 22px;
+      border-radius: var(--lg-r);
+      padding: 24px 20px;
       text-align: center;
+      transition: background var(--lg-ease), border-color var(--lg-ease), color var(--lg-ease);
     }
 
-    .total-box .label { font-size: 12px; margin-bottom: 4px; }
-    .total-box .value { font-size: 32px; font-weight: bold; }
-    .total-box .unit { font-size: 14px; }
-    .total-box .interp { font-size: 12px; margin-top: 6px; font-weight: bold; }
+    .total-box .label {
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      margin-bottom: .3em;
+      opacity: .85;
+    }
+    .total-box .value {
+      font-family: var(--lg-en);
+      font-size: 3.4rem;
+      font-weight: 500;
+      line-height: 1;
+      letter-spacing: .02em;
+    }
+    .total-box .unit {
+      font-family: var(--lg-en);
+      font-size: .875rem;
+      letter-spacing: .1em;
+      opacity: .8;
+    }
+    .total-box .interp {
+      font-size: .78125rem;
+      font-weight: 700;
+      line-height: 1.7;
+      margin-top: .9em;
+      padding-top: .9em;
+      border-top: 1px solid currentColor;
+      opacity: .92;
+    }
 
+    /* 強調は淡い塗り、最上位のみ反転 */
+    .level-none {
+      background: var(--lg-paper2);
+      color: var(--lg-text-sub);
+      border: 1px solid var(--lg-line);
+    }
     .level-low {
-      background: color-mix(in srgb, var(--color-accent4) 18%, var(--color-white));
-      color: var(--color-accent2);
-      border: 2px solid var(--color-accent3);
+      background: color-mix(in srgb, var(--lg-green) 9%, var(--lg-white));
+      color: var(--lg-green);
+      border: 1px solid color-mix(in srgb, var(--lg-green) 28%, var(--lg-white));
     }
     .level-mid {
-      background: color-mix(in srgb, var(--color-warning) 12%, var(--color-white));
-      color: color-mix(in srgb, var(--color-warning) 40%, var(--color-dark));
-      border: 2px solid color-mix(in srgb, var(--color-warning) 50%, var(--color-bg));
+      background: color-mix(in srgb, var(--lg-amber) 11%, var(--lg-white));
+      color: color-mix(in srgb, var(--lg-amber) 78%, var(--lg-ink));
+      border: 1px solid color-mix(in srgb, var(--lg-amber) 34%, var(--lg-white));
     }
     .level-high {
-      background: color-mix(in srgb, var(--color-warning) 22%, var(--color-white));
-      color: color-mix(in srgb, var(--color-warning) 25%, var(--color-dark));
-      border: 2px solid var(--color-warning);
-    }
-    .level-none {
-      background: color-mix(in srgb, var(--color-bg) 65%, var(--color-white));
-      color: color-mix(in srgb, var(--color-dark) 55%, var(--color-bg));
-      border: 2px solid color-mix(in srgb, var(--color-dark) 15%, var(--color-white));
+      background: var(--lg-amber);
+      color: var(--lg-white);
+      border: 1px solid var(--lg-amber);
     }
 
-    button.clear-btn {
-      margin-top: 10px;
-      width: 100%;
-      background: var(--color-white);
-      color: var(--color-warning);
-      border: 1px solid color-mix(in srgb, var(--color-warning) 45%, var(--color-dark));
-      padding: 8px;
-      border-radius: 6px;
-      font-size: 13px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    button.clear-btn:hover {
-      background: color-mix(in srgb, var(--color-warning) 10%, var(--color-white));
-    }
-
+    /* ---- 換算一覧表 ---- */
     .ref-col { grid-column: 1 / -1; }
 
     .tab-buttons {
       display: flex;
-      gap: 6px;
-      margin-bottom: 12px;
+      gap: 8px;
+      margin-bottom: 18px;
       flex-wrap: wrap;
     }
 
     .tab-btn {
-      padding: 5px 14px;
-      border-radius: 6px;
-      border: 1px solid color-mix(in srgb, var(--color-dark) 16%, var(--color-white));
-      background: var(--color-white);
+      min-height: 36px;
+      padding: .35em 1.25em;
+      font-family: var(--lg-gothic);
+      font-size: .78125rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      color: var(--lg-text-sub);
+      background: transparent;
+      border: 1px solid var(--lg-line);
+      border-radius: 100vmax;
       cursor: pointer;
-      font-size: 13px;
-      transition: all 0.15s;
+      transition: background var(--lg-ease), color var(--lg-ease), border-color var(--lg-ease);
     }
     .tab-btn.active {
-      background: var(--color-dark);
-      color: var(--color-white);
-      border-color: var(--color-dark);
+      background: var(--lg-green);
+      border-color: var(--lg-green);
+      color: var(--lg-white);
     }
     .tab-btn:hover:not(.active) {
-      background: color-mix(in srgb, var(--color-accent6) 12%, var(--color-white));
+      background: var(--lg-paper2);
+      color: var(--lg-ink);
     }
 
-    .ref-table-wrapper { overflow-x: auto; }
+    .ref-table-wrapper {
+      overflow-x: auto;
+      border: 1px solid var(--lg-line-soft);
+      border-radius: var(--lg-r-sm);
+    }
 
     table.ref-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13px;
+      font-size: .8125rem;
+      line-height: 1.7;
     }
 
     table.ref-table th {
-      background: var(--color-dark);
-      color: var(--color-white);
-      padding: 8px 10px;
+      padding: 11px 14px;
       text-align: left;
-      font-weight: bold;
+      font-family: var(--lg-gothic);
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .07em;
+      color: var(--lg-white);
+      background: var(--lg-green);
       white-space: nowrap;
     }
 
     table.ref-table td {
-      padding: 7px 10px;
-      border-bottom: 1px solid color-mix(in srgb, var(--color-dark) 8%, var(--color-white));
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--lg-line-soft);
       vertical-align: top;
     }
 
+    table.ref-table tbody tr:nth-child(even) td {
+      background: color-mix(in srgb, var(--lg-paper2) 45%, var(--lg-white));
+    }
     table.ref-table tr:last-child td { border-bottom: none; }
-    table.ref-table tr:hover td {
-      background: color-mix(in srgb, var(--color-accent6) 10%, var(--color-white));
+    table.ref-table tbody tr:hover td {
+      background: color-mix(in srgb, var(--lg-green) 7%, var(--lg-white));
     }
 
+    /* ---- バッジ（作用時間） ---- */
     .badge {
-      display: inline-block;
-      padding: 2px 7px;
-      border-radius: 10px;
-      font-size: 11px;
-      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      padding: .22em .8em;
+      border-radius: 100vmax;
+      font-size: .6875rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      white-space: nowrap;
     }
     .badge-ultra {
-      background: color-mix(in srgb, var(--color-warning) 18%, var(--color-white));
-      color: color-mix(in srgb, var(--color-warning) 35%, var(--color-dark));
+      background: color-mix(in srgb, var(--lg-amber) 12%, var(--lg-white));
+      color: var(--lg-amber);
+      border: 1px solid color-mix(in srgb, var(--lg-amber) 28%, var(--lg-white));
     }
     .badge-short {
-      background: color-mix(in srgb, var(--color-accent1) 22%, var(--color-white));
-      color: var(--color-accent2);
+      background: color-mix(in srgb, var(--lg-green-lt) 13%, var(--lg-white));
+      color: var(--lg-green);
+      border: 1px solid color-mix(in srgb, var(--lg-green-lt) 30%, var(--lg-white));
     }
     .badge-mid {
-      background: color-mix(in srgb, var(--color-accent4) 16%, var(--color-white));
-      color: var(--color-dark);
+      background: color-mix(in srgb, var(--lg-teal) 11%, var(--lg-white));
+      color: var(--lg-teal);
+      border: 1px solid color-mix(in srgb, var(--lg-teal) 26%, var(--lg-white));
     }
     .badge-long {
-      background: color-mix(in srgb, var(--color-accent6) 16%, var(--color-white));
-      color: var(--color-dark);
+      background: color-mix(in srgb, var(--lg-blue) 10%, var(--lg-white));
+      color: var(--lg-blue);
+      border: 1px solid color-mix(in srgb, var(--lg-blue) 24%, var(--lg-white));
     }
 
-    .eq-cell { font-weight: bold; color: var(--color-accent3); }
+    .eq-cell {
+      font-family: var(--lg-en);
+      font-size: .9375rem;
+      font-weight: 600;
+      letter-spacing: .02em;
+      color: var(--lg-green);
+      white-space: nowrap;
+    }
+    .eq-cell small { font-family: var(--lg-gothic); font-size: .6875rem; color: var(--lg-text-faint); }
 
     .footnote {
-      font-size: 11px;
-      color: color-mix(in srgb, var(--color-dark) 65%, var(--color-bg));
-      padding: 12px 16px;
-      border-top: 1px solid color-mix(in srgb, var(--color-dark) 15%, var(--color-white));
-      line-height: 1.8;
+      padding: 20px 24px 24px;
+      border-top: 1px solid var(--lg-line-soft);
+      background: color-mix(in srgb, var(--lg-beige) 16%, var(--lg-white));
+      font-size: .71875rem;
+      line-height: 2;
+      color: var(--lg-text-sub);
     }
-    .footnote b { color: var(--color-dark); }
-
-    @media print {
-      header {
-        background: var(--color-dark) !important;
-        color: var(--color-white) !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-      .card { break-inside: avoid; }
-      button { display: none; }
-    }
+    .footnote b { color: var(--lg-ink); font-weight: 700; }
 
     .empty-state {
       text-align: center;
-      color: color-mix(in srgb, var(--color-dark) 55%, var(--color-bg));
-      font-size: 13px;
-      padding: 20px 0;
+      padding: 28px 0;
+      font-size: .8125rem;
+      color: var(--lg-text-faint);
+    }
+
+    /* クイック換算のミニ表 */
+    #quickTable table { width: 100%; border-collapse: collapse; font-size: .8125rem; }
+    #quickTable th, #quickTable td {
+      padding: 9px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--lg-line-soft);
+    }
+    #quickTable th {
+      font-size: .71875rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      color: var(--lg-text-faint);
+    }
+
+    @media (max-width: 900px) {
+      .container { grid-template-columns: 1fr; gap: 18px; }
+    }
+    @media (max-width: 767px) {
+      .container { width: calc(100% - 2rem); }
+      .card-body { padding: 18px; }
+      .card-header { padding: 14px 18px; }
+      .total-box .value { font-size: 2.8rem; }
+    }
+
+    @media print {
+      .card { break-inside: avoid; box-shadow: none; }
+      button { display: none; }
     }
   </style>
 </head>
-<body>
-<div class="page-planes" aria-hidden="true">
-  <div class="pp-a"></div>
-  <div class="pp-b"></div>
-  <div class="pp-band"></div>
-</div>
 
-<header>
-  <h1>ベンゾジアゼピン系薬剤　ジアゼパム換算計算ツール</h1>
-  <p>薬剤依存症患者の薬剤整理用　／　ジアゼパム 5mg を基準とした換算</p>
-</header>
+<body data-lg-root=".." data-lg-desk="薬物療法・処方支援" data-lg-page="ベンゾジアゼピン換算">
+<div id="lg-header"></div>
+
+<main>
+  <div class="lg-inner-lg">
+    <div id="lg-crumb"></div>
+
+    <div class="lg-pagehead">
+      <span class="lg-pagehead__en" lang="en">Dose Equivalence</span>
+      <h1 class="lg-pagehead__ttl">ベンゾジアゼピン系薬剤<br>ジアゼパム換算計算ツール</h1>
+      <p class="lg-pagehead__sub">
+        薬剤依存症患者の薬剤整理用。ジアゼパム 5mg を基準に、内服中のベンゾジアゼピン系薬剤を
+        1日総量へ換算します。値はあくまで目安であり、減薬計画は専門医と相談のうえ個別に判断してください。
+      </p>
+      <hr class="lg-pagehead__rule">
+    </div>
+  </div>
 
 <div class="container">
 
@@ -496,7 +580,11 @@
     </div>
   </div>
 </div>
+</main>
 
+<div id="lg-footer"></div>
+
+<script src="../assets/lounge.js"></script>
 <script>
 // =====================================================
 // データ定義

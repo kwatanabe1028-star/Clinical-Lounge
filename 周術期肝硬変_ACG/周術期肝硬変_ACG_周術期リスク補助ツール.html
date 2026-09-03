@@ -7,279 +7,204 @@
   <meta name="title" content="周術期肝硬変：周術期リスク補助ツール（ACG）" />
   <meta property="og:title" content="周術期肝硬変：周術期リスク補助ツール（ACG）" />
   <meta name="twitter:title" content="周術期肝硬変：周術期リスク補助ツール（ACG）" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/lounge.css" />
+
   <style>
-    :root {
-      --color-bg: #D6D1C2;
-      --color-dark: #1C3530;
-      --color-accent1: #4E7868;
-      --color-accent2: #3A6E5E;
-      --color-accent3: #286858;
-      --color-accent4: #1E6068;
-      --color-accent5: #1C5A72;
-      --color-accent6: #196E96;
-      --color-warning: #B86018;
-      --color-danger: #c43d3d;
-      --color-white: #ffffff;
-      --border-ui: color-mix(in srgb, var(--color-dark) 16%, var(--color-white));
-      --text-muted: color-mix(in srgb, var(--color-dark) 72%, var(--color-bg));
-      --shadow: 0 10px 24px color-mix(in srgb, var(--color-dark) 14%, transparent);
-    }
-    * {
-      box-sizing: border-box;
-    }
-    *:focus-visible {
-      outline: 2px solid var(--color-accent6);
-      outline-offset: 2px;
-    }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
-      font-size: 15px;
-      line-height: 1.55;
-      color: var(--color-dark);
-      background: var(--color-bg);
-      -webkit-font-smoothing: antialiased;
-    }
-    .scene {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      overflow: hidden;
-    }
-    .scene__a {
-      position: absolute;
-      width: min(125vw, 52rem);
-      height: 42vh;
-      top: -8%;
-      left: -22%;
-      background: color-mix(in srgb, var(--color-accent1) 24%, var(--color-bg));
-      transform: rotate(-4deg);
-    }
-    .scene__b {
-      position: absolute;
-      width: 56vw;
-      max-width: 26rem;
-      height: min(70vh, 28rem);
-      bottom: -14%;
-      right: -18%;
-      background: color-mix(in srgb, var(--color-dark) 14%, var(--color-bg));
-      transform: rotate(5deg);
-      border-radius: 0 0 0 18%;
-    }
-    .scene__band {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: var(--color-accent6);
-    }
+    /* ---------------------------------------------------------------
+       このページ固有の見た目。共通部品は ../assets/lounge.css
+       JS が参照するクラス（.action-empty / .action--high|med|low）は
+       名前を変えていない。
+       --------------------------------------------------------------- */
+
     .wrap {
-      max-width: 44rem;
+      width: min(100% - 3rem, 900px);
       margin: 0 auto;
-      padding: 1.5rem 1.1rem 3rem;
+      padding-bottom: 8px;
     }
-    .back {
-      margin: 0 0 1rem;
-      font-size: 0.8125rem;
-    }
-    .back a {
-      color: var(--color-dark);
-      font-weight: 700;
-    }
-    header.page-head {
-      margin-bottom: 1.25rem;
-      padding-bottom: 1rem;
-      border-bottom: 3px solid var(--color-dark);
-    }
-    .page-head__eyebrow {
-      margin: 0 0 0.35rem;
-      font-size: 0.625rem;
-      font-weight: 600;
-      letter-spacing: 0.16em;
-      color: var(--text-muted);
-    }
-    h1 {
-      margin: 0 0 0.5rem;
-      font-size: clamp(1.15rem, 4vw, 1.45rem);
-      font-weight: 900;
-      letter-spacing: 0.02em;
-    }
-    .page-head__sub {
-      margin: 0;
-      font-size: 0.8125rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-    .disclaimer {
-      margin: 0 0 1.25rem;
-      padding: 0.75rem 0.9rem;
-      font-size: 0.75rem;
-      line-height: 1.45;
-      background: color-mix(in srgb, var(--color-warning) 14%, var(--color-white));
-      border: 1px solid var(--border-ui);
-      border-radius: 8px;
-      box-shadow: var(--shadow);
-    }
+
+    /* ---- ページ内ナビ（タブ風） ---- */
     nav.toc {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.4rem 0.5rem;
-      margin-bottom: 1.25rem;
+      gap: 8px;
+      margin: 0 0 32px;
     }
     nav.toc a {
-      font-size: 0.75rem;
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      padding: .35em 1.25em;
+      font-size: .78125rem;
       font-weight: 700;
-      padding: 0.35rem 0.55rem;
-      border-radius: 6px;
+      letter-spacing: .06em;
       text-decoration: none;
-      color: var(--color-dark);
-      background: var(--color-white);
-      border: 1px solid var(--border-ui);
+      color: var(--lg-text-sub);
+      background: transparent;
+      border: 1px solid var(--lg-line);
+      border-radius: 100vmax;
+      transition: background var(--lg-ease), color var(--lg-ease), border-color var(--lg-ease);
     }
     nav.toc a:hover {
-      background: color-mix(in srgb, var(--color-accent1) 14%, var(--color-white));
-      border-color: var(--color-accent2);
+      background: var(--lg-green);
+      border-color: var(--lg-green);
+      color: var(--lg-white);
     }
+
+    /* ---- セクション（= パネル） ---- */
     section.block {
-      margin-bottom: 1.35rem;
-      background: var(--color-white);
-      border: 1px solid var(--border-ui);
-      border-radius: 10px;
-      box-shadow: var(--shadow);
+      margin-bottom: 28px;
+      background: var(--lg-white);
+      border: 1px solid var(--lg-line-soft);
+      border-radius: var(--lg-r);
+      box-shadow: var(--lg-shadow);
       overflow: hidden;
     }
     section.block h2 {
       margin: 0;
-      padding: 0.65rem 1rem;
-      font-size: 0.9375rem;
-      font-weight: 800;
-      color: var(--color-white);
-      background: linear-gradient(
-        118deg,
-        color-mix(in srgb, var(--color-dark) 45%, var(--color-accent3)) 0%,
-        color-mix(in srgb, var(--color-accent4) 55%, var(--color-accent5)) 100%
-      );
+      padding: 16px 28px;
+      font-family: var(--lg-mincho);
+      font-size: 1.0625rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      color: var(--lg-ink);
+      background: color-mix(in srgb, var(--lg-beige) 24%, var(--lg-white));
+      border-bottom: 1px solid var(--lg-line-soft);
     }
-    .block__body {
-      padding: 1rem;
-    }
+    .block__body { padding: 28px; }
+
+    /* ---- 入力 ---- */
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(11.5rem, 1fr));
-      gap: 0.75rem 1rem;
-      margin-bottom: 0.5rem;
+      grid-template-columns: repeat(auto-fill, minmax(12.5rem, 1fr));
+      gap: 16px 18px;
+      margin-bottom: 8px;
     }
-    .field {
-      min-width: 0;
-    }
+    .field { min-width: 0; }
     .field label {
       display: block;
-      font-size: 0.6875rem;
+      margin-bottom: .4em;
+      font-size: .75rem;
       font-weight: 700;
-      margin-bottom: 0.25rem;
-      color: var(--text-muted);
+      letter-spacing: .05em;
+      color: var(--lg-ink);
     }
     .field input,
     .field select {
       width: 100%;
-      padding: 0.45rem 0.5rem;
-      font-size: 0.875rem;
-      border: 1px solid var(--border-ui);
-      border-radius: 6px;
-      font-family: inherit;
+      min-height: 42px;
+      padding: .45em .8em;
+      font-family: var(--lg-gothic);
+      font-size: .875rem;
+      color: var(--lg-text);
+      background: var(--lg-white);
+      border: 1px solid var(--lg-line);
+      border-radius: var(--lg-r-sm);
+      outline: none;
+      transition: border-color var(--lg-ease), box-shadow var(--lg-ease);
+    }
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--lg-green);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--lg-green) 16%, transparent);
     }
     .field-hint {
-      margin: 0.2rem 0 0;
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      line-height: 1.35;
+      margin: .35rem 0 0;
+      font-size: .6875rem;
+      line-height: 1.7;
+      color: var(--lg-text-faint);
     }
+    input[readonly] {
+      background: var(--lg-paper2);
+      color: var(--lg-text-sub);
+    }
+    .field-span-2 { grid-column: span 2; }
+    @media (max-width: 560px) { .field-span-2 { grid-column: span 1; } }
+
+    /* ---- 計算ブロック ---- */
     .calc-section {
-      margin: 0 0 1.15rem;
-      padding: 0.85rem 0.9rem;
-      border: 1px solid var(--border-ui);
-      border-radius: 8px;
-      background: color-mix(in srgb, var(--color-bg) 55%, var(--color-white));
+      margin: 0 0 22px;
+      padding: 20px 22px;
+      border: 1px solid color-mix(in srgb, var(--lg-beige) 55%, var(--lg-white));
+      border-radius: var(--lg-r-sm);
+      background: color-mix(in srgb, var(--lg-beige) 18%, var(--lg-white));
     }
     .calc-section h3 {
-      margin: 0 0 0.55rem;
-      font-size: 0.8125rem;
-      font-weight: 800;
-      color: var(--color-dark);
+      margin: 0 0 .9rem;
+      font-family: var(--lg-mincho);
+      font-size: .9375rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      line-height: 1.6;
+      color: var(--lg-ink);
     }
     .calc-out {
-      margin: 0.65rem 0 0;
-      padding: 0.55rem 0.65rem;
-      font-size: 0.8125rem;
-      line-height: 1.45;
-      border-radius: 6px;
-      border: 1px solid var(--border-ui);
-      background: var(--color-white);
+      margin: 14px 0 0;
+      padding: 12px 16px;
+      font-size: .8125rem;
+      line-height: 1.75;
+      border-radius: var(--lg-r-sm);
+      border: 1px solid var(--lg-line);
+      background: var(--lg-white);
     }
-    .calc-out strong {
-      color: var(--color-dark);
-    }
+    .calc-out strong { color: var(--lg-ink); }
+
     .row-check {
       display: flex;
       align-items: center;
-      gap: 0.45rem;
-      margin: 0 0 0.5rem;
-      font-size: 0.75rem;
+      gap: .5rem;
+      margin: 0 0 .6rem;
+      font-size: .78125rem;
       font-weight: 700;
+      color: var(--lg-ink);
     }
-    .row-check input {
-      width: auto;
-    }
+    .row-check input { width: auto; accent-color: var(--lg-green); }
+
     .btn-small {
-      margin-top: 0.35rem;
-      padding: 0.35rem 0.65rem;
-      font-size: 0.6875rem;
+      margin-top: .5rem;
+      min-height: 34px;
+      padding: .3em 1.1em;
+      font-family: var(--lg-gothic);
+      font-size: .71875rem;
       font-weight: 700;
-      border: 1px solid var(--border-ui);
-      border-radius: 6px;
-      background: var(--color-white);
+      letter-spacing: .06em;
+      color: var(--lg-text-sub);
+      background: transparent;
+      border: 1px solid var(--lg-line);
+      border-radius: 100vmax;
       cursor: pointer;
-      font-family: inherit;
-      color: var(--color-dark);
+      transition: background var(--lg-ease), color var(--lg-ease);
     }
-    .btn-small:hover {
-      background: color-mix(in srgb, var(--color-accent1) 12%, var(--color-white));
-    }
-    input[readonly] {
-      background: color-mix(in srgb, var(--color-dark) 5%, var(--color-white));
-      color: var(--text-muted);
-    }
-    .field-span-2 {
-      grid-column: span 2;
-    }
-    @media (max-width: 520px) {
-      .field-span-2 {
-        grid-column: span 1;
-      }
-    }
+    .btn-small:hover { background: var(--lg-paper2); color: var(--lg-ink); }
+
+    /* ---- 次のアクション ---- */
     .actions-panel {
-      margin: 0 0 1.35rem;
-      padding: 1rem 1rem 1.05rem;
-      background: var(--color-white);
-      border: 2px solid var(--color-dark);
-      border-radius: 10px;
-      box-shadow: var(--shadow);
+      margin: 0 0 28px;
+      padding: 28px;
+      background: var(--lg-white);
+      border: 1px solid color-mix(in srgb, var(--lg-green) 26%, var(--lg-line-soft));
+      border-radius: var(--lg-r);
+      box-shadow: var(--lg-shadow);
     }
     .actions-panel h2 {
-      margin: 0 0 0.65rem;
-      font-size: 1rem;
-      font-weight: 900;
-      color: var(--color-dark);
+      margin: 0 0 .5rem;
+      font-family: var(--lg-mincho);
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      color: var(--lg-ink);
     }
     .actions-panel__sub {
-      margin: 0 0 0.75rem;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      line-height: 1.45;
+      margin: 0 0 1.2rem;
+      font-size: .78125rem;
+      line-height: 1.85;
+      color: var(--lg-text-sub);
     }
+    .action-legend { color: var(--lg-text-sub); }
+
     ol.action-list {
       margin: 0;
       padding: 0;
@@ -289,176 +214,188 @@
     ol.action-list li {
       counter-increment: act;
       position: relative;
-      margin: 0 0 0.55rem;
-      padding: 0.55rem 0.65rem 0.55rem 2.35rem;
-      border-radius: 8px;
-      border: 1px solid var(--border-ui);
-      font-size: 0.8125rem;
-      line-height: 1.5;
-      background: color-mix(in srgb, var(--color-bg) 35%, var(--color-white));
+      margin: 0 0 10px;
+      padding: 14px 18px 14px 52px;
+      border-radius: var(--lg-r-sm);
+      border: 1px solid var(--lg-line-soft);
+      font-size: .8125rem;
+      line-height: 1.85;
+      background: var(--lg-paper2);
     }
     ol.action-list li::before {
       content: counter(act);
       position: absolute;
-      left: 0.55rem;
-      top: 0.5rem;
-      width: 1.45rem;
-      height: 1.45rem;
-      line-height: 1.45rem;
-      text-align: center;
-      font-size: 0.7rem;
-      font-weight: 900;
+      left: 16px;
+      top: 15px;
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      font-family: var(--lg-en);
+      font-size: .875rem;
+      font-weight: 600;
       border-radius: 50%;
-      color: var(--color-white);
-      background: var(--color-accent2);
+      color: var(--lg-white);
+      background: var(--lg-green-lt);
     }
+    /* 緊急度は淡い塗りで示し、番号だけ反転させる */
     ol.action-list li.action--high {
-      border-color: color-mix(in srgb, var(--color-danger) 45%, var(--border-ui));
-      background: color-mix(in srgb, var(--color-danger) 8%, var(--color-white));
+      border-color: color-mix(in srgb, var(--lg-danger) 32%, var(--lg-white));
+      background: color-mix(in srgb, var(--lg-danger) 7%, var(--lg-white));
     }
-    ol.action-list li.action--high::before {
-      background: var(--color-danger);
-    }
+    ol.action-list li.action--high::before { background: var(--lg-danger); }
     ol.action-list li.action--med {
-      border-color: color-mix(in srgb, var(--color-warning) 50%, var(--border-ui));
-      background: color-mix(in srgb, var(--color-warning) 10%, var(--color-white));
+      border-color: color-mix(in srgb, var(--lg-amber) 34%, var(--lg-white));
+      background: color-mix(in srgb, var(--lg-amber) 9%, var(--lg-white));
     }
-    ol.action-list li.action--med::before {
-      background: var(--color-warning);
+    ol.action-list li.action--med::before { background: var(--lg-amber); }
+    ol.action-list li.action--low {
+      border-color: color-mix(in srgb, var(--lg-green) 22%, var(--lg-white));
+      background: color-mix(in srgb, var(--lg-green) 6%, var(--lg-white));
     }
-    ol.action-list li.action--low::before {
-      background: var(--color-accent4);
-    }
-    .action-empty {
-      margin: 0;
-      font-size: 0.8125rem;
-      color: var(--text-muted);
-    }
-    .sync-hint {
-      margin: 0.75rem 0 0;
-      font-size: 0.6875rem;
-      color: var(--text-muted);
-    }
+    ol.action-list li.action--low::before { background: var(--lg-teal); }
+
+    .action-empty { margin: 0; font-size: .8125rem; color: var(--lg-text-faint); }
+    .sync-hint { margin: 1rem 0 0; font-size: .6875rem; color: var(--lg-text-faint); }
+
+    /* ---- 表 ---- */
     table.simple {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.75rem;
+      font-size: .78125rem;
+      line-height: 1.75;
+      background: var(--lg-white);
     }
     table.simple th,
     table.simple td {
-      border: 1px solid var(--border-ui);
-      padding: 0.45rem 0.5rem;
+      border: 1px solid var(--lg-line-soft);
+      padding: 10px 12px;
       text-align: left;
       vertical-align: top;
     }
-    table.simple th {
-      background: color-mix(in srgb, var(--color-dark) 6%, var(--color-white));
+    table.simple thead th {
+      font-size: .71875rem;
       font-weight: 700;
+      letter-spacing: .06em;
+      color: var(--lg-white);
+      background: var(--lg-green);
+      border-color: var(--lg-green);
+      white-space: nowrap;
     }
-    details.ref-details {
-      margin-top: 0.5rem;
-      font-size: 0.8125rem;
-    }
+    table.simple tbody td strong { color: var(--lg-ink); }
+
+    /* ---- 参照・出典 ---- */
+    details.ref-details { margin-top: 14px; font-size: .8125rem; }
     details.ref-details summary {
       cursor: pointer;
-      font-weight: 800;
-      color: var(--color-dark);
-      padding: 0.35rem 0;
-    }
-    .links a {
-      color: var(--color-dark);
+      font-family: var(--lg-mincho);
       font-weight: 700;
-      word-break: break-all;
+      letter-spacing: .04em;
+      color: var(--lg-ink);
+      padding: .5rem 0;
     }
-    .vocal-official-row {
-      margin: 0 0 1rem;
-    }
+    .links a { color: var(--lg-blue); font-weight: 700; word-break: break-all; }
+
+    .vocal-official-row { margin: 0 0 18px; }
     a.vocal-official-btn {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
-      padding: 0.55rem 1rem;
-      font-size: 0.875rem;
-      font-weight: 800;
+      gap: .5rem;
+      min-height: 44px;
+      padding: .5em 1.7em;
+      font-family: var(--lg-gothic);
+      font-size: .875rem;
+      font-weight: 700;
+      letter-spacing: .07em;
       text-decoration: none;
-      color: var(--color-white);
-      background: linear-gradient(
-        118deg,
-        color-mix(in srgb, var(--color-dark) 40%, var(--color-accent3)) 0%,
-        color-mix(in srgb, var(--color-accent4) 55%, var(--color-accent5)) 100%
-      );
-      border-radius: 8px;
-      border: 1px solid var(--border-ui);
-      box-shadow: var(--shadow);
+      color: var(--lg-white);
+      background: var(--lg-green);
+      border: 1px solid var(--lg-green);
+      border-radius: 100vmax;
+      transition: background var(--lg-ease), border-color var(--lg-ease), box-shadow var(--lg-ease);
     }
     a.vocal-official-btn:hover {
-      filter: brightness(1.04);
+      background: var(--lg-ink);
+      border-color: var(--lg-ink);
+      box-shadow: var(--lg-shadow);
     }
+
     .vocal-doc {
-      margin: 0 0 0.65rem;
-      font-size: 0.75rem;
-      line-height: 1.55;
-      color: var(--text-muted);
+      margin: 0 0 14px;
+      font-size: .78125rem;
+      line-height: 1.85;
+      color: var(--lg-text-sub);
     }
-    .vocal-doc ul {
-      margin: 0.35rem 0 0;
-      padding-left: 1.15rem;
-    }
-    .vocal-doc li {
-      margin-bottom: 0.35rem;
-    }
-    .vocal-doc strong {
-      color: var(--color-dark);
-    }
-    footer {
-      margin-top: 2rem;
-      padding-top: 0.75rem;
-      border-top: 1px solid var(--border-ui);
-      font-size: 0.6875rem;
-      color: var(--text-muted);
-    }
+    .vocal-doc ul { margin: .5rem 0 0; padding-left: 1.2rem; }
+    .vocal-doc li { margin-bottom: .4rem; }
+    .vocal-doc strong { color: var(--lg-ink); }
+
     .ref-cite-box {
-      margin: 0 0 1rem;
-      padding: 0.65rem 0.85rem;
-      font-size: 0.8125rem;
-      line-height: 1.55;
-      color: var(--color-dark);
-      background: color-mix(in srgb, var(--color-accent5) 10%, var(--color-white));
-      border: 1px solid var(--border-ui);
-      border-radius: 8px;
+      margin: 0 0 18px;
+      padding: 16px 20px;
+      font-size: .8125rem;
+      line-height: 1.8;
+      color: var(--lg-text);
+      background: color-mix(in srgb, var(--lg-blue) 6%, var(--lg-white));
+      border: 1px solid color-mix(in srgb, var(--lg-blue) 18%, var(--lg-white));
+      border-radius: var(--lg-r-sm);
     }
     .ref-cite-box dt {
-      margin: 0.45rem 0 0;
-      font-weight: 800;
-      font-size: 0.75rem;
-      color: var(--color-dark);
+      margin: .7rem 0 0;
+      font-family: var(--lg-mincho);
+      font-weight: 700;
+      font-size: .78125rem;
+      color: var(--lg-ink);
     }
     .ref-cite-box dd {
-      margin: 0.12rem 0 0;
+      margin: .15rem 0 0;
       padding: 0;
-      font-size: 0.75rem;
-      color: var(--text-muted);
+      font-size: .75rem;
+      color: var(--lg-text-sub);
+    }
+
+    /* ---- 出典（本文末） ---- */
+    .source-note {
+      margin: 40px 0 0;
+      padding: 18px 22px;
+      border-radius: var(--lg-r-sm);
+      background: var(--lg-paper2);
+      border: 1px solid var(--lg-line-soft);
+      font-size: .71875rem;
+      line-height: 1.9;
+      color: var(--lg-text-sub);
+    }
+    .source-note a { color: var(--lg-blue); word-break: break-all; }
+
+    @media (max-width: 767px) {
+      .wrap { width: calc(100% - 2rem); }
+      .block__body { padding: 18px; }
+      section.block h2 { padding: 14px 18px; font-size: 1rem; }
+      .actions-panel { padding: 20px 18px; }
+      .calc-section { padding: 16px 16px; }
+      ol.action-list li { padding: 12px 14px 12px 46px; }
     }
   </style>
 </head>
-<body>
-  <div class="scene" aria-hidden="true">
-    <div class="scene__a"></div>
-    <div class="scene__b"></div>
-    <div class="scene__band"></div>
-  </div>
-  <div class="wrap">
-    <p class="back"><a href="../portal/index.html">← Clinical Lounge 入口</a></p>
 
-    <header class="page-head">
-      <p class="page-head__eyebrow">
-        ACG Clinical Guideline: Perioperative Risk Assessment and Management in Patients With Cirrhosis（Am J Gastroenterol. 2025;120:1968–1984）
-      </p>
-      <h1>周術期肝硬変：周術期リスク補助ツール</h1>
-      <p class="page-head__sub">
-        本ツールは上記 ACG ガイドラインに基づき、<strong>肝硬変患者の周術期意思決定を支援する補助ツール</strong>です。表示は診療の代替ではありません。同期オンで<strong>共通検査値</strong>を MELD・CTP に反映し、<strong>FIB-4</strong>は自動計算、<strong>VOCAL-Penn</strong>は公式計算機の％を転記してください。入力に応じて<strong>次のアクション</strong>が更新されます。
-      </p>
-    </header>
+<body data-lg-root=".." data-lg-desk="消化器・周術期（肝硬変）" data-lg-page="肝硬変 周術期リスク補助ツール">
+  <div id="lg-header"></div>
+
+  <main>
+    <div class="wrap">
+      <div id="lg-crumb"></div>
+
+      <div class="lg-pagehead">
+        <span class="lg-pagehead__en" lang="en">Perioperative Risk</span>
+        <h1 class="lg-pagehead__ttl">肝硬変 周術期リスク補助ツール</h1>
+        <p class="lg-pagehead__sub">
+          ACG ガイドライン（Am J Gastroenterol. 2025;120:1968–1984）に基づき、
+          <strong>肝硬変患者の周術期意思決定を支援する補助ツール</strong>です。表示は診療の代替ではありません。
+          同期オンで<strong>共通検査値</strong>を MELD・CTP に反映し、<strong>FIB-4</strong> は自動計算、
+          <strong>VOCAL-Penn</strong> は公式計算機の％を転記してください。入力に応じて<strong>次のアクション</strong>が更新されます。
+        </p>
+        <hr class="lg-pagehead__rule" />
+      </div>
 
     <nav class="toc" aria-label="ページ内リンク">
       <a href="#actions">次のアクション</a>
@@ -951,13 +888,17 @@
       </div>
     </section>
 
-    <footer>
+      <div class="source-note">
       <p>
         出典：Mahmud N, Fricker ZP, McElroy LM, Qayed E, Wong RJ, Ioannou GN. <cite>ACG Clinical Guideline: Perioperative Risk Assessment and Management in Patients With Cirrhosis</cite>. <i>Am J Gastroenterol</i>. 2025;120:1968–1984. <a href="https://doi.org/10.14309/ajg.0000000000003616" rel="noopener noreferrer" target="_blank">doi:10.14309/ajg.0000000000003616</a>.
       </p>
-    </footer>
-  </div>
+      </div>
+    </div>
+  </main>
 
+  <div id="lg-footer"></div>
+
+  <script src="../assets/lounge.js"></script>
   <script>
     (function () {
       document.title = "周術期肝硬変：周術期リスク補助ツール（ACG）";

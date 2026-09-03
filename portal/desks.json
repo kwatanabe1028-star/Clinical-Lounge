@@ -1,57 +1,87 @@
 {
-  "version": "1.2.0",
-  "updated": "2026-07-10",
-  "changelogNote": "退院支援・地域連携デスクと「高齢者退院ケーススタディ」を追加",
+  "version": "1.4.0",
+  "updated": "2026-09-03",
+  "changelogNote": "ポータルにツール検索とお知らせを追加（ツールに検索用 keywords を新設）",
   "desks": [
     {
       "id": "desk-discharge",
       "roleLabel": "Clinical desk",
+      "nameEn": "Discharge Planning",
       "name": "退院支援・地域連携",
       "lede": "症例をたどって退院調整の判断を学ぶ、症例ベースの学習教材。",
+      "keywords": ["退院調整", "地域連携", "MSW", "医療ソーシャルワーカー", "在宅", "施設"],
       "tools": [
         {
           "href": "../高齢者退院ケーススタディ/高齢者退院ケーススタディ.html",
           "title": "高齢者退院ケーススタディ",
-          "desc": "2症例（HOME/FACILITY）の多段階シナリオ。各判断ポイントで選択→正誤＋厚めの解説"
+          "desc": "2症例（HOME/FACILITY）の多段階シナリオ。各判断ポイントで選択→正誤＋厚めの解説",
+          "keywords": [
+            "症例", "ケーススタディ", "退院ゴールロードマップ", "退院支援",
+            "回復期リハ", "地域包括ケア病棟", "介護保険", "医療保険",
+            "要介護度", "特養", "老健", "認知症", "廃用症候群", "学習教材"
+          ]
         }
       ]
     },
     {
       "id": "desk-gi-periop",
       "roleLabel": "Clinical desk",
+      "nameEn": "GI & Perioperative",
       "name": "消化器・周術期（肝硬変）",
       "lede": "ACG ガイドライン要点に沿った周術期リスク評価の補助（CSPH ルール・TPO・チェックリスト）。",
+      "keywords": ["消化器", "周術期", "術前評価", "肝臓"],
       "tools": [
         {
           "href": "../周術期肝硬変_ACG/周術期肝硬変_ACG_周術期リスク補助ツール.html",
           "title": "肝硬変 周術期リスク補助ツール（ACG 要点）",
-          "desc": "共通検査値・MELD/CTP/FIB-4・VOCAL公式％転記→次アクション・GRADE 参考"
+          "desc": "共通検査値・MELD/CTP/FIB-4・VOCAL公式％転記→次アクション・GRADE 参考",
+          "keywords": [
+            "肝硬変", "MELD", "MELD-Na", "CTP", "Child-Pugh", "チャイルドピュー",
+            "FIB-4", "VOCAL-Penn", "CSPH", "門脈圧亢進", "LSM", "肝硬度",
+            "血小板", "TPO", "TIPS", "腹水", "ASA", "GRADE", "ACG", "術前"
+          ]
         }
       ]
     },
     {
       "id": "desk-pharma",
       "roleLabel": "Clinical desk",
+      "nameEn": "Pharmacotherapy",
       "name": "薬物療法・処方支援",
       "lede": "換算・用量の確認など、薬学的な補助ツール。",
+      "keywords": ["処方", "用量", "薬剤", "ポリファーマシー"],
       "tools": [
         {
           "href": "../ベンゾジアゼピン系薬剤の換算/benzo_calculator.html",
           "title": "ベンゾジアゼピン系薬剤の換算",
-          "desc": "ベンゾジアゼピン換算計算（benzo_calculator）"
+          "desc": "ベンゾジアゼピン換算計算（benzo_calculator）",
+          "keywords": [
+            "ジアゼパム", "DZP", "換算", "等価換算", "ベンゾ", "BZD",
+            "デパス", "エチゾラム", "ハルシオン", "トリアゾラム", "レンドルミン",
+            "ブロチゾラム", "マイスリー", "ゾルピデム", "アモバン", "ルネスタ",
+            "セルシン", "ホリゾン", "ワイパックス", "ロラゼパム", "アルプラゾラム",
+            "睡眠薬", "抗不安薬", "減薬", "依存", "Ashton", "アシュトン", "Z薬"
+          ]
         }
       ]
     },
     {
       "id": "desk-psy-gero",
       "roleLabel": "Clinical desk",
+      "nameEn": "Psychiatry & Geriatrics",
       "name": "精神・老年医療（評価）",
       "lede": "スクリーニングや重症度の整理に使う評価系ツール。",
+      "keywords": ["精神科", "老年医学", "スクリーニング", "評価尺度"],
       "tools": [
         {
           "href": "../高齢者うつチェックリスト/高齢者うつ病評価統合シート.html",
           "title": "高齢者うつ病評価統合シート",
-          "desc": "チェックリスト・評価の統合シート"
+          "desc": "チェックリスト・評価の統合シート",
+          "keywords": [
+            "うつ", "うつ病", "抑うつ", "PHQ-9", "PHQ9", "GDS-15", "GDS15",
+            "DSM-5", "DSM5", "大うつ病", "スクリーニング", "希死念慮",
+            "高齢者", "老年期うつ", "チェックリスト", "重症度"
+          ]
         }
       ]
     }
