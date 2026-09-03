@@ -1,0 +1,2869 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>予防医療・ヘルスメンテナンス計画ツール（ACP／USPSTF・ACIP）</title>
+  <meta name="title" content="予防医療・ヘルスメンテナンス計画ツール（ACP／USPSTF・ACIP）" />
+  <meta property="og:title" content="予防医療・ヘルスメンテナンス計画ツール（ACP／USPSTF・ACIP）" />
+  <meta name="twitter:title" content="予防医療・ヘルスメンテナンス計画ツール（ACP／USPSTF・ACIP）" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/lounge.css" />
+
+  <style>
+    /* ---------------------------------------------------------------
+       このページ固有の見た目。共通部品は ../assets/lounge.css
+       アクション一覧の .action-list / .action--high|med|low は
+       既存ツール（周術期肝硬変_ACG）と同じ作りにそろえている。
+       --------------------------------------------------------------- */
+
+    .wrap {
+      width: min(100% - 3rem, 1040px);
+      margin: 0 auto;
+      padding-bottom: 8px;
+    }
+
+    /* ---- ページ内ナビ（タブ風） ---- */
+    nav.toc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 32px;
+    }
+    nav.toc a {
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      padding: .35em 1.25em;
+      font-size: .78125rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-decoration: none;
+      color: var(--lg-text-sub);
+      background: transparent;
+      border: 1px solid var(--lg-line);
+      border-radius: 100vmax;
+      transition: background var(--lg-ease), color var(--lg-ease), border-color var(--lg-ease);
+    }
+    nav.toc a:hover {
+      background: var(--lg-green);
+      border-color: var(--lg-green);
+      color: var(--lg-white);
+    }
+
+    /* ---- ヘッダー右の集計バッジ ---- */
+    .hdr-count {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 4px;
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      color: var(--lg-text-sub);
+      white-space: nowrap;
+    }
+    .hdr-count b {
+      font-family: var(--lg-en);
+      font-size: 1.0625rem;
+      font-weight: 600;
+      color: var(--lg-ink);
+    }
+    @media (max-width: 640px) { .hdr-count { display: none; } }
+
+    /* ---- セクション（= パネル） ---- */
+    section.block {
+      margin-bottom: 28px;
+      background: var(--lg-white);
+      border: 1px solid var(--lg-line-soft);
+      border-radius: var(--lg-r);
+      box-shadow: var(--lg-shadow);
+      overflow: hidden;
+    }
+    section.block > h2 {
+      margin: 0;
+      padding: 16px 28px;
+      font-family: var(--lg-mincho);
+      font-size: 1.0625rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      color: var(--lg-ink);
+      background: color-mix(in srgb, var(--lg-beige) 24%, var(--lg-white));
+      border-bottom: 1px solid var(--lg-line-soft);
+    }
+    .block__body { padding: 24px 28px 28px; }
+    @media (max-width: 560px) {
+      section.block > h2 { padding: 14px 18px; }
+      .block__body { padding: 18px; }
+    }
+
+    .sub-h {
+      margin: 22px 0 12px;
+      padding-bottom: .35em;
+      font-family: var(--lg-mincho);
+      font-size: .875rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      color: var(--lg-ink);
+      border-bottom: 1px solid var(--lg-line-soft);
+    }
+    .sub-h:first-child { margin-top: 0; }
+
+    /* ---- 入力 ---- */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(11.5rem, 1fr));
+      gap: 14px 16px;
+    }
+    .field { min-width: 0; }
+    .field label {
+      display: block;
+      margin-bottom: .4em;
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      color: var(--lg-ink);
+    }
+    .field input,
+    .field select {
+      width: 100%;
+      min-height: 42px;
+      padding: .45em .8em;
+      font-family: var(--lg-gothic);
+      font-size: .875rem;
+      color: var(--lg-text);
+      background: var(--lg-white);
+      border: 1px solid var(--lg-line);
+      border-radius: var(--lg-r-sm);
+      outline: none;
+      transition: border-color var(--lg-ease), box-shadow var(--lg-ease);
+    }
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--lg-green);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--lg-green) 16%, transparent);
+    }
+    .field input[readonly] {
+      background: var(--lg-paper2);
+      color: var(--lg-text-sub);
+      font-family: var(--lg-en);
+      font-size: 1rem;
+    }
+    .field-hint {
+      margin: .35rem 0 0;
+      font-size: .6875rem;
+      line-height: 1.7;
+      color: var(--lg-text-faint);
+    }
+
+    /* ---- チェックボックス群 ---- */
+    .chk-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr));
+      gap: 6px 14px;
+    }
+    .chk {
+      display: flex;
+      align-items: flex-start;
+      gap: .55em;
+      min-height: 34px;
+      padding: .25em .5em .25em .1em;
+      font-size: .8125rem;
+      line-height: 1.6;
+      color: var(--lg-text);
+      cursor: pointer;
+      border-radius: var(--lg-r-xs);
+    }
+    .chk:hover { background: color-mix(in srgb, var(--lg-beige) 20%, transparent); }
+    .chk input {
+      flex: none;
+      width: 17px;
+      height: 17px;
+      margin: .28em 0 0;
+      accent-color: var(--lg-green);
+      cursor: pointer;
+    }
+
+    /* ---- サーベイランスの折りたたみ ---- */
+    .sv-item {
+      margin: 0 0 10px;
+      border: 1px solid var(--lg-line-soft);
+      border-radius: var(--lg-r-sm);
+      background: color-mix(in srgb, var(--lg-beige) 14%, var(--lg-white));
+      overflow: hidden;
+    }
+    .sv-item > .chk {
+      margin: 0;
+      padding: .7em 1em;
+      border-radius: 0;
+      font-weight: 700;
+      font-size: .8125rem;
+    }
+    .sv-body {
+      padding: 4px 16px 16px;
+      border-top: 1px dashed var(--lg-line);
+    }
+    .sv-body[hidden] { display: none; }
+
+    /* ---- アクション ---- */
+    .actions-panel {
+      margin: 0 0 28px;
+      padding: 26px 28px 28px;
+      background: var(--lg-white);
+      border: 1px solid var(--lg-line-soft);
+      border-radius: var(--lg-r);
+      box-shadow: var(--lg-shadow);
+    }
+    @media (max-width: 560px) { .actions-panel { padding: 20px 18px 22px; } }
+    .actions-panel h2 {
+      margin: 0 0 .5rem;
+      font-family: var(--lg-mincho);
+      font-size: 1.125rem;
+      letter-spacing: .06em;
+    }
+    .actions-panel__sub {
+      margin: 0 0 1.2rem;
+      font-size: .78125rem;
+      line-height: 1.85;
+      color: var(--lg-text-sub);
+    }
+
+    .act-group { margin: 0 0 20px; }
+    .act-group:last-child { margin-bottom: 0; }
+    .act-group__h {
+      display: flex;
+      align-items: baseline;
+      gap: .6em;
+      margin: 0 0 10px;
+      font-family: var(--lg-mincho);
+      font-size: .9375rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      color: var(--lg-ink);
+    }
+    .act-group__h .n {
+      font-family: var(--lg-en);
+      font-size: 1.0625rem;
+      font-weight: 600;
+      color: var(--lg-green);
+    }
+
+    ol.action-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: act;
+    }
+    ol.action-list li {
+      counter-increment: act;
+      position: relative;
+      margin: 0 0 10px;
+      padding: 14px 18px 14px 52px;
+      border-radius: var(--lg-r-sm);
+      border: 1px solid var(--lg-line-soft);
+      font-size: .8125rem;
+      line-height: 1.85;
+      background: var(--lg-paper2);
+    }
+    ol.action-list li::before {
+      content: counter(act);
+      position: absolute;
+      left: 16px;
+      top: 15px;
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      font-family: var(--lg-en);
+      font-size: .875rem;
+      font-weight: 600;
+      border-radius: 50%;
+      color: var(--lg-white);
+      background: var(--lg-green-lt);
+    }
+    /* 緊急度は淡い塗りで示し、番号だけ反転させる */
+    ol.action-list li.action--high {
+      border-color: color-mix(in srgb, var(--lg-danger) 32%, var(--lg-white));
+      background: color-mix(in srgb, var(--lg-danger) 7%, var(--lg-white));
+    }
+    ol.action-list li.action--high::before { background: var(--lg-danger); }
+    ol.action-list li.action--med {
+      border-color: color-mix(in srgb, var(--lg-amber) 34%, var(--lg-white));
+      background: color-mix(in srgb, var(--lg-amber) 9%, var(--lg-white));
+    }
+    ol.action-list li.action--med::before { background: var(--lg-amber); }
+    ol.action-list li.action--low {
+      border-color: color-mix(in srgb, var(--lg-green) 22%, var(--lg-white));
+      background: color-mix(in srgb, var(--lg-green) 6%, var(--lg-white));
+    }
+    ol.action-list li.action--low::before { background: var(--lg-teal); }
+
+    .act-ttl {
+      display: block;
+      font-weight: 700;
+      font-size: .875rem;
+      color: var(--lg-ink);
+    }
+    .act-why { display: block; color: var(--lg-text-sub); }
+    .act-line { display: block; }
+    .act-line em {
+      font-style: normal;
+      font-weight: 700;
+      color: var(--lg-ink);
+    }
+    .act-when {
+      display: inline-block;
+      margin-left: .4em;
+      padding: .05em .6em;
+      font-family: var(--lg-en);
+      font-size: .9375rem;
+      font-weight: 600;
+      color: var(--lg-white);
+      background: var(--lg-teal);
+      border-radius: 100vmax;
+    }
+
+    .action-empty { margin: 0; font-size: .8125rem; color: var(--lg-text-faint); }
+
+    /* 対象外リスト（そっけなく畳む） */
+    details.na-box { margin: 0; }
+    details.na-box > summary {
+      cursor: pointer;
+      font-size: .8125rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      color: var(--lg-text-sub);
+      list-style: none;
+    }
+    details.na-box > summary::-webkit-details-marker { display: none; }
+    details.na-box > summary::before {
+      content: "▸ ";
+      color: var(--lg-text-faint);
+    }
+    details.na-box[open] > summary::before { content: "▾ "; }
+    ul.na-list {
+      margin: 12px 0 0;
+      padding: 0 0 0 1.2em;
+      font-size: .78125rem;
+      line-height: 1.9;
+      color: var(--lg-text-sub);
+    }
+    ul.na-list b { color: var(--lg-text); }
+
+    /* ---- バッジ ---- */
+    .tag {
+      display: inline-block;
+      margin-left: .4em;
+      padding: .08em .6em;
+      font-size: .6875rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      border-radius: 100vmax;
+      vertical-align: .12em;
+      white-space: nowrap;
+    }
+    .tag--grade {
+      color: var(--lg-white);
+      background: var(--lg-green);
+    }
+    .tag--grade[data-g="C"], .tag--grade[data-g="I"] { background: var(--lg-text-sub); }
+    .tag--grade[data-g="D"] { background: var(--lg-text-faint); }
+    .tag--gap {
+      color: var(--lg-amber);
+      background: color-mix(in srgb, var(--lg-amber) 13%, var(--lg-white));
+      border: 1px solid color-mix(in srgb, var(--lg-amber) 40%, var(--lg-white));
+    }
+    .tag--jp {
+      color: var(--lg-teal);
+      background: color-mix(in srgb, var(--lg-teal) 10%, var(--lg-white));
+      border: 1px solid color-mix(in srgb, var(--lg-teal) 34%, var(--lg-white));
+    }
+
+    /* ---- 各論タイル ---- */
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+      gap: 12px;
+    }
+    button.topic-tile {
+      display: flex;
+      flex-direction: column;
+      gap: .3em;
+      min-height: 92px;
+      padding: 14px 16px;
+      text-align: left;
+      font-family: var(--lg-gothic);
+      color: var(--lg-text);
+      background: color-mix(in srgb, var(--lg-beige) 16%, var(--lg-white));
+      border: 1px solid var(--lg-line-soft);
+      border-radius: var(--lg-r-sm);
+      cursor: pointer;
+      transition: background var(--lg-ease), border-color var(--lg-ease), transform var(--lg-ease);
+    }
+    button.topic-tile:hover {
+      background: color-mix(in srgb, var(--lg-green) 8%, var(--lg-white));
+      border-color: color-mix(in srgb, var(--lg-green) 34%, var(--lg-white));
+    }
+    /* 選択中は薄塗りを濃くするだけ。縁に太いバーは足さない */
+    button.topic-tile[aria-pressed="true"] {
+      background: color-mix(in srgb, var(--lg-green) 14%, var(--lg-white));
+      border-color: var(--lg-green);
+    }
+    .topic-tile__en {
+      font-family: var(--lg-en);
+      font-size: .8125rem;
+      letter-spacing: .08em;
+      line-height: 1.3;
+      color: var(--lg-text-faint);
+    }
+    .topic-tile__ja {
+      font-family: var(--lg-mincho);
+      font-size: .9375rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      line-height: 1.45;
+      color: var(--lg-ink);
+    }
+    .topic-tile__n {
+      margin-top: auto;
+      font-size: .6875rem;
+      letter-spacing: .05em;
+      color: var(--lg-text-sub);
+    }
+    .topic-tile__n b {
+      font-family: var(--lg-en);
+      font-size: .9375rem;
+      font-weight: 600;
+      color: var(--lg-green);
+    }
+
+    /* ---- 各論バナー（カード領域の先頭） ---- */
+    .topic-banner {
+      margin: 0 0 20px;
+      border: 1px solid color-mix(in srgb, var(--lg-green) 26%, var(--lg-white));
+      border-radius: var(--lg-r-sm);
+      background: color-mix(in srgb, var(--lg-green) 5%, var(--lg-white));
+      overflow: hidden;
+    }
+    .topic-banner__h {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: .3em .8em;
+      padding: 14px 18px 12px;
+    }
+    .topic-banner__en {
+      font-family: var(--lg-en);
+      font-size: .8125rem;
+      letter-spacing: .1em;
+      color: var(--lg-green);
+    }
+    .topic-banner__ja {
+      font-family: var(--lg-mincho);
+      font-size: 1.0625rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      color: var(--lg-ink);
+    }
+    .topic-banner__clear {
+      margin-left: auto;
+      min-height: 30px;
+      padding: .15em 1.1em;
+      font-family: var(--lg-gothic);
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      color: var(--lg-text-sub);
+      background: var(--lg-white);
+      border: 1px solid var(--lg-line);
+      border-radius: 100vmax;
+      cursor: pointer;
+    }
+    .topic-banner__clear:hover {
+      color: var(--lg-white);
+      background: var(--lg-text-sub);
+      border-color: var(--lg-text-sub);
+    }
+    .topic-banner__lede {
+      margin: 0;
+      padding: 0 18px 14px;
+      font-size: .8125rem;
+      line-height: 1.85;
+      color: var(--lg-text);
+    }
+    .topic-key {
+      padding: 12px 18px 14px;
+      background: var(--lg-white);
+      border-top: 1px solid color-mix(in srgb, var(--lg-green) 18%, var(--lg-white));
+    }
+    .topic-key h4,
+    .topic-banner__gap h4 {
+      margin: 0 0 .6em;
+      font-family: var(--lg-gothic);
+      font-size: .6875rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      color: var(--lg-text-faint);
+    }
+    table.topic-key__t {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .78125rem;
+      line-height: 1.8;
+    }
+    table.topic-key__t th,
+    table.topic-key__t td {
+      padding: .5em .8em;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--lg-line-soft);
+    }
+    table.topic-key__t tr:last-child th,
+    table.topic-key__t tr:last-child td { border-bottom: 0; }
+    table.topic-key__t th {
+      width: 34%;
+      font-weight: 700;
+      color: var(--lg-ink);
+      background: var(--lg-paper2);
+      white-space: nowrap;
+    }
+    @media (max-width: 560px) {
+      table.topic-key__t th { width: 40%; white-space: normal; }
+    }
+    .topic-banner__gap {
+      padding: 12px 18px 14px;
+      font-size: .78125rem;
+      line-height: 1.85;
+      background: color-mix(in srgb, var(--lg-amber) 7%, var(--lg-white));
+      border-top: 1px solid var(--lg-line-soft);
+    }
+    .topic-banner__gap p { margin: 0; }
+
+    /* 各論を選んでいる間、既存の絞り込みは効かないので沈める */
+    .seg.is-off { opacity: .45; }
+    .seg.is-off button { cursor: not-allowed; }
+
+    /* ---- 根拠カード ---- */
+    .card-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 10px;
+      margin: 0 0 18px;
+    }
+    .seg {
+      display: inline-flex;
+      padding: 3px;
+      background: var(--lg-paper2);
+      border: 1px solid var(--lg-line);
+      border-radius: 100vmax;
+    }
+    .seg button {
+      min-height: 30px;
+      padding: .2em 1em;
+      font-family: var(--lg-gothic);
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      color: var(--lg-text-sub);
+      background: transparent;
+      border: 0;
+      border-radius: 100vmax;
+      cursor: pointer;
+      transition: background var(--lg-ease), color var(--lg-ease);
+    }
+    .seg button[aria-pressed="true"] {
+      color: var(--lg-white);
+      background: var(--lg-green);
+    }
+    .card-count {
+      font-size: .75rem;
+      color: var(--lg-text-faint);
+      margin-left: auto;
+    }
+
+    .rec-card {
+      margin: 0 0 14px;
+      border: 1px solid var(--lg-line-soft);
+      border-radius: var(--lg-r-sm);
+      background: var(--lg-white);
+      overflow: hidden;
+    }
+    .rec-card__h {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: .3em .5em;
+      padding: 11px 16px;
+      font-family: var(--lg-mincho);
+      font-size: .9375rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      color: var(--lg-ink);
+      background: color-mix(in srgb, var(--lg-beige) 20%, var(--lg-white));
+      border-bottom: 1px solid var(--lg-line-soft);
+    }
+    .rec-card__h .cat {
+      font-family: var(--lg-gothic);
+      font-size: .6875rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      color: var(--lg-text-faint);
+    }
+    .rec-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    @media (max-width: 700px) { .rec-cols { grid-template-columns: 1fr; } }
+    .rec-col { padding: 14px 16px; }
+    .rec-col + .rec-col { border-left: 1px solid var(--lg-line-soft); }
+    @media (max-width: 700px) {
+      .rec-col + .rec-col { border-left: 0; border-top: 1px solid var(--lg-line-soft); }
+    }
+    .rec-col h4 {
+      margin: 0 0 .5em;
+      font-family: var(--lg-gothic);
+      font-size: .6875rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      color: var(--lg-text-faint);
+    }
+    .rec-col p {
+      margin: 0;
+      font-size: .8125rem;
+      line-height: 1.85;
+    }
+    .rec-gap {
+      padding: 12px 16px;
+      font-size: .78125rem;
+      line-height: 1.85;
+      color: var(--lg-text);
+      background: color-mix(in srgb, var(--lg-amber) 7%, var(--lg-white));
+      border-top: 1px solid var(--lg-line-soft);
+    }
+    .rec-gap b { color: var(--lg-amber); }
+    .rec-src {
+      padding: 9px 16px;
+      font-size: .6875rem;
+      line-height: 1.8;
+      color: var(--lg-text-faint);
+      background: var(--lg-paper2);
+      border-top: 1px solid var(--lg-line-soft);
+    }
+    .rec-src a { color: var(--lg-blue); }
+
+    /* ---- カルテ用テキスト ---- */
+    .memo-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 0 0 14px;
+    }
+    .btn {
+      min-height: 40px;
+      padding: .4em 1.5em;
+      font-family: var(--lg-gothic);
+      font-size: .8125rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      color: var(--lg-white);
+      background: var(--lg-green);
+      border: 1px solid var(--lg-green);
+      border-radius: 100vmax;
+      cursor: pointer;
+      transition: background var(--lg-ease), color var(--lg-ease);
+    }
+    .btn:hover { background: var(--lg-ink); border-color: var(--lg-ink); }
+    .btn--ghost {
+      color: var(--lg-text-sub);
+      background: transparent;
+      border-color: var(--lg-line);
+    }
+    .btn--ghost:hover {
+      color: var(--lg-white);
+      background: var(--lg-text-sub);
+      border-color: var(--lg-text-sub);
+    }
+    textarea.memo {
+      width: 100%;
+      min-height: 300px;
+      padding: 16px 18px;
+      font-family: var(--lg-mono);
+      font-size: .78125rem;
+      line-height: 1.9;
+      color: var(--lg-text);
+      background: var(--lg-paper2);
+      border: 1px solid var(--lg-line);
+      border-radius: var(--lg-r-sm);
+      resize: vertical;
+    }
+    .copy-note {
+      margin: .6rem 0 0;
+      font-size: .6875rem;
+      color: var(--lg-text-faint);
+    }
+
+    /* ---- 注意書き ---- */
+    .notice {
+      margin: 0 0 26px;
+      padding: 16px 20px;
+      font-size: .78125rem;
+      line-height: 1.9;
+      color: var(--lg-text);
+      background: color-mix(in srgb, var(--lg-beige) 26%, var(--lg-white));
+      border: 1px solid var(--lg-line);
+      border-radius: var(--lg-r-sm);
+    }
+    .notice b { color: var(--lg-ink); }
+    .notice ul { margin: .5em 0 0; padding-left: 1.3em; }
+    .notice li { margin-bottom: .25em; }
+
+    .source-note {
+      margin: 34px 0 0;
+      padding-top: 20px;
+      font-size: .75rem;
+      line-height: 1.9;
+      color: var(--lg-text-sub);
+      border-top: 1px solid var(--lg-line);
+    }
+    .source-note h3 {
+      margin: 0 0 .7em;
+      font-family: var(--lg-mincho);
+      font-size: .875rem;
+      letter-spacing: .06em;
+    }
+    .source-note ol { margin: 0; padding-left: 1.4em; }
+    .source-note li { margin-bottom: .4em; }
+  </style>
+</head>
+
+<body data-lg-root=".." data-lg-desk="予防医療・ヘルスメンテナンス" data-lg-page="ヘルスメンテナンス計画ツール">
+  <div id="lg-header"></div>
+
+  <main>
+    <div class="wrap">
+      <div id="lg-crumb"></div>
+
+      <div class="lg-pagehead">
+        <span class="lg-pagehead__en" lang="en">Preventive Care</span>
+        <h1 class="lg-pagehead__ttl">予防医療・ヘルスメンテナンス計画ツール</h1>
+        <p class="lg-pagehead__sub">
+          患者背景・検査値・接種歴・検診歴を入れると、<strong>次にとるべき予防医療のアクション</strong>が組み上がります。
+          骨格は ACP（米国内科学会）日本支部の予防医療サイト（USPSTF・ACIP の 28 項目）で、
+          <strong>日本の対策型がん検診・定期接種 B 類・特定健診を必ず併記</strong>します。
+          既知の所見を追うサーベイランス 7 項目も同じ画面で扱います。
+        </p>
+        <hr class="lg-pagehead__rule" />
+      </div>
+
+      <div class="hdr-count" data-lg-header-slot>
+        実施 <b id="hdr-due">0</b> ／ 予定 <b id="hdr-sched">0</b>
+      </div>
+
+      <nav class="toc" aria-label="ページ内リンク">
+        <a href="#topics">各論から引く</a>
+        <a href="#actions">推奨アクション</a>
+        <a href="#bg">患者背景</a>
+        <a href="#labs">検査値</a>
+        <a href="#vac">接種歴</a>
+        <a href="#scr">検診歴・サーベイランス</a>
+        <a href="#cards">根拠カード</a>
+        <a href="#memo">カルテ用テキスト</a>
+        <a href="#ref">出典</a>
+      </nav>
+
+      <div class="notice">
+        <b>使う前に。</b>
+        <ul>
+          <li>これは推奨を取りこぼさないための<b>確認補助</b>で、診療判断の代替ではありません。実際の適用は主治医と相談してください。</li>
+          <li>入力は<b>この画面の中だけ</b>で処理し、どこにも保存・送信しません。ページを閉じれば消えます。</li>
+          <li>日本では<b>予防医療の多くが保険適用外</b>です。市区町村健診・定期接種・人間ドックのどれで実現できるかを各カードに書いています。</li>
+        </ul>
+      </div>
+
+      <!-- ============================================================
+           各論から引く（学習用）
+           ============================================================ -->
+      <section class="block" id="topics">
+        <h2>各論から引く（学習用）</h2>
+        <div class="block__body">
+          <p style="margin:0 0 16px;font-size:.8125rem;line-height:1.85;color:var(--lg-text-sub)">
+            患者を入力しなくても、疾患・テーマを選べば<strong>その領域の推奨だけ</strong>を通しで読めます。
+            「押さえる数字」と「日米差の勘所」を先に出してから、該当する根拠カードを並べます。
+            すでに患者を入力していれば、各カードに<strong>その人での判定</strong>がバッジで付きます。
+          </p>
+          <div class="topic-grid" id="topic-grid"></div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           推奨アクション
+           ============================================================ -->
+      <div class="actions-panel" id="actions">
+        <h2>推奨アクション</h2>
+        <p class="actions-panel__sub">
+          赤＝いま実施したい／黄＝共同意思決定（本人と相談して決める）／緑＝次回予定・記録。<br />
+          血圧測定・飲酒量の聴取・うつと不安のスクリーニングのように<strong>毎回の受診で拾えばよい定型項目</strong>は、
+          上を埋めないよう別枠に畳んであります。<br />
+          入力を変えると即時に組み替わります。〔A〕〔B〕〔C〕〔D〕〔I〕は USPSTF の推奨グレード、
+          <span class="tag tag--gap">日米差</span> は米国推奨と日本の制度がずれる項目です。
+        </p>
+
+        <div class="act-group">
+          <h3 class="act-group__h">いま実施 <span class="n" id="n-due">0</span></h3>
+          <ol class="action-list" id="list-due" aria-live="polite"></ol>
+          <p class="action-empty" id="empty-due">該当なし。</p>
+        </div>
+
+        <div class="act-group">
+          <h3 class="act-group__h">共同意思決定が必要 <span class="n" id="n-sdm">0</span></h3>
+          <ol class="action-list" id="list-sdm" aria-live="polite"></ol>
+          <p class="action-empty" id="empty-sdm">該当なし。</p>
+        </div>
+
+        <div class="act-group">
+          <h3 class="act-group__h">次回予定 <span class="n" id="n-sched">0</span></h3>
+          <ol class="action-list" id="list-sched" aria-live="polite"></ol>
+          <p class="action-empty" id="empty-sched">該当なし。</p>
+        </div>
+
+        <div class="act-group">
+          <details class="na-box">
+            <summary>毎回の受診で確認する定型項目（<span id="n-routine">0</span>）— たまっても慌てなくてよい</summary>
+            <ol class="action-list" id="list-routine" style="margin-top:12px"></ol>
+            <p class="action-empty" id="empty-routine" style="margin-top:12px">該当なし。</p>
+          </details>
+        </div>
+
+        <div class="act-group">
+          <details class="na-box">
+            <summary>対象外・実施済み（<span id="n-na">0</span>）— 理由つきで確認する</summary>
+            <ul class="na-list" id="list-na"></ul>
+          </details>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           患者背景
+           ============================================================ -->
+      <section class="block" id="bg">
+        <h2>患者背景</h2>
+        <div class="block__body">
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="age">年齢</label>
+              <input type="number" id="age" min="18" max="110" step="1" placeholder="例 68" />
+            </div>
+            <div class="field">
+              <label for="sex">性別</label>
+              <select id="sex">
+                <option value="">選択</option>
+                <option value="male">男性</option>
+                <option value="female">女性</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="height">身長（cm）</label>
+              <input type="number" id="height" min="100" max="220" step="0.1" placeholder="例 165" />
+            </div>
+            <div class="field">
+              <label for="weight">体重（kg）</label>
+              <input type="number" id="weight" min="20" max="200" step="0.1" placeholder="例 62" />
+            </div>
+            <div class="field">
+              <label for="bmi-out">BMI</label>
+              <input type="text" id="bmi-out" readonly value="—" />
+              <p class="field-hint">糖尿病スクリーニングはアジア系で 23 以上、肥満の減量指導は 30 以上が目安。</p>
+            </div>
+          </div>
+
+          <h3 class="sub-h">喫煙・飲酒</h3>
+          <div class="form-grid">
+            <div class="field">
+              <label for="smoke">喫煙状況</label>
+              <select id="smoke">
+                <option value="never">吸わない</option>
+                <option value="former">過去に吸っていた</option>
+                <option value="current">現在吸っている</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="cig">1日本数</label>
+              <input type="number" id="cig" min="0" max="120" step="1" placeholder="例 20" />
+            </div>
+            <div class="field">
+              <label for="smoke-yrs">喫煙年数</label>
+              <input type="number" id="smoke-yrs" min="0" max="90" step="1" placeholder="例 40" />
+            </div>
+            <div class="field">
+              <label for="py-out">pack-year ／ 喫煙指数</label>
+              <input type="text" id="py-out" readonly value="—" />
+              <p class="field-hint">米国は pack-year（＝本数÷20×年数）、日本の喀痰細胞診は喫煙指数（＝本数×年数）で線を引く。</p>
+            </div>
+            <div class="field">
+              <label for="quit-yrs">禁煙後の年数</label>
+              <input type="number" id="quit-yrs" min="0" max="80" step="1" placeholder="例 8" />
+              <p class="field-hint">空欄だと低線量 CT の対象と判定できません（禁煙 15 年未満が条件のため）。過去に吸っていた人は必ず入れてください。</p>
+            </div>
+            <div class="field">
+              <label for="alcohol">飲酒（日本酒換算 合/日）</label>
+              <input type="number" id="alcohol" min="0" max="20" step="0.5" placeholder="例 2" />
+              <p class="field-hint">1 合 ≒ ビール 500 mL ≒ ワイン小グラス 2 杯。</p>
+            </div>
+          </div>
+
+          <h3 class="sub-h">妊娠・婦人科</h3>
+          <div class="form-grid">
+            <div class="field">
+              <label for="preg">妊娠</label>
+              <select id="preg">
+                <option value="none">なし</option>
+                <option value="planning">妊娠を希望・可能性あり</option>
+                <option value="pregnant">妊娠中</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="preg-week">妊娠週数</label>
+              <input type="number" id="preg-week" min="1" max="42" step="1" placeholder="例 30" />
+            </div>
+            <div class="field">
+              <label for="menopause">閉経</label>
+              <select id="menopause">
+                <option value="unknown">不明・未聴取</option>
+                <option value="yes">閉経後</option>
+                <option value="no">閉経前</option>
+              </select>
+              <p class="field-hint">65 歳未満の骨密度測定の判定に使います。</p>
+            </div>
+            <div class="field">
+              <label for="uterus">子宮</label>
+              <select id="uterus">
+                <option value="yes">あり</option>
+                <option value="no">子宮全摘後（頸部なし）</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="sexual">性交歴</label>
+              <select id="sexual">
+                <option value="unknown">不明・未聴取</option>
+                <option value="yes">あり</option>
+                <option value="no">なし</option>
+              </select>
+            </div>
+          </div>
+
+          <h3 class="sub-h">既往・状態</h3>
+          <div class="chk-grid">
+            <label class="chk"><input type="checkbox" id="cx-htn" /><span>高血圧</span></label>
+            <label class="chk"><input type="checkbox" id="cx-dm" /><span>糖尿病</span></label>
+            <label class="chk"><input type="checkbox" id="cx-dl" /><span>脂質異常症</span></label>
+            <label class="chk"><input type="checkbox" id="cx-cvd" /><span>心血管疾患の既往（＝二次予防）</span></label>
+            <label class="chk"><input type="checkbox" id="cx-lung" /><span>慢性呼吸器疾患（COPD・喘息）</span></label>
+            <label class="chk"><input type="checkbox" id="cx-liver" /><span>慢性肝疾患・肝硬変</span></label>
+            <label class="chk"><input type="checkbox" id="cx-ckd" /><span>慢性腎臓病（CKD）</span></label>
+            <label class="chk"><input type="checkbox" id="cx-dialysis" /><span>透析中</span></label>
+            <label class="chk"><input type="checkbox" id="cx-asplenia" /><span>無脾・脾摘後</span></label>
+            <label class="chk"><input type="checkbox" id="cx-immuno" /><span>免疫抑制（ステロイド・生物学的製剤・移植後）</span></label>
+            <label class="chk"><input type="checkbox" id="cx-cancer" /><span>悪性腫瘍 治療中</span></label>
+            <label class="chk"><input type="checkbox" id="cx-hiv" /><span>HIV 感染</span></label>
+            <label class="chk"><input type="checkbox" id="cx-csf" /><span>人工内耳・髄液漏</span></label>
+            <label class="chk"><input type="checkbox" id="cx-hcw" /><span>医療従事者</span></label>
+            <label class="chk"><input type="checkbox" id="cx-facility" /><span>施設入所中</span></label>
+            <label class="chk"><input type="checkbox" id="cx-frail" /><span>フレイル・要介護</span></label>
+          </div>
+
+          <h3 class="sub-h">家族歴</h3>
+          <div class="chk-grid">
+            <label class="chk"><input type="checkbox" id="fh-crc" /><span>大腸がん（第一度近親者）</span></label>
+            <label class="chk"><input type="checkbox" id="fh-breast" /><span>乳がん・卵巣がん・膵がん・前立腺がん</span></label>
+            <label class="chk"><input type="checkbox" id="fh-aaa" /><span>腹部大動脈瘤</span></label>
+          </div>
+
+          <h3 class="sub-h">問診・身体所見</h3>
+          <div class="chk-grid">
+            <label class="chk"><input type="checkbox" id="fd-fall" /><span>1 年以内の転倒</span></label>
+            <label class="chk"><input type="checkbox" id="fd-gait" /><span>歩行・バランスの問題</span></label>
+            <label class="chk"><input type="checkbox" id="fd-mood" /><span>2 週間以上の抑うつ気分・興味の減退</span></label>
+            <label class="chk"><input type="checkbox" id="fd-anx" /><span>不安感・緊張感・切迫感で困っている</span></label>
+            <label class="chk"><input type="checkbox" id="fd-drug" /><span>薬物使用が疑われる</span></label>
+            <label class="chk"><input type="checkbox" id="fd-ipv" /><span>家庭内暴力・虐待が疑われる</span></label>
+            <label class="chk"><input type="checkbox" id="fd-osteo-risk" /><span>骨折の危険因子あり（既存骨折・低体重・ステロイド・家族歴 等）</span></label>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           検査値
+           ============================================================ -->
+      <section class="block" id="labs">
+        <h2>検査値</h2>
+        <div class="block__body">
+          <div class="form-grid">
+            <div class="field">
+              <label for="lb-sbp">収縮期血圧（mmHg）</label>
+              <input type="number" id="lb-sbp" min="60" max="260" step="1" placeholder="例 138" />
+            </div>
+            <div class="field">
+              <label for="lb-dbp">拡張期血圧（mmHg）</label>
+              <input type="number" id="lb-dbp" min="30" max="160" step="1" placeholder="例 84" />
+            </div>
+            <div class="field">
+              <label for="lb-hba1c">HbA1c（%・NGSP）</label>
+              <input type="number" id="lb-hba1c" min="3" max="18" step="0.1" placeholder="例 5.9" />
+            </div>
+            <div class="field">
+              <label for="lb-fpg">空腹時血糖（mg/dL）</label>
+              <input type="number" id="lb-fpg" min="40" max="500" step="1" placeholder="例 104" />
+            </div>
+            <div class="field">
+              <label for="lb-ldl">LDL-C（mg/dL）</label>
+              <input type="number" id="lb-ldl" min="20" max="400" step="1" placeholder="例 142" />
+            </div>
+            <div class="field">
+              <label for="lb-hdl">HDL-C（mg/dL）</label>
+              <input type="number" id="lb-hdl" min="10" max="150" step="1" placeholder="例 48" />
+            </div>
+            <div class="field">
+              <label for="lb-egfr">eGFR（mL/min/1.73m²）</label>
+              <input type="number" id="lb-egfr" min="1" max="180" step="0.1" placeholder="例 52" />
+            </div>
+            <div class="field">
+              <label for="lb-uprot-kind">尿の蛋白評価</label>
+              <select id="lb-uprot-kind">
+                <option value="acr">尿アルブミン/Cr（mg/gCr）</option>
+                <option value="pcr">尿蛋白/Cr（mg/gCr）</option>
+              </select>
+              <p class="field-hint">アルブミンと総蛋白では紹介の閾値が違います（アルブミン 300 ／ 総蛋白 500 mg/gCr）。どちらを入れたか選んでください。</p>
+            </div>
+            <div class="field">
+              <label for="lb-acr">上で選んだ値（mg/gCr）</label>
+              <input type="number" id="lb-acr" min="0" max="10000" step="1" placeholder="例 45" />
+            </div>
+            <div class="field">
+              <label for="lb-uprot-dip">尿蛋白（試験紙）</label>
+              <select id="lb-uprot-dip">
+                <option value="">未測定</option>
+                <option value="neg">（−）</option>
+                <option value="pm">（±）</option>
+                <option value="pos">（＋）以上</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="lb-hematuria">尿潜血（試験紙）</label>
+              <select id="lb-hematuria">
+                <option value="">未測定</option>
+                <option value="neg">（−）</option>
+                <option value="pos">（＋）以上</option>
+              </select>
+              <p class="field-hint">「尿蛋白（±）かつ血尿（＋）」も腎臓専門医への紹介基準です。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           接種歴
+           ============================================================ -->
+      <section class="block" id="vac">
+        <h2>接種歴</h2>
+        <div class="block__body">
+          <div class="form-grid">
+            <div class="field">
+              <label for="vx-flu">インフルエンザ（今シーズン）</label>
+              <select id="vx-flu">
+                <option value="no">未接種</option>
+                <option value="yes">接種済み</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="vx-covid">新型コロナ（今シーズン）</label>
+              <select id="vx-covid">
+                <option value="no">未接種</option>
+                <option value="yes">接種済み</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="vx-pneumo">肺炎球菌</label>
+              <select id="vx-pneumo">
+                <option value="none">未接種</option>
+                <option value="ppsv23">PPSV23（ニューモバックス）</option>
+                <option value="pcv13">PCV13（プレベナー13）</option>
+                <option value="pcv15">PCV15</option>
+                <option value="pcv20">PCV20（プレベナー20）</option>
+                <option value="pcv21">PCV21（キャップバックス）</option>
+                <option value="unknown">不明</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="vx-pneumo-yr">肺炎球菌 最終接種（西暦）</label>
+              <input type="number" id="vx-pneumo-yr" min="1990" max="2100" step="1" placeholder="例 2019" />
+            </div>
+            <div class="field">
+              <label for="vx-rsv">RSV</label>
+              <select id="vx-rsv">
+                <option value="no">未接種</option>
+                <option value="yes">接種済み</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="vx-zoster">帯状疱疹</label>
+              <select id="vx-zoster">
+                <option value="none">未接種</option>
+                <option value="live">生ワクチン 1 回</option>
+                <option value="rzv1">組換え（シングリックス）1 回</option>
+                <option value="rzv2">組換え 2 回完了</option>
+                <option value="unknown">不明</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="vx-tdap-yr">破傷風トキソイド系 最終接種（西暦）</label>
+              <input type="number" id="vx-tdap-yr" min="1950" max="2100" step="1" placeholder="例 2012" />
+            </div>
+            <div class="field">
+              <label for="vx-mmr">麻疹・風疹・水痘・ムンプス</label>
+              <select id="vx-mmr">
+                <option value="unknown">不明</option>
+                <option value="two">2 回接種済み</option>
+                <option value="one">1 回のみ</option>
+                <option value="none">未接種</option>
+                <option value="immune">罹患歴あり／抗体陽性を確認済み</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="vx-hpv">HPV</label>
+              <select id="vx-hpv">
+                <option value="unknown">不明</option>
+                <option value="yes">規定回数を完了</option>
+                <option value="no">未接種</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="vx-hbv">B 型肝炎</label>
+              <select id="vx-hbv">
+                <option value="unknown">不明</option>
+                <option value="yes">3 回完了</option>
+                <option value="no">未接種</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           検診歴・サーベイランス
+           ============================================================ -->
+      <section class="block" id="scr">
+        <h2>検診歴・サーベイランス</h2>
+        <div class="block__body">
+
+          <h3 class="sub-h">最後に受けた検診（空欄＝未受診・不明として扱います）</h3>
+          <div class="form-grid">
+            <div class="field">
+              <label for="sc-gastric">胃がん検診</label>
+              <input type="month" id="sc-gastric" />
+            </div>
+            <div class="field">
+              <label for="sc-gastric-m">胃：方法</label>
+              <select id="sc-gastric-m">
+                <option value="endo">内視鏡</option>
+                <option value="xray">X 線</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="sc-crc">大腸がん検診（便潜血）</label>
+              <input type="month" id="sc-crc" />
+            </div>
+            <div class="field">
+              <label for="sc-lung">肺がん検診</label>
+              <input type="month" id="sc-lung" />
+            </div>
+            <div class="field">
+              <label for="sc-breast">乳がん検診（マンモグラフィ）</label>
+              <input type="month" id="sc-breast" />
+            </div>
+            <div class="field">
+              <label for="sc-cervix">子宮頸がん検診</label>
+              <input type="month" id="sc-cervix" />
+            </div>
+            <div class="field">
+              <label for="sc-cervix-m">子宮頸：方法</label>
+              <select id="sc-cervix-m">
+                <option value="cyto">細胞診</option>
+                <option value="hpv">HPV 検査単独法</option>
+                <option value="co">細胞診・HPV 併用</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="sc-bmd">骨密度（DXA）</label>
+              <input type="month" id="sc-bmd" />
+            </div>
+            <div class="field">
+              <label for="sc-hcv">肝炎ウイルス検査</label>
+              <input type="month" id="sc-hcv" />
+            </div>
+            <div class="field">
+              <label for="sc-aaa">腹部超音波（大動脈）</label>
+              <input type="month" id="sc-aaa" />
+            </div>
+          </div>
+
+          <h3 class="sub-h">サーベイランス（該当するものにチェック）</h3>
+
+          <div class="sv-item">
+            <label class="chk"><input type="checkbox" id="sv-polyp" data-sv="sv-polyp-body" /><span>大腸ポリープ切除後</span></label>
+            <div class="sv-body" id="sv-polyp-body" hidden>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="sv-polyp-path">病理</label>
+                  <select id="sv-polyp-path">
+                    <option value="adenoma">腺腫（低リスク所見）</option>
+                    <option value="advanced">高リスク腺腫（10mm以上・絨毛成分・高度異型）</option>
+                    <option value="serrated">鋸歯状病変</option>
+                    <option value="hyperplastic">過形成性ポリープのみ</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="sv-polyp-n">個数</label>
+                  <input type="number" id="sv-polyp-n" min="0" max="50" step="1" placeholder="例 2" />
+                </div>
+                <div class="field">
+                  <label for="sv-polyp-size">最大径（mm）</label>
+                  <input type="number" id="sv-polyp-size" min="0" max="100" step="1" placeholder="例 8" />
+                </div>
+                <div class="field">
+                  <label for="sv-polyp-date">最終 大腸内視鏡</label>
+                  <input type="month" id="sv-polyp-date" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sv-item">
+            <label class="chk"><input type="checkbox" id="sv-liver" data-sv="sv-liver-body" /><span>慢性肝疾患・肝硬変（肝細胞癌サーベイランス）</span></label>
+            <div class="sv-body" id="sv-liver-body" hidden>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="sv-liver-risk">危険群</label>
+                  <select id="sv-liver-risk">
+                    <option value="high">高危険群（B 型・C 型慢性肝炎、非ウイルス性肝硬変）</option>
+                    <option value="superhigh">超高危険群（B 型肝硬変・C 型肝硬変）</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="sv-liver-date">最終 腹部超音波</label>
+                  <input type="month" id="sv-liver-date" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sv-item">
+            <label class="chk"><input type="checkbox" id="sv-aaa" data-sv="sv-aaa-body" /><span>腹部大動脈瘤あり（径のフォロー）</span></label>
+            <div class="sv-body" id="sv-aaa-body" hidden>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="sv-aaa-size">最大短径（mm）</label>
+                  <input type="number" id="sv-aaa-size" min="20" max="120" step="1" placeholder="例 42" />
+                </div>
+                <div class="field">
+                  <label for="sv-aaa-date">最終 計測</label>
+                  <input type="month" id="sv-aaa-date" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sv-item">
+            <label class="chk"><input type="checkbox" id="sv-hep" data-sv="sv-hep-body" /><span>B 型・C 型肝炎ウイルス陽性</span></label>
+            <div class="sv-body" id="sv-hep-body" hidden>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="sv-hep-type">状態</label>
+                  <select id="sv-hep-type">
+                    <option value="hbv">HBs 抗原陽性（キャリア・未治療）</option>
+                    <option value="hcv">HCV RNA 陽性（未治療）</option>
+                    <option value="svr">HCV 治療後 SVR</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sv-item">
+            <label class="chk"><input type="checkbox" id="sv-osteo" data-sv="sv-osteo-body" /><span>骨粗鬆症 治療中</span></label>
+            <div class="sv-body" id="sv-osteo-body" hidden>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="sv-osteo-drug">薬剤</label>
+                  <select id="sv-osteo-drug">
+                    <option value="bp">ビスホスホネート</option>
+                    <option value="denosumab">デノスマブ</option>
+                    <option value="other">その他（SERM・活性型 VitD・骨形成促進薬）</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="sv-osteo-yrs">治療年数</label>
+                  <input type="number" id="sv-osteo-yrs" min="0" max="30" step="1" placeholder="例 5" />
+                </div>
+                <div class="field">
+                  <label for="sv-osteo-date">最終 骨密度</label>
+                  <input type="month" id="sv-osteo-date" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sv-item">
+            <label class="chk"><input type="checkbox" id="sv-thyroid" data-sv="sv-thyroid-body" /><span>甲状腺結節あり</span></label>
+            <div class="sv-body" id="sv-thyroid-body" hidden>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="sv-thyroid-size">最大径（mm）</label>
+                  <input type="number" id="sv-thyroid-size" min="1" max="150" step="1" placeholder="例 12" />
+                </div>
+                <div class="field">
+                  <label for="sv-thyroid-risk">超音波所見</label>
+                  <select id="sv-thyroid-risk">
+                    <option value="low">悪性所見に乏しい</option>
+                    <option value="susp">悪性を疑う所見あり（低エコー・微細石灰化・境界不明瞭 等）</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="sv-thyroid-date">最終 超音波</label>
+                  <input type="month" id="sv-thyroid-date" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="field-hint" style="margin-top:14px">
+            CKD は「既往・状態」の CKD チェックと eGFR・尿アルブミン/Cr から自動で G・A 区分を判定します。
+          </p>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           根拠カード
+           ============================================================ -->
+      <section class="block" id="cards">
+        <h2>根拠カード（米国と日本の両論併記）</h2>
+        <div class="block__body">
+          <div class="card-toolbar">
+            <div class="seg" role="group" aria-label="表示範囲">
+              <button type="button" data-scope="hit" aria-pressed="true">該当項目のみ</button>
+              <button type="button" data-scope="all" aria-pressed="false">全項目</button>
+            </div>
+            <div class="seg" role="group" aria-label="カテゴリ">
+              <button type="button" data-cat="" aria-pressed="true">すべて</button>
+              <button type="button" data-cat="cancer" aria-pressed="false">がん検診</button>
+              <button type="button" data-cat="vaccine" aria-pressed="false">ワクチン</button>
+              <button type="button" data-cat="screening" aria-pressed="false">スクリーニング</button>
+              <button type="button" data-cat="counseling" aria-pressed="false">カウンセリング</button>
+              <button type="button" data-cat="surveillance" aria-pressed="false">サーベイランス</button>
+            </div>
+            <span class="card-count" id="card-count"></span>
+          </div>
+          <div id="card-area"></div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           カルテ用テキスト
+           ============================================================ -->
+      <section class="block" id="memo">
+        <h2>カルテ用テキスト</h2>
+        <div class="block__body">
+          <div class="memo-bar">
+            <button type="button" class="btn" id="btn-copy">コピー</button>
+            <button type="button" class="btn btn--ghost" id="btn-reset">入力をリセット</button>
+          </div>
+          <textarea class="memo" id="memo-text" readonly aria-label="カルテ貼付用テキスト"></textarea>
+          <p class="copy-note">
+            個人が特定される情報は入れていません。貼り付け先の規程に従って扱ってください。
+          </p>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           出典
+           ============================================================ -->
+      <div class="source-note" id="ref">
+        <h3>出典</h3>
+        <ol>
+          <li>
+            ACP（米国内科学会）日本支部 予防医学推進タスクフォース委員会.
+            <cite>エビデンスに基づいた予防医療推進のための情報共有</cite>.
+            <a href="https://www.acpjapan.org/preventive-healthcare/" rel="noopener noreferrer" target="_blank">https://www.acpjapan.org/preventive-healthcare/</a>
+            ／「成人の予防医療チェックシート」2026.8.28 版.
+            本ツールの項目立てと各項目の対象条件は、原則としてこのサイトの記載に沿っています。
+          </li>
+          <li>
+            厚生労働省.
+            <cite>がん予防重点健康教育及びがん検診実施のための指針</cite>（健発第0331058号 平成20年3月31日／令和6年2月14日一部改正）.
+            <a href="https://www.mhlw.go.jp/content/10900000/001471911.pdf" rel="noopener noreferrer" target="_blank">PDF</a>
+            — 日本の対策型がん検診の対象年齢・受診間隔・検診項目はこの指針の原文によります。
+          </li>
+          <li>
+            U.S. Preventive Services Task Force.
+            <a href="https://www.uspreventiveservicestaskforce.org/" rel="noopener noreferrer" target="_blank">Recommendation Topics</a>
+            ／ CDC Advisory Committee on Immunization Practices (ACIP).
+            <a href="https://www.cdc.gov/acip/index.html" rel="noopener noreferrer" target="_blank">ACIP Recommendations</a>.
+          </li>
+          <li>
+            各カード末尾に、その項目の ACP 日本支部 該当ページへのリンクを個別に付けています。
+            数値の根拠を確かめるときはそちらを開いてください。
+          </li>
+        </ol>
+        <p style="margin-top:1em">
+          <b>免責</b>：本ツールは USPSTF・ACIP の推奨と日本の制度を照合して表示するだけの補助であり、
+          個々の患者への適用可否を判断するものではありません。
+          推奨は改訂されます。判断の前に、必ず上記の一次資料で最新版を確認してください。
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="lg-footer"></div>
+
+  <script src="../assets/lounge.js"></script>
+  <script>
+    /* =========================================================================
+       予防医療・ヘルスメンテナンス計画ツール
+
+       構成は3層。
+         1. collect()  … 画面の入力を1つのオブジェクト p にまとめる
+         2. ITEMS      … 推奨1項目＝配列の1要素。ev(p) が「この患者にとって何か」を返す
+         3. render()   … ITEMS を回して アクション一覧・根拠カード・カルテ文を描く
+
+       項目を足すときは ITEMS に1要素追加するだけでよい。
+       ev(p) の戻り値
+         null                         … 判定に必要な入力がまだない
+         { st, prio, head, why, when, note }
+           st   : "due"（いま実施） "sdm"（共同意思決定） "sched"（次回予定）
+                  "done"（実施済み・期間内） "na"（対象外）
+           prio : "high" | "med" | "low"（due / sdm の並び順と色）
+           when : "YYYY-MM"（sched のときの予定月）
+       ========================================================================= */
+    (function () {
+      "use strict";
+
+      var DUE = "due", SDM = "sdm", SCHED = "sched", DONE = "done", NA = "na";
+      var HIGH = "high", MED = "med", LOW = "low";
+
+      var ACP = "https://www.acpjapan.org/preventive-healthcare/";
+      var MHLW = "https://www.mhlw.go.jp/content/10900000/001471911.pdf";
+      var SHEET = { label: "ACP日本支部 成人の予防医療チェックシート2026", url: ACP };
+      var GUIDE = { label: "厚労省 がん検診指針（令和6年2月14日改正）", url: MHLW };
+
+      var CAT_LABEL = {
+        cancer: "がん検診",
+        vaccine: "ワクチン",
+        screening: "スクリーニング",
+        counseling: "カウンセリング",
+        surveillance: "サーベイランス"
+      };
+
+      /* ---------------------------------------------------------------------
+         入力ヘルパー
+         --------------------------------------------------------------------- */
+      function el(id) { return document.getElementById(id); }
+
+      function numOf(id) {
+        var n = el(id);
+        if (!n || n.value === "") { return null; }
+        var v = parseFloat(n.value);
+        return isFinite(v) ? v : null;
+      }
+      function valOf(id) { var n = el(id); return n ? n.value : ""; }
+      function chkOf(id) { var n = el(id); return !!(n && n.checked); }
+
+      /* 年月（<input type="month">）は「西暦*12＋月」の整数に直して比べる */
+      function ymNow() { var d = new Date(); return d.getFullYear() * 12 + d.getMonth(); }
+      function ymOf(s) {
+        var m = /^(\d{4})-(\d{2})$/.exec(s || "");
+        return m ? (parseInt(m[1], 10) * 12 + parseInt(m[2], 10) - 1) : null;
+      }
+      function ymStr(n) {
+        var y = Math.floor(n / 12), mo = (n % 12) + 1;
+        return y + "-" + (mo < 10 ? "0" : "") + mo;
+      }
+      /* 前回 last から months か月後が来ているか。last が空なら「未実施＝いま実施」 */
+      function after(last, months) {
+        var a = ymOf(last);
+        if (a === null) { return { over: true, when: null, never: true }; }
+        var d = a + months;
+        return { over: d <= ymNow(), when: ymStr(d), never: false };
+      }
+      function todayStr() {
+        var d = new Date(), m = d.getMonth() + 1, day = d.getDate();
+        return d.getFullYear() + "-" + (m < 10 ? "0" : "") + m + "-" + (day < 10 ? "0" : "") + day;
+      }
+
+      /* ---------------------------------------------------------------------
+         入力をまとめる
+         --------------------------------------------------------------------- */
+      function collect() {
+        var h = numOf("height"), w = numOf("weight");
+        var bmi = (h && w && h > 0) ? (w / ((h / 100) * (h / 100))) : null;
+
+        var cig = numOf("cig") || 0, syr = numOf("smoke-yrs") || 0;
+        var smoke = valOf("smoke");
+
+        var p = {
+          age: numOf("age"),
+          sex: valOf("sex"),
+          bmi: bmi,
+          smoke: smoke,
+          ever: (smoke === "current" || smoke === "former"),
+          py: (cig / 20) * syr,          /* pack-year（米国式） */
+          bi: cig * syr,                 /* 喫煙指数（日本の喀痰細胞診の基準） */
+          quit: numOf("quit-yrs"),
+          alcohol: numOf("alcohol"),
+          preg: valOf("preg"),
+          pregWeek: numOf("preg-week"),
+          uterus: valOf("uterus"),
+          menopause: valOf("menopause"),
+          sexual: valOf("sexual"),
+
+          sbp: numOf("lb-sbp"), dbp: numOf("lb-dbp"),
+          hba1c: numOf("lb-hba1c"), fpg: numOf("lb-fpg"),
+          ldl: numOf("lb-ldl"), hdl: numOf("lb-hdl"),
+          egfr: numOf("lb-egfr"), acr: numOf("lb-acr"),
+          uprotKind: valOf("lb-uprot-kind"),
+          uprotDip: valOf("lb-uprot-dip"), hematuria: valOf("lb-hematuria"),
+
+          vxFlu: valOf("vx-flu"), vxCovid: valOf("vx-covid"),
+          vxPneumo: valOf("vx-pneumo"), vxPneumoYr: numOf("vx-pneumo-yr"),
+          vxRsv: valOf("vx-rsv"), vxZoster: valOf("vx-zoster"),
+          vxTdapYr: numOf("vx-tdap-yr"), vxMmr: valOf("vx-mmr"),
+          vxHpv: valOf("vx-hpv"), vxHbv: valOf("vx-hbv"),
+
+          scGastric: valOf("sc-gastric"), scGastricM: valOf("sc-gastric-m"),
+          scCrc: valOf("sc-crc"), scLung: valOf("sc-lung"),
+          scBreast: valOf("sc-breast"),
+          scCervix: valOf("sc-cervix"), scCervixM: valOf("sc-cervix-m"),
+          scBmd: valOf("sc-bmd"), scHcv: valOf("sc-hcv"), scAaa: valOf("sc-aaa")
+        };
+
+        /* 既往・家族歴・所見はまとめて真偽値に */
+        ["htn", "dm", "dl", "cvd", "lung", "liver", "ckd", "dialysis", "asplenia",
+         "immuno", "cancer", "hiv", "csf", "hcw", "facility", "frail"].forEach(function (k) {
+          p["cx_" + k] = chkOf("cx-" + k);
+        });
+        ["crc", "breast", "aaa"].forEach(function (k) { p["fh_" + k] = chkOf("fh-" + k); });
+        ["fall", "gait", "mood", "anx", "drug", "ipv"].forEach(function (k) {
+          p["fd_" + k] = chkOf("fd-" + k);
+        });
+        p.fd_osteoRisk = chkOf("fd-osteo-risk");
+
+        /* サーベイランス */
+        p.svPolyp = chkOf("sv-polyp");
+        p.svPolypPath = valOf("sv-polyp-path");
+        p.svPolypN = numOf("sv-polyp-n");
+        p.svPolypSize = numOf("sv-polyp-size");
+        p.svPolypDate = valOf("sv-polyp-date");
+
+        p.svLiver = chkOf("sv-liver");
+        p.svLiverRisk = valOf("sv-liver-risk");
+        p.svLiverDate = valOf("sv-liver-date");
+
+        p.svAaa = chkOf("sv-aaa");
+        p.svAaaSize = numOf("sv-aaa-size");
+        p.svAaaDate = valOf("sv-aaa-date");
+
+        p.svHep = chkOf("sv-hep");
+        p.svHepType = valOf("sv-hep-type");
+
+        p.svOsteo = chkOf("sv-osteo");
+        p.svOsteoDrug = valOf("sv-osteo-drug");
+        p.svOsteoYrs = numOf("sv-osteo-yrs");
+        p.svOsteoDate = valOf("sv-osteo-date");
+
+        p.svThyroid = chkOf("sv-thyroid");
+        p.svThyroidSize = numOf("sv-thyroid-size");
+        p.svThyroidRisk = valOf("sv-thyroid-risk");
+        p.svThyroidDate = valOf("sv-thyroid-date");
+
+        /* 派生：高齢者の定期接種B類でよく使う「基礎疾患による60〜64歳の対象」 */
+        p.b60 = (p.age !== null && p.age >= 60 && p.age <= 64 &&
+                 (p.cx_cvd || p.cx_ckd || p.cx_lung || p.cx_hiv || p.cx_dialysis));
+        /* 派生：肺炎球菌・帯状疱疹などで使う免疫不全まわり */
+        p.immunoAny = (p.cx_immuno || p.cx_hiv || p.cx_asplenia || p.cx_cancer || p.cx_dialysis);
+        /* 派生：慢性疾患（ACIP が19〜64歳で肺炎球菌の対象にする層） */
+        p.chronic = (p.cx_cvd || p.cx_lung || p.cx_liver || p.cx_ckd || p.cx_dm ||
+                     p.smoke === "current");
+        /* 派生：心血管の危険因子 */
+        p.cvRisk = (p.cx_htn || p.cx_dm || p.cx_dl || p.smoke === "current" ||
+                    (p.sbp !== null && p.sbp >= 140) || (p.bmi !== null && p.bmi >= 25));
+        return p;
+      }
+
+      /* =====================================================================
+         推奨カタログ
+         us … 米国（USPSTF / ACIP）  jp … 日本の制度・学会  gap … ずれの説明
+         ===================================================================== */
+      var ITEMS = [
+
+        /* ---------------- がん検診 ---------------- */
+        {
+          id: "ca-lung", cat: "cancer", title: "肺がん検診",
+          us: { grade: "B", body: "50〜80歳で喫煙 20 pack-year 以上、現在喫煙中または禁煙 15 年未満の人に、低線量 CT（LDCT）を年1回（USPSTF 2021）。" },
+          jp: { body: "対策型検診は 40 歳以上に質問＋胸部エックス線を年1回。50 歳以上かつ喫煙指数（1日本数×年数）600 以上の人には喀痰細胞診を追加する（厚労省指針）。重喫煙者への LDCT は有効性評価に基づく肺がん検診ガイドライン 2025 年版で 50〜74 歳・年1回が推奨 A、胸部エックス線は 40〜79 歳・年1回が推奨 A。" },
+          gap: "米国は胸部エックス線を推奨しないが、日本では胸部エックス線が対策型検診の柱。逆に LDCT は日本の自治体検診では未整備で、人間ドック・自費になることが多い。",
+          src: [{ label: "ACP日本支部 肺がん", url: ACP + "cancer-screening/lung-cancer-screening/" }, GUIDE],
+          ev: function (p) {
+            if (p.age === null) { return null; }
+            var ldct = (p.age >= 50 && p.age <= 80 && p.py >= 20 &&
+                        (p.smoke === "current" || (p.smoke === "former" && p.quit !== null && p.quit < 15)));
+            if (ldct) {
+              var s = after(p.scLung, 12);
+              var why = "50〜80歳・" + Math.round(p.py) + " pack-year・" +
+                        (p.smoke === "current" ? "現在喫煙中" : "禁煙 " + p.quit + " 年");
+              if (s.over) { return { st: DUE, prio: HIGH, head: "低線量 CT（肺がん）年1回", why: why, note: "日本の自治体検診では未整備のことが多い。人間ドック・自費での実施を相談する。" }; }
+              return { st: SCHED, prio: LOW, head: "低線量 CT（肺がん）", why: why, when: s.when };
+            }
+            if (p.age >= 40) {
+              var x = after(p.scLung, 12);
+              var extra = (p.age >= 50 && p.bi >= 600) ? "喫煙指数 " + Math.round(p.bi) + " → 喀痰細胞診も追加対象。" : "";
+              if (x.over) { return { st: DUE, prio: p.bi >= 600 ? MED : LOW, head: "胸部エックス線（肺がん）年1回", why: "40歳以上は対策型検診の対象", note: extra }; }
+              return { st: SCHED, prio: LOW, head: "胸部エックス線（肺がん）", why: "40歳以上", when: x.when, note: extra };
+            }
+            return { st: NA, why: "40 歳未満は対策型の肺がん検診の対象外" };
+          }
+        },
+        {
+          id: "ca-gastric", cat: "cancer", title: "胃がん検診",
+          us: { grade: "—", body: "USPSTF は胃がん検診を推奨項目として扱っていない。" },
+          jp: { body: "対策型検診は 50 歳以上に、問診＋胃内視鏡または胃エックス線のいずれか。厚労省指針では原則 2 年に 1 回で、胃エックス線のみ当分の間 年 1 回でも差し支えなく、対象も当分の間 40 歳以上としてよい。受診を特に推奨するのは 50〜69 歳。なお国立がん研究センターのガイドラインは、内視鏡 2〜3 年ごと・エックス線 1〜3 年ごとという間隔を示しており、制度上の間隔（2 年に 1 回）とは書き方が違う。同ガイドラインの推奨は内視鏡・エックス線ともグレード B（内視鏡は 30〜57%、エックス線は約 40% の死亡率減少効果）。ペプシノゲン単独法・H. pylori 抗体単独法・両者の併用法はいずれも I（証拠不十分）。" },
+          gap: "日本独自の検診で、米国には推奨自体がない（罹患率の差による）。ABC 分類（ペプシノゲン＋ピロリ抗体）は広く使われているが、対策型検診としての推奨は得られていない。",
+          src: [{ label: "ACP日本支部 胃がん", url: ACP + "cancer-screening/gastric-cancer-screening/" }, GUIDE],
+          ev: function (p) {
+            if (p.age === null) { return null; }
+            if (p.age < 40) { return { st: NA, why: "40 歳未満は対策型の胃がん検診の対象外" }; }
+            var endo = (p.scGastricM !== "xray");
+            var s = after(p.scGastric, endo ? 24 : 12);
+            var head = endo ? "胃内視鏡（胃がん）" : "胃エックス線（胃がん）";
+            if (p.age < 50) {
+              if (endo) { return { st: NA, why: "内視鏡による対策型検診は 50 歳以上から。40 歳台は胃エックス線なら対象にして差し支えない" }; }
+              return s.over
+                ? { st: DUE, prio: LOW, head: head, why: "40 歳台は胃エックス線であれば対象" }
+                : { st: SCHED, prio: LOW, head: head, why: "40 歳台・胃エックス線", when: s.when };
+            }
+            return s.over
+              ? { st: DUE, prio: MED, head: head, why: "50 歳以上（特に推奨は 50〜69 歳）", note: endo ? "2〜3 年ごと" : "1〜3 年ごと（年1回でも可）" }
+              : { st: SCHED, prio: LOW, head: head, why: "50 歳以上", when: s.when };
+          }
+        },
+        {
+          id: "ca-crc", cat: "cancer", title: "大腸がん検診",
+          us: { grade: "A", body: "50〜75 歳に大腸がん検診を推奨（A）。45〜49 歳も推奨（B）。76〜85 歳は個別判断（C）。方法は便潜血検査（毎年）／大腸 CT（5 年ごと）／大腸内視鏡（10 年ごと）のいずれか（USPSTF 2021）。" },
+          jp: { body: "対策型検診は 40 歳以上に問診＋免疫便潜血検査 2 日法を年1回。50 歳以上には積極的に受診指導を行う。要精検の第一選択は全大腸内視鏡で、便潜血検査のみによる精密検査は行わない（厚労省指針）。" },
+          gap: "開始年齢が米国 45 歳・日本 40 歳。米国は大腸内視鏡や大腸 CT も一次検診の選択肢に入れるが、日本の対策型は便潜血検査のみで、内視鏡は精密検査の位置づけ。",
+          src: [SHEET, GUIDE],
+          ev: function (p) {
+            if (p.age === null) { return null; }
+            if (p.age < 40) {
+              return p.fh_crc
+                ? { st: SDM, prio: MED, head: "大腸内視鏡の開始時期を相談", why: "第一度近親者に大腸がん。対策型検診の年齢前でも個別に検討する" }
+                : { st: NA, why: "40 歳未満は対策型の大腸がん検診の対象外" };
+            }
+            var s = after(p.scCrc, 12);
+            var note = p.fh_crc ? "第一度近親者に大腸がん → 便潜血ではなく内視鏡でのフォローを個別に検討。" : "";
+            return s.over
+              ? { st: DUE, prio: p.age >= 50 ? MED : LOW, head: "便潜血検査 2 日法（大腸がん）年1回", why: "40 歳以上（50 歳以上は重点対象）", note: note }
+              : { st: SCHED, prio: LOW, head: "便潜血検査（大腸がん）", why: "40 歳以上", when: s.when, note: note };
+          }
+        },
+        {
+          id: "ca-breast", cat: "cancer", title: "乳がん検診",
+          us: { grade: "B", body: "40〜74 歳の女性にスクリーニング・マンモグラフィを 2 年ごと（USPSTF 2024）。75 歳以上、および高濃度乳房への超音波・MRI の追加はいずれも I（証拠不十分）。" },
+          jp: { body: "対策型検診は 40 歳以上の女性に質問＋マンモグラフィを原則 2 年に1回。受診を特に推奨するのは 40〜69 歳。視診・触診は推奨しない（実施する場合はマンモグラフィと併用）。40〜50 歳未満は内外斜位方向に加えて頭尾方向も撮影する（厚労省指針）。30 歳台は対象外だが、ブレスト・アウェアネスの指導を行う。" },
+          gap: "上限が米国 74 歳・日本は推奨 69 歳まで。日本人は高濃度乳房が多く（40 歳台で 54.9〜68.8%）マンモグラフィの感度が下がるが、超音波・MRI の追加は USPSTF では I（証拠不十分＝利益と害を判断できない）であって「推奨しない（D）」ではない。",
+          src: [{ label: "ACP日本支部 乳がん", url: ACP + "cancer-screening/breast-cancer-screening" }, GUIDE],
+          ev: function (p) {
+            if (p.age === null || p.sex !== "female") {
+              return p.sex === "male" ? { st: NA, why: "男性は対象外" } : null;
+            }
+            if (p.age < 40) { return { st: NA, why: "40 歳未満は対策型の乳がん検診の対象外（ブレスト・アウェアネスの指導は行う）" }; }
+            if (p.age >= 75) {
+              return { st: SDM, prio: LOW, head: "乳がん検診を続けるかを相談", why: "75 歳以上は USPSTF では I（証拠不十分）、日本の推奨も 69 歳まで", note: "日本の指針に上限規定はない。余命と本人の希望を踏まえて決める。" };
+            }
+            var s = after(p.scBreast, 24);
+            return s.over
+              ? { st: DUE, prio: MED, head: "マンモグラフィ（乳がん）2 年ごと", why: "40 歳以上の女性（特に推奨は 40〜69 歳）" }
+              : { st: SCHED, prio: LOW, head: "マンモグラフィ（乳がん）", why: "40 歳以上の女性", when: s.when };
+          }
+        },
+        {
+          id: "ca-cervix", cat: "cancer", title: "子宮頸がん検診",
+          us: { grade: "A", body: "21〜29 歳は子宮頸部細胞診を 3 年ごと。30〜65 歳は 細胞診 3 年ごと／HPV 検査単独 5 年ごと／細胞診・HPV 併用 5 年ごと のいずれか。21 歳未満には推奨しない（D）。65 歳超も推奨しない（D）が、これは過去に適切な検診を受けており、かつ高リスクでない人に限られる。CIN2 以上や子宮頸がんの既往、HIV・免疫不全、胎内 DES 曝露がある場合は一律に終了しない。" },
+          jp: { body: "対策型検診は 20 歳以上の女性に問診・視診・子宮頸部細胞診・内診を 2 年に1回（特に推奨は 20〜69 歳）。HPV 検査単独法は 30 歳以上・5 年に1回で、30 歳から 5 歳刻みの節目年齢に行うことを推奨（特に推奨は 30〜60 歳）。HPV 陽性なら同一検体でトリアージ検査（細胞診）を行い、トリアージ陰性なら翌年度に追跡検査（厚労省指針、2024 年 4 月〜）。" },
+          gap: "日本は 20 歳開始・2 年ごとで、米国（21 歳開始・3〜5 年ごと）より若年から頻回。米国は 65 歳超で終了することを明示するが、日本の指針に中止年齢の規定はない。HPV 検査単独法は長期追跡できる体制が導入の要件になっている。",
+          src: [{ label: "ACP日本支部 子宮頸がん", url: ACP + "cancer-screening/cervical-cancer/" }, GUIDE],
+          ev: function (p) {
+            if (p.age === null || p.sex !== "female") {
+              return p.sex === "male" ? { st: NA, why: "男性は対象外" } : null;
+            }
+            if (p.uterus === "no") { return { st: NA, why: "子宮全摘後（頸部なし）" }; }
+            if (p.age < 20) { return { st: NA, why: "20 歳未満は対象外（米国は 21 歳未満に推奨しない＝グレード D）" }; }
+            var m = p.scCervixM, months = (m === "cyto") ? 24 : 60;
+            var label = (m === "cyto") ? "子宮頸部細胞診" : (m === "hpv" ? "HPV 検査単独法" : "細胞診・HPV 併用");
+            if (m !== "cyto" && p.age < 30) { return { st: SDM, prio: LOW, head: "子宮頸がん検診の方法を確認", why: "HPV 検査単独法・併用法は 30 歳以上から。20 歳台は細胞診で" }; }
+            if (p.age > 65) {
+              return { st: SDM, prio: LOW, head: "子宮頸がん検診を続けるかを相談", why: "米国は 65 歳超で終了（グレード D）、日本の推奨も 69 歳まで", note: "D は過去に適切な検診を受け高リスクでない人に限る。CIN2 以上の既往・免疫不全などがあれば継続する。日本の指針に上限規定はない。" };
+            }
+            var s = after(p.scCervix, months);
+            return s.over
+              ? { st: DUE, prio: MED, head: label + "（子宮頸がん）", why: "20 歳以上の女性・" + (months / 12) + " 年ごと" }
+              : { st: SCHED, prio: LOW, head: label + "（子宮頸がん）", why: "20 歳以上の女性", when: s.when };
+          }
+        },
+        {
+          id: "ca-prostate", cat: "cancer", title: "前立腺がん検診（PSA）",
+          us: { grade: "C", body: "55〜69 歳は、PSA 検診を受けるかどうかを本人と相談して個別に決める（C）。70 歳以上には推奨しない（D）。利益は 1,000 人あたり約 13 年で前立腺がん死 1.3 件の回避、害は偽陽性・過剰診断・過剰治療（失禁 20%、勃起不全 67%）。" },
+          jp: { body: "国の対策型がん検診には含まれず、実施は各市町村の任意判断（2015 年時点で 83% が実施）。日本泌尿器科学会は、利益と不利益の情報を提供したうえで個人の意向に従って実施することが好ましいとしている。日本の前立腺がん死亡率は人口 10 万対 4.2 で、米国の 8.4 より低い。" },
+          gap: "日本には国の対策型検診がなく、実施主体が自治体・人間ドック任せ。死亡率が米国より低いぶん、過剰診断のリスクは相対的に大きい。",
+          src: [{ label: "ACP日本支部 前立腺がん", url: ACP + "cancer-screening/screening-for-prostate-cancer/" }],
+          ev: function (p) {
+            if (p.age === null || p.sex !== "male") {
+              return p.sex === "female" ? { st: NA, why: "女性は対象外" } : null;
+            }
+            if (p.age >= 70) { return { st: NA, why: "70 歳以上には推奨しない（USPSTF グレード D）" }; }
+            if (p.age >= 55) { return { st: SDM, prio: MED, head: "PSA 検診を受けるかを相談", why: "55〜69 歳は共同意思決定（グレード C）", note: "利益（1,000 人あたり 13 年で死亡 1.3 件回避）と害（過剰診断・過剰治療）を並べて説明する。" }; }
+            return { st: NA, why: "55 歳未満は対象外" };
+          }
+        },
+        {
+          id: "ca-brca", cat: "cancer", title: "BRCA 関連がんのリスク評価",
+          us: { grade: "B", body: "乳がん・卵巣がん・卵管がん・腹膜がんの既往、またはこれらの家族歴・BRCA1/2 変異家系のある女性に、家族歴リスク評価ツール（Ontario Family History Assessment Tool、Manchester Scoring System、7-Question Family History Screening Tool、Tyrer-Cuzick、簡易 BRCAPRO など）で評価する。陽性なら遺伝カウンセリングを受け、適応があれば遺伝学的検査（B）。該当する既往・家族歴のない女性へのルーチンの評価・カウンセリング・検査は推奨しない（D）。" },
+          jp: { body: "HBOC（遺伝性乳癌卵巣癌症候群）の診断・管理は JOHBOC のガイドラインによる。2020 年度から、発症した患者への BRCA1/2 検査とリスク低減手術が保険適用。2026 年 6 月 1 日から、発症者の第一度近親者（未発症）への BRCA1/2 検査（D006-18）も保険適用になった。" },
+          gap: "米国はプライマリ・ケアでのリスク評価を起点にするが、日本は発症者を起点とした保険診療の枠組みが中心。未発症者へのアプローチは 2026 年 6 月に広がったばかり。",
+          src: [{ label: "ACP日本支部 BRCA関連がん", url: ACP + "cancer-screening/brca/" }],
+          ev: function (p) {
+            if (p.sex !== "female") { return p.sex === "male" ? { st: NA, why: "USPSTF の推奨は女性が対象" } : null; }
+            if (p.fh_breast) { return { st: DUE, prio: MED, head: "家族歴リスク評価ツールで BRCA リスクを評価", why: "乳がん・卵巣がん・膵がん・前立腺がんの家族歴あり", note: "陽性なら遺伝カウンセリングへ。発症者の第一度近親者は 2026 年 6 月から BRCA1/2 検査が保険適用。" }; }
+            return { st: NA, why: "該当する既往・家族歴がなければルーチンの評価は推奨しない（グレード D）" };
+          }
+        },
+        {
+          id: "ca-breast-rx", cat: "cancer", title: "乳がんリスク低減のための薬剤",
+          us: { grade: "B", body: "35 歳以上で乳がん発症リスクが高く、薬剤の有害事象リスクが低い女性に、タモキシフェン・ラロキシフェン・アロマターゼ阻害薬による化学予防を提案する（B）。リスクが高くない女性へのルーチン使用は推奨しない（D）。USPSTF は普遍的なカットオフを定めていない。リスク評価ツールを使った臨床試験で最も多く使われた値が 5 年間の浸潤性乳がん発症リスク 1.66% 超であり、USPSTF は利益が害を上回りやすい例として 5 年リスク 3% 以上も挙げている。" },
+          jp: { body: "Gail モデルは日本人には適用できない。タモキシフェンの予防的投与は保険適用外で、薬事承認・保険適用・診療体制との整合が実務上の論点になっている。" },
+          gap: "日本ではリスク評価ツールも薬剤の予防投与も実装されていない。米国の推奨をそのまま持ち込めない項目で、専門施設での相談にとどまる。",
+          src: [{ label: "ACP日本支部 乳がん（リスク低減薬）", url: ACP + "cancer-screening/medication-use-to-reduce-risk-of-breast-cancer/" }],
+          ev: function (p) {
+            if (p.age === null || p.sex !== "female") { return p.sex === "male" ? { st: NA, why: "女性が対象" } : null; }
+            if (p.age >= 35 && p.fh_breast) { return { st: SDM, prio: LOW, head: "乳がん化学予防の適否を専門施設で相談", why: "35 歳以上・家族歴あり（発症リスクと薬剤の有害事象リスクの評価は未実施）", note: "この画面では高リスクかどうかは判定していない。専門施設でリスク評価をしたうえで判断する。日本ではリスク評価ツールが未確立で、タモキシフェンの予防投与は保険適用外。" }; }
+            return { st: NA, why: "高リスクでない女性へのルーチン使用は推奨しない（グレード D）" };
+          }
+        },
+
+        /* ---------------- ワクチン ---------------- */
+        {
+          id: "vx-flu", cat: "vaccine", title: "インフルエンザワクチン",
+          us: { grade: "ACIP", body: "禁忌のない生後 6 か月以上の全員に毎年 1 回。9 月または 10 月の接種が望ましい。6〜8 歳は接種歴により 1 回または 2 回（4 週間以上あける）、9 歳以上は 1 回。65 歳以上は高用量不活化（HD-IIV3）・組換え（RIV3）・アジュバント添加（aIIV3）のいずれかを優先し、7〜8 月の接種は避ける。" },
+          jp: { body: "定期接種 B 類の対象は 65 歳以上、および 60〜64 歳で心臓・腎臓・呼吸器の機能障害または HIV による免疫機能障害がある人。それ以外は任意接種。13 歳未満は 2 回接種（原則 4 週間隔）。令和 8 年度中から、従来の標準量に加えて 75 歳以上には高用量インフルエンザ HA ワクチン（標準量の 4 倍の抗原量）も定期接種に使えるようになった。定期接種に用いるワクチンは標準量・高用量のいずれかとされている。" },
+          gap: "米国は全年齢に毎年推奨するが、日本の定期接種は高齢者と一部の基礎疾患に限られる。高用量は日本でも 75 歳以上の定期接種に入ったが、アジュバント添加製剤は選べない。",
+          src: [{ label: "ACP日本支部 インフルエンザ", url: ACP + "vaccinations/influenza/" },
+                { label: "厚労省 令和8年度以降のインフルエンザワクチンの定期接種", url: "https://www.mhlw.go.jp/content/10901000/001665710.pdf" }],
+          ev: function (p) {
+            if (p.age === null) { return null; }
+            if (p.vxFlu === "yes") { return { st: DONE, why: "今シーズン接種済み" }; }
+            var teiki = (p.age >= 65 || p.b60);
+            return { st: DUE, prio: teiki ? HIGH : MED,
+                     head: "インフルエンザワクチン（毎年 1 回）",
+                     why: teiki ? "定期接種 B 類の対象" : "全年齢に毎年推奨（日本では任意接種）",
+                     note: "9〜10 月の接種が望ましい。" + (p.age >= 75 ? " 75 歳以上は高用量 HA ワクチンも定期接種で選べる。" : "") };
+          }
+        },
+        {
+          id: "vx-pneumo", cat: "vaccine", title: "肺炎球菌ワクチン",
+          us: { grade: "ACIP", body: "50 歳以上の未接種者に PCV21・PCV20・PCV15 のいずれかを 1 回（PCV15 を使った場合は 1 年以上あけて PPSV23、免疫不全等では 8 週間）。19〜49 歳でも免疫不全・髄液漏・人工内耳・慢性疾患があれば同様。PPSV23 のみ既接種なら 1 年以上あけて PCV21/20/15。PCV13 のみ既接種なら 1 年以上あけて PCV21 または PCV20。" },
+          jp: { body: "定期接種 B 類は 2026 年度から PCV20 に変更された。対象は「65 歳の者」と「60〜64 歳で心臓・腎臓・呼吸器の重度機能障害または HIV による免疫機能障害がある者」に限られ、1 回のみ。66 歳以上には定期接種の対象年齢がなく、経過措置もない。PPSV23・PCV15・PCV21 は定期の対象外。既接種者は前回から 1 年以上あけて PCV20 または PCV21 を任意接種で受けられる。日本の血清型カバー率（2022〜2024 年）は PCV20 が 50%、PCV21 が 78%。" },
+          gap: "米国は 50 歳以上の全員を対象にし「結合型 → 多糖体」の連鎖を組むが、日本の定期接種は 65 歳ちょうどの年度に PCV20 単回のみ。50〜64 歳の健康な人と 66 歳以上は、日本では自費の任意接種になる。",
+          src: [{ label: "ACP日本支部 肺炎球菌", url: ACP + "vaccinations/pneumococcal-vaccine/" },
+                { label: "厚労省 令和8年4月以降の高齢者に対する肺炎球菌ワクチンの定期接種", url: "https://www.mhlw.go.jp/content/10901000/001665710.pdf" }],
+          ev: function (p) {
+            if (p.age === null) { return null; }
+            /* ACIP は 50 歳以上の全員が対象。19〜49 歳は免疫不全・髄液漏・人工内耳・慢性疾患があれば対象 */
+            var target = (p.age >= 50) || (p.age >= 19 && (p.immunoAny || p.cx_csf || p.chronic));
+            if (!target) { return { st: NA, why: "50 歳未満で、免疫不全・髄液漏・人工内耳・慢性疾患のいずれもない" }; }
+            /* 日本の定期接種 B 類は「65 歳ちょうど」と「60〜64 歳の該当者」だけ。66 歳以上は対象外 */
+            var teiki = (p.age === 65 || p.b60);
+            var v = p.vxPneumo;
+            if (v === "pcv20" || v === "pcv21") { return { st: DONE, why: "PCV20 / PCV21 接種済み" }; }
+            if (v === "ppsv23" || v === "pcv13" || v === "pcv15") {
+              var yrs = (p.vxPneumoYr !== null) ? (new Date().getFullYear() - p.vxPneumoYr) : null;
+              /* PCV15 のあとは PPSV23、PPSV23 や PCV13 のあとは PCV21/PCV20 と、続きが逆になる */
+              var next = (v === "pcv15") ? "PPSV23" : "PCV20 または PCV21";
+              var wait = (v === "pcv15" && p.immunoAny) ? 0 : 1;   /* 免疫不全では PCV15→PPSV23 は 8 週で可 */
+              if (yrs !== null && wait && yrs < 1) {
+                return { st: SCHED, prio: LOW, head: next + " の追加", why: "前回接種から 1 年以上あける", when: (p.vxPneumoYr + 1) + "-01" };
+              }
+              return { st: DUE, prio: MED, head: next + " の追加接種",
+                       why: v.toUpperCase() + " 既接種" + (yrs !== null ? "（" + p.vxPneumoYr + " 年）" : ""),
+                       note: (v === "pcv15" && p.immunoAny ? "免疫不全では PCV15 の 8 週後に PPSV23 でよい。" : "") + "日本では任意接種（定期の対象外）。" };
+            }
+            var why, note;
+            if (teiki) {
+              why = (p.age === 65) ? "65 歳・未接種（定期接種の対象年度）" : "60〜64 歳で基礎疾患あり";
+              note = "";
+            } else if (p.age > 65) {
+              why = "66 歳以上・未接種";
+              note = "日本の定期接種は 65 歳ちょうどの年度のみで、66 歳以上への経過措置はない。自費の任意接種になる。";
+            } else {
+              why = (p.age >= 50) ? "50〜64 歳（ACIP は 50 歳以上の全員が対象）" : "19〜49 歳で免疫不全・慢性疾患等あり";
+              note = "日本では定期接種の対象外で、自費の任意接種になる。";
+            }
+            return { st: DUE, prio: teiki ? HIGH : MED,
+                     head: teiki ? "PCV20（定期接種 B 類）" : "PCV20 または PCV21（任意接種）",
+                     why: why, note: note };
+          }
+        },
+        {
+          id: "vx-covid", cat: "vaccine", title: "新型コロナワクチン",
+          us: { grade: "ACIP", body: "65 歳以上は共同意思決定に基づいて接種する。生後 6 か月〜64 歳も共同意思決定によるが、重症化リスクが高い群では利益が大きく、低リスク群では相対的に小さい。" },
+          jp: { body: "定期接種 B 類の対象は 65 歳以上、および 60〜64 歳で心臓・腎臓・呼吸器の機能障害または HIV による重度の免疫機能障害がある人。秋冬に 1 回。それ以外は任意接種（自己負担）。" },
+          gap: "米国は年齢を問わず共同意思決定に寄せた運用、日本は高齢者への定期接種として制度化されている。日本は HIV 感染者を明示的に対象にしている点が特徴。",
+          src: [{ label: "ACP日本支部 新型コロナ", url: ACP + "vaccinations/interim-covid-19-vaccine-guidelines/" }],
+          ev: function (p) {
+            if (p.age === null) { return null; }
+            if (p.vxCovid === "yes") { return { st: DONE, why: "今シーズン接種済み" }; }
+            var teiki = (p.age >= 65 || p.b60);
+            if (teiki) { return { st: DUE, prio: HIGH, head: "新型コロナワクチン（秋冬 1 回）", why: p.age >= 65 ? "65 歳以上・定期接種 B 類" : "60〜64 歳で基礎疾患あり" }; }
+            return { st: SDM, prio: LOW, head: "新型コロナワクチンの要否を相談", why: "64 歳以下は共同意思決定（日本では任意接種・自己負担）", note: p.immunoAny || p.chronic ? "重症化リスクが高い群では利益が大きい。" : "" };
+          }
+        },
+        {
+          id: "vx-rsv", cat: "vaccine", title: "RS ウイルスワクチン",
+          us: { grade: "ACIP", body: "75 歳以上は全員に 1 回。60〜74 歳は重症化リスクが高い場合に 1 回（慢性心血管疾患、COPD 等の慢性肺疾患、末期腎不全、糖尿病、神経筋疾患、慢性肝疾患、BMI 40 以上、中等度〜重度の免疫不全、介護施設入所、フレイル、遠隔地居住 など）。妊婦は Abrysvo に限り妊娠 32 週 0 日〜36 週 6 日に 1 回、多くの地域では 9〜1 月に接種する。既接種者への追加接種は不要（2024 年 6 月 26 日更新）。" },
+          jp: { body: "【妊婦】令和 8 年 4 月 1 日から、児の RS ウイルス感染症予防のための母子免疫ワクチン（組換え RS ウイルスワクチン＝アブリスボ®）が予防接種法の A 類疾病の定期接種になった。対象は妊娠 28 週から 37 週に至るまでの人。【成人・高齢者】任意接種で公費助成はない。承認は 60 歳以上、または 50 歳以上で重症化リスクが高い人（慢性肺疾患・慢性心血管疾患・慢性腎臓病・慢性肝疾患・糖尿病・神経疾患 など）。製品はアレックスビー®・アブリスボ®・エムレスビア®。" },
+          gap: "妊婦は日本のほうが対象週数が広い（日本 28〜37 週未満、米国 32 週 0 日〜36 週 6 日）うえ、日本は A 類の定期接種で公費。一方、高齢者は米国が 75 歳以上全員に推奨するのに対し、日本は全額自費で、費用が実施のいちばんの壁になる。",
+          src: [{ label: "ACP日本支部 RSウイルス", url: ACP + "vaccinations/rsv-vaccine-recommendations/" },
+                { label: "厚労省 令和8年度定期接種化ワクチン", url: "https://www.mhlw.go.jp/content/10901000/001665710.pdf" }],
+          ev: function (p) {
+            if (p.age === null) { return null; }
+            if (p.vxRsv === "yes") { return { st: DONE, why: "接種済み（追加接種は不要）" }; }
+            if (p.preg === "pregnant") {
+              if (p.pregWeek === null) { return { st: DUE, prio: MED, head: "妊娠週数を確認（RS ウイルス母子免疫）", why: "妊娠 28 週〜37 週未満なら A 類の定期接種の対象" }; }
+              if (p.pregWeek >= 28 && p.pregWeek < 37) {
+                return { st: DUE, prio: HIGH, head: "RS ウイルス母子免疫ワクチン（アブリスボ®）",
+                         why: "妊娠 " + p.pregWeek + " 週（日本は 28 週〜37 週未満が A 類 定期接種）",
+                         note: "米国の推奨週数は 32 週 0 日〜36 週 6 日と狭い。児の重症 RS ウイルス感染の予防が目的。" };
+              }
+              return { st: SCHED, prio: MED, head: "RS ウイルス母子免疫ワクチン（アブリスボ®）",
+                       why: "妊娠 " + p.pregWeek + " 週。28 週から定期接種の対象になる" };
+            }
+            if (p.age >= 75) { return { st: DUE, prio: MED, head: "RS ウイルスワクチン 1 回", why: "75 歳以上", note: "日本では任意接種（公費助成なし）。" }; }
+            var risk = (p.cx_cvd || p.cx_lung || p.cx_ckd || p.cx_dialysis || p.cx_dm ||
+                        p.cx_liver || p.immunoAny || p.cx_facility || p.cx_frail ||
+                        (p.bmi !== null && p.bmi >= 40));
+            if (p.age >= 60 && risk) { return { st: DUE, prio: MED, head: "RS ウイルスワクチン 1 回", why: "60〜74 歳・重症化リスクあり", note: "日本では任意接種（公費助成なし）。" }; }
+            return { st: NA, why: "75 歳未満で重症化リスクの条件を満たさない" };
+          }
+        },
+        {
+          id: "vx-zoster", cat: "vaccine", title: "帯状疱疹ワクチン",
+          us: { grade: "ACIP", body: "50 歳以上の免疫が正常な成人に組換えワクチン（RZV）2 回。19 歳以上で免疫不全・免疫抑制状態の成人にも 2 回。生ワクチンより組換えワクチンが望ましい。" },
+          jp: { body: "2025 年度から定期接種 B 類になり、対象は 65 歳（および 60〜64 歳で HIV による免疫機能障害で日常生活がほぼ不可能な人）。経過措置として 2025〜2029 年度の 5 年間は 70・75・80・85・90・95・100 歳も対象。乾燥弱毒生ワクチン 1 回、または組換えワクチン 2 回のいずれかを選ぶ。シングリックス® は 2018 年 3 月に 50 歳以上、2023 年 6 月に 18 歳以上へ承認が拡大。" },
+          gap: "米国は 50 歳以上に組換え 2 回を一律推奨。日本の定期接種は 65 歳と経過措置年齢に限られ、生ワクチンも選択肢に残っている。50〜64 歳は任意接種（自費）。",
+          src: [{ label: "ACP日本支部 帯状疱疹", url: ACP + "screening/acip-recommendations-zostervaccine/" }],
+          ev: function (p) {
+            if (p.age === null) { return null; }
+            if (p.vxZoster === "rzv2") { return { st: DONE, why: "組換えワクチン 2 回完了" }; }
+            if (p.vxZoster === "rzv1") { return { st: DUE, prio: HIGH, head: "組換え帯状疱疹ワクチン 2 回目", why: "1 回目のみ。2 回目は 2〜6 か月後" }; }
+            var teikiAge = (p.age === 65) ||
+                           (p.age >= 70 && p.age <= 100 && ((p.age - 70) % 5 === 0));
+            if (p.immunoAny && p.age >= 19) {
+              return { st: DUE, prio: HIGH, head: "組換え帯状疱疹ワクチン 2 回", why: "19 歳以上・免疫不全／免疫抑制状態", note: "免疫抑制下では生ワクチンは使えない。" };
+            }
+            if (p.age >= 50) {
+              return { st: DUE, prio: teikiAge ? HIGH : MED,
+                       head: "帯状疱疹ワクチン（組換え 2 回が望ましい）",
+                       why: "50 歳以上",
+                       note: teikiAge ? "今年度は定期接種 B 類の対象年齢（経過措置を含む）。" : "定期接種の対象年齢ではないため任意接種（自費）。" };
+            }
+            return { st: NA, why: "50 歳未満で免疫不全もない" };
+          }
+        },
+        {
+          id: "vx-tdap", cat: "vaccine", title: "破傷風・ジフテリア・百日咳",
+          us: { grade: "ACIP", body: "成人で未接種なら Tdap を 1 回、その後 10 年ごとに Td または Tdap を追加。妊娠のたびに 27〜36 週で Tdap を 1 回。2019 年 10 月の改訂で、定期ブースター・創傷時対応・キャッチアップのいずれにも Tdap を使えるようになった。" },
+          jp: { body: "成人用 Tdap（Boostrix®・Adacel®）は国内未承認で、個別輸入により一部の医療機関でのみ接種できる。代替として DTaP（トリビック®）が使われる。定期接種は 11〜12 歳の第 2 期 DT のみ。ブースターや創傷時には破傷風トキソイド単味が使われる。" },
+          gap: "日本には成人 Tdap の定期ブースター体制が確立していない。百日咳の追加免疫が入らないまま年齢を重ねる点が米国との最大の違い。",
+          src: [{ label: "ACP日本支部 破傷風・ジフテリア・百日咳", url: ACP + "vaccinations/tdap-vaccine-adults/" }],
+          ev: function (p) {
+            if (p.age === null) { return null; }
+            if (p.preg === "pregnant" && p.pregWeek !== null && p.pregWeek >= 27 && p.pregWeek <= 36) {
+              return { st: DUE, prio: HIGH, head: "Tdap（妊娠 27〜36 週・毎回の妊娠で 1 回）", why: "妊娠 " + p.pregWeek + " 週", note: "日本では成人用 Tdap が未承認のため、実施可否を施設で確認する。" };
+            }
+            var yrs = (p.vxTdapYr !== null) ? (new Date().getFullYear() - p.vxTdapYr) : null;
+            if (yrs !== null && yrs < 10) {
+              return { st: SCHED, prio: LOW, head: "破傷風トキソイド系の追加（10 年ごと）", why: "最終接種 " + p.vxTdapYr + " 年", when: (p.vxTdapYr + 10) + "-01" };
+            }
+            return { st: DUE, prio: LOW,
+                     head: "破傷風トキソイド系の追加接種",
+                     why: yrs === null ? "最終接種が不明" : "最終接種から " + yrs + " 年",
+                     note: "米国は Tdap を推奨するが、日本では成人用 Tdap が未承認。破傷風トキソイド単味または DTaP で対応する。" };
+          }
+        },
+        {
+          id: "vx-mmr", cat: "vaccine", title: "麻疹・風疹・おたふくかぜ・水痘",
+          us: { grade: "ACIP", body: "接種歴がなく感染歴もない成人に 2 回接種。" },
+          jp: { body: "定期接種は小児期の MR ワクチン 2 回。1962 年 4 月 2 日〜1979 年 4 月 1 日生まれの男性は、風疹の追加的対策（第 5 期）として抗体検査と定期接種の対象になる。おたふくかぜ・水痘の成人接種は任意。成人では抗体価を確認してから接種するのが一般的。" },
+          gap: "米国は成人の 2 回接種を明確に求めるが、日本は生まれ年で定期接種の回数が異なり、抗体検査を挟む運用が中心。実施期間や費用助成は自治体で異なるため、その都度確認が必要。",
+          src: [SHEET],
+          ev: function (p) {
+            if (p.age === null) { return null; }
+            if (p.vxMmr === "two" || p.vxMmr === "immune") { return { st: DONE, why: "2 回接種済み／罹患歴・抗体陽性を確認済み" }; }
+            var birth = new Date().getFullYear() - p.age;
+            var rubella5 = (p.sex === "male" && birth >= 1962 && birth <= 1979);
+            return { st: DUE, prio: p.preg === "planning" ? MED : LOW,
+                     head: "抗体検査（麻疹・風疹・水痘・ムンプス）または 2 回接種",
+                     why: p.vxMmr === "one" ? "1 回のみ" : (p.vxMmr === "none" ? "未接種" : "接種歴が不明"),
+                     note: (rubella5 ? "生年から風疹の追加的対策（第 5 期）の対象年代。自治体のクーポンの有無を確認する。" : "") +
+                           (p.preg === "planning" ? " 妊娠を希望している場合、風疹の抗体確認を優先する（生ワクチンは接種後 2 か月避妊）。" : "") };
+          }
+        },
+        {
+          id: "vx-hpv", cat: "vaccine", title: "HPV ワクチン",
+          us: { grade: "ACIP", body: "11〜12 歳での開始を推奨（9 歳から可）。26 歳までは男女ともキャッチアップ接種を推奨。27〜45 歳は共同意思決定に基づいて判断する。" },
+          jp: { body: "定期接種は小学校 6 年〜高校 1 年相当の女子に 2〜3 回。9 価ワクチン（シルガード®9）は 15 歳未満で開始すれば 2 回で完了。男性への接種は任意（4 価が承認済み）。" },
+          gap: "米国は男女とも 26 歳までのキャッチアップを推奨し、27〜45 歳も共同意思決定の対象にするが、日本の定期接種は女子のみ。男性接種は自費になる。",
+          src: [SHEET],
+          ev: function (p) {
+            if (p.age === null) { return null; }
+            if (p.vxHpv === "yes") { return { st: DONE, why: "規定回数を完了" }; }
+            if (p.age <= 26) { return { st: DUE, prio: MED, head: "HPV ワクチン（キャッチアップ）", why: "26 歳以下・未接種", note: p.sex === "male" ? "男性への接種は日本では任意（自費）。" : "" }; }
+            if (p.age <= 45) { return { st: SDM, prio: LOW, head: "HPV ワクチンの要否を相談", why: "27〜45 歳は共同意思決定", note: "日本では任意接種（自費）。" }; }
+            return { st: NA, why: "45 歳を超えており、接種の推奨対象ではない" };
+          }
+        },
+        {
+          id: "vx-hbv", cat: "vaccine", title: "B 型肝炎ワクチン",
+          us: { grade: "ACIP", body: "19〜59 歳の全員、および 60 歳以上で基礎疾患がある人・医療従事者などの高リスク者に接種する。60 歳以上でリスク因子がない人も、希望すれば接種してよい。" },
+          jp: { body: "定期接種は 0 歳児のみ（2016 年 10 月〜）。成人は任意接種で、医療従事者・透析患者・HBs 抗原陽性者の同居家族などで実施され、抗体価を確認して追加接種を行うのが一般的。" },
+          gap: "米国は 19〜59 歳を一律の対象にするが、日本の成人接種はリスク者に限った任意接種にとどまる。",
+          src: [SHEET],
+          ev: function (p) {
+            if (p.age === null) { return null; }
+            if (p.vxHbv === "yes") { return { st: DONE, why: "3 回完了" }; }
+            var high = (p.cx_hcw || p.cx_dialysis || p.cx_liver || p.cx_dm || p.cx_hiv);
+            if (p.age >= 19 && p.age <= 59) { return { st: DUE, prio: high ? MED : LOW, head: "B 型肝炎ワクチン 3 回", why: "19〜59 歳" + (high ? "・高リスク" : ""), note: "日本では任意接種。" }; }
+            if (p.age >= 60 && high) { return { st: DUE, prio: MED, head: "B 型肝炎ワクチン 3 回", why: "60 歳以上・高リスク（医療従事者・透析・慢性肝疾患・糖尿病 など）", note: "日本では任意接種。" }; }
+            return { st: SDM, prio: LOW, head: "B 型肝炎ワクチンを希望するか確認", why: "60 歳以上・リスク因子なし（希望すれば接種してよい）", note: "日本では任意接種。" };
+          }
+        },
+
+        /* ---------------- スクリーニング ---------------- */
+        {
+          id: "sc-hcv", cat: "screening", title: "C 型肝炎スクリーニング",
+          us: { grade: "B", body: "18〜79 歳の成人に HCV 感染のスクリーニングを推奨（B）。抗 HCV 抗体を測定し、陽性なら PCR で確認する。多くの成人は 1 回限りでよく、持続的にリスクがある人は定期的に行う。" },
+          jp: { body: "肝炎ウイルス検診として B 型・C 型を併せて実施する。過去に検査を受けたことがない人に少なくとも 1 回。40 歳以上は健康増進事業、それ以外の年齢は特定感染症検査等事業として無料で受けられ、保健所や委託医療機関で実施できる。陽性なら肝炎治療特別促進事業により DAA 治療の医療費助成がある。" },
+          gap: "日本は C 型に限らず B 型も併せた包括的な検診で、公費の枠組みと治療費助成まで整っている。この項目に関しては日本の体制のほうが手厚い。",
+          src: [{ label: "ACP日本支部 C型肝炎", url: ACP + "screening/uspstf-recommendation-statement/" }],
+          ev: function (p) {
+            if (p.age === null) { return null; }
+            if (p.age < 18 || p.age > 79) { return { st: NA, why: "18〜79 歳が対象" }; }
+            if (p.scHcv) { return { st: DONE, why: "肝炎ウイルス検査 実施済み（" + p.scHcv + "）" }; }
+            return { st: DUE, prio: MED, head: "肝炎ウイルス検査（B 型・C 型）を 1 回", why: "18〜79 歳で検査歴なし", note: "40 歳以上は健康増進事業、それ以外は特定感染症検査等事業で無料。" };
+          }
+        },
+        {
+          id: "sc-htn", cat: "screening", title: "高血圧スクリーニング",
+          us: { grade: "A", body: "18 歳以上の成人に血圧測定によるスクリーニングを推奨（A）。診断を確定する前に、家庭血圧（HBPM）または 24 時間自由行動下血圧（ABPM）で診察室外の血圧を確認する。40 歳以上または高リスクは毎年、18〜39 歳でリスクがなく以前の血圧が正常なら 3〜5 年ごと。診察室血圧 140/90 mmHg 以上がステージ 2。" },
+          jp: { body: "特定健診（40〜74 歳）で毎年測定する。診察室血圧 140/90 mmHg 以上、家庭血圧 135/85 mmHg 以上が高血圧。日本では 24 時間 ABPM が日常診療で使いにくく、家庭血圧測定が一般化している。" },
+          gap: "考え方はほぼ同じ。日本は特定健診が 40 歳からで、18〜39 歳は職域健診に依存する点が違う。診察室外血圧の確認は、日本では家庭血圧が事実上の標準。",
+          src: [{ label: "ACP日本支部 高血圧", url: ACP + "screening/hypertension-screening/" }],
+          ev: function (p) {
+            if (p.age === null || p.age < 18) { return p.age === null ? null : { st: NA, why: "18 歳以上が対象" }; }
+            if (p.cx_htn) { return { st: NA, why: "高血圧として治療中（スクリーニングの対象ではない）" }; }
+            if ((p.sbp !== null && p.sbp >= 140) || (p.dbp !== null && p.dbp >= 90)) {
+              return { st: DUE, prio: HIGH, head: "家庭血圧で高血圧を確認", why: "診察室血圧 " + (p.sbp || "?") + "/" + (p.dbp || "?") + " mmHg", note: "家庭血圧 135/85 mmHg 以上が高血圧。白衣高血圧・仮面高血圧の鑑別のためにも診察室外の測定を。" };
+            }
+            if (p.sbp === null && p.dbp === null) { return { st: DUE, prio: LOW, head: "血圧を測定", why: "18 歳以上（未測定）" }; }
+            var every = (p.age >= 40 || p.cvRisk) ? "毎年" : "3〜5 年ごと";
+            return { st: DONE, why: "血圧は正常範囲。次回は " + every + "（" + (p.age >= 40 ? "40 歳以上" : "18〜39 歳・リスクなし") + "）" };
+          }
+        },
+        {
+          id: "sc-dm", cat: "screening", title: "糖尿病スクリーニング",
+          us: { grade: "B", body: "35〜70 歳で過体重・肥満の成人にスクリーニングを推奨（B）。過体重は BMI 25 以上、肥満は 30 以上だが、アジア系では BMI 23 以上が適切なカットオフである可能性が示されている。空腹時血糖・HbA1c・75gOGTT のいずれかで、3 年ごとが合理的。糖尿病は FPG 126 mg/dL 以上／HbA1c 6.5% 以上／OGTT 200 mg/dL 以上、前糖尿病は FPG 100〜125／HbA1c 5.7〜6.4／OGTT 140〜199。前糖尿病には食事・運動療法を行う。" },
+          jp: { body: "特定健診（40〜74 歳）で HbA1c と空腹時血糖を測定する。日本の糖尿病診療ガイドライン（2024 年版）には、スクリーニングの対象・実施時期・頻度についての言及がない。" },
+          gap: "米国は 35 歳・BMI 23（アジア系）から拾うが、日本の特定健診は 40 歳から。35〜39 歳は制度の谷間になりやすい。",
+          src: [{ label: "ACP日本支部 糖尿病", url: ACP + "screening/diabetes-screening/" }],
+          ev: function (p) {
+            if (p.age === null) { return null; }
+            if (p.cx_dm) { return { st: NA, why: "糖尿病として治療中（スクリーニングの対象ではない）" }; }
+            if (p.age < 35 || p.age > 70) { return { st: NA, why: "35〜70 歳が対象" }; }
+            if (p.bmi === null) { return { st: DUE, prio: LOW, head: "身長・体重から BMI を確認", why: "BMI 23 以上（アジア系）ならスクリーニングの対象" }; }
+            if (p.bmi < 23) { return { st: NA, why: "BMI " + p.bmi.toFixed(1) + "（アジア系のカットオフ 23 未満）" }; }
+            var dm = (p.hba1c !== null && p.hba1c >= 6.5) || (p.fpg !== null && p.fpg >= 126);
+            var pre = (p.hba1c !== null && p.hba1c >= 5.7 && p.hba1c < 6.5) ||
+                      (p.fpg !== null && p.fpg >= 100 && p.fpg < 126);
+            if (dm) { return { st: DUE, prio: HIGH, head: "糖尿病の確定診断へ", why: "HbA1c " + (p.hba1c !== null ? p.hba1c + "%" : "—") + " ／ 空腹時血糖 " + (p.fpg !== null ? p.fpg + " mg/dL" : "—") + "（糖尿病域）" }; }
+            if (pre) { return { st: DUE, prio: MED, head: "前糖尿病への食事・運動療法", why: "HbA1c 5.7〜6.4% ／ 空腹時血糖 100〜125 mg/dL", note: "USPSTF は前糖尿病に対する食事・運動療法を推奨している。" }; }
+            if (p.hba1c === null && p.fpg === null) { return { st: DUE, prio: MED, head: "HbA1c または空腹時血糖を測定", why: "35〜70 歳・BMI " + p.bmi.toFixed(1) + "（23 以上）" }; }
+            return { st: SCHED, prio: LOW, head: "糖尿病スクリーニング（3 年ごと）", why: "今回は正常域", when: ymStr(ymNow() + 36) };
+          }
+        },
+        {
+          id: "sc-alcohol", cat: "screening", title: "飲酒量のスクリーニング",
+          us: { grade: "B", body: "18 歳以上の成人に不健康な飲酒のスクリーニングを行い、該当する人には短時間の行動カウンセリングを提供する（USPSTF 2018）。※ACP 日本支部の各論ページは作成予定。" },
+          jp: { body: "ACP 日本支部のチェックシートは、節度ある飲酒の目安を「1 日ビール 500 mL、日本酒 1 合、ワイン小グラス 2 杯 相当以下」としている。特定健診の問診にも飲酒量の項目がある。" },
+          gap: "",
+          src: [SHEET],
+          ev: function (p) {
+            if (p.age === null || p.age < 18) { return p.age === null ? null : { st: NA, why: "18 歳以上が対象" }; }
+            if (p.alcohol === null) { return { st: DUE, prio: LOW, head: "飲酒量を聴取", why: "節度ある飲酒は 1 日 日本酒 1 合（ビール 500 mL）相当まで" }; }
+            if (p.alcohol > 1) { return { st: DUE, prio: MED, head: "減酒の短時間カウンセリング", why: "日本酒換算 " + p.alcohol + " 合/日（目安は 1 合まで）" }; }
+            return { st: DONE, why: "日本酒換算 " + p.alcohol + " 合/日（節度ある範囲）" };
+          }
+        },
+        {
+          id: "sc-aaa", cat: "screening", title: "腹部大動脈瘤スクリーニング",
+          us: { grade: "B", body: "喫煙歴のある 65〜75 歳の男性に、腹部超音波によるスクリーニングを 1 回（B）。喫煙歴のない 65〜75 歳の男性は選択的に（C）。喫煙歴・家族歴のない女性には推奨しない（D）。喫煙歴または家族歴のある女性は証拠不十分（I）。" },
+          jp: { body: "スクリーニングを推奨事項として定めた日本のガイドラインはない。2020 年改訂版 大動脈瘤・大動脈解離診療ガイドラインは、65 歳以上の男性・65 歳以上の喫煙女性・第一度近親者に家族歴のある人については積極的に考慮すべきとするが、推奨事項の形にはしていない。日本の有病率は 0.3〜0.48% で欧米の 4〜9% より大幅に低く、一律のスクリーニングではなく、他の検査に併せた機会的スクリーニングが検討されている段階。" },
+          gap: "日本には推奨事項としてのスクリーニングがない。有病率が 1 桁違うため、米国の推奨をそのまま当てはめられない。腹部エコーを撮る機会があれば大動脈も見る、という運用が現実的。",
+          src: [{ label: "ACP日本支部 腹部大動脈瘤", url: ACP + "screening/aaa-screening" }],
+          ev: function (p) {
+            if (p.age === null || p.sex === "") { return null; }
+            if (p.svAaa) { return { st: NA, why: "すでに腹部大動脈瘤あり（サーベイランスの項目で扱う）" }; }
+            if (p.age < 65 || p.age > 75) { return { st: NA, why: "65〜75 歳が対象" }; }
+            if (p.sex === "male") {
+              if (p.scAaa) { return { st: DONE, why: "腹部超音波 実施済み（" + p.scAaa + "）。生涯 1 回でよい" }; }
+              if (p.ever) { return { st: DUE, prio: MED, head: "腹部超音波（大動脈）1 回", why: "喫煙歴のある 65〜75 歳男性（グレード B）", note: "日本にはスクリーニングのガイドラインがなく、有病率も低い。他の腹部エコーに併せる形が現実的。" }; }
+              return { st: SDM, prio: LOW, head: "腹部超音波を撮るか相談", why: "喫煙歴のない 65〜75 歳男性は選択的（グレード C）" };
+            }
+            if (p.ever || p.fh_aaa) { return { st: SDM, prio: LOW, head: "腹部超音波の要否を相談", why: "喫煙歴または家族歴のある女性は証拠不十分（グレード I）" }; }
+            return { st: NA, why: "喫煙歴・家族歴のない女性には推奨しない（グレード D）" };
+          }
+        },
+        {
+          id: "sc-osteo", cat: "screening", title: "骨粗鬆症スクリーニング",
+          us: { grade: "B", body: "65 歳以上の女性に骨密度測定を推奨（B）。65 歳未満でも、閉経後の女性で骨粗鬆症の危険因子があり、かつ臨床的リスク評価ツールで骨折リスクが高いと判断された場合には推奨（B）。危険因子が 1 つあれば直ちに測定するのではなく、危険因子の確認 → リスク評価ツール、の二段階になる。男性は証拠不十分（I）。" },
+          jp: { body: "骨粗鬆症検診は 40〜70 歳までの 5 歳刻みの節目年齢の女性が対象。受診率は 5.4% と極めて低く、70 歳以上のハイリスク者が対象外になること、推奨される central DXA が実施されていない場合があることが課題。ガイドラインは FRAX® のような骨折リスク評価法の活用を今後の方向として示している。" },
+          gap: "米国は 65 歳以上の女性を主対象にするが、日本の節目検診は 70 歳で終わり、いちばんリスクの高い層が抜け落ちる。受診率の低さも大きな違い。",
+          src: [{ label: "ACP日本支部 骨粗鬆症", url: ACP + "screening/osteoporosis-screening/" }],
+          ev: function (p) {
+            if (p.age === null || p.sex === "") { return null; }
+            if (p.svOsteo) { return { st: NA, why: "骨粗鬆症として治療中（サーベイランスの項目で扱う）" }; }
+            if (p.sex === "male") { return { st: NA, why: "男性は証拠不十分（グレード I）" }; }
+            /* 「閉経前」と明示されていれば、年齢による推定で上書きしない */
+            var postmeno = (p.menopause === "yes") ||
+                           (p.menopause !== "no" && p.age >= 55);
+            var target = (p.age >= 65) || (postmeno && p.fd_osteoRisk);
+            if (!target) { return { st: NA, why: p.fd_osteoRisk ? "危険因子はあるが閉経後が確認できていない" : "65 歳未満で、閉経後の危険因子も確認されていない" }; }
+            if (p.scBmd) { return { st: DONE, why: "骨密度 実施済み（" + p.scBmd + "）。再検の間隔は定まっていない" }; }
+            var note = (p.age >= 40 && p.age <= 70 && p.age % 5 === 0)
+              ? "今年度は日本の骨粗鬆症検診の節目年齢にあたる。" : "";
+            if (p.age > 70) { note = "日本の節目検診は 70 歳までで、70 歳超は自治体検診の対象外。医療機関での DXA を検討する。"; }
+            return { st: DUE, prio: MED, head: p.age >= 65 ? "骨密度測定（central DXA）" : "リスク評価ツールで骨折リスクを評価 → 高ければ DXA", why: p.age >= 65 ? "65 歳以上の女性" : "閉経後・骨折の危険因子あり（65 歳未満はまずリスク評価）", note: note };
+          }
+        },
+        {
+          id: "sc-falls", cat: "screening", title: "転倒予防",
+          us: { grade: "B", body: "65 歳以上で転倒リスクが高い地域在住高齢者に、転倒を防ぐための運動介入を推奨（B）。多因子介入は臨床医が個別に判断する（C）。" },
+          jp: { body: "骨粗鬆症の予防と治療ガイドライン 2025 年版は、運動全般（集団・個別を問わず）、複数要素のグループ運動・在宅運動、太極拳、向精神薬の減量に効果があるとし、家屋評価と環境・行動修正も転倒を減らすとしている。" },
+          gap: "",
+          src: [{ label: "ACP日本支部 転倒予防", url: ACP + "screening/falls-prevention-older-adults/" }],
+          ev: function (p) {
+            if (p.age === null) { return null; }
+            if (p.age < 65) { return { st: NA, why: "65 歳以上が対象" }; }
+            if (p.fd_fall || p.fd_gait || p.cx_frail) {
+              return { st: DUE, prio: MED, head: "転倒予防の運動介入", why: (p.fd_fall ? "1 年以内の転倒あり" : "") + (p.fd_gait ? "／歩行・バランスの問題" : "") + (p.cx_frail ? "／フレイル・要介護" : ""), note: "運動（グループ・在宅・太極拳）に加え、向精神薬の減量と家屋評価も効果がある。" };
+            }
+            return { st: DUE, prio: LOW, head: "転倒歴と歩行・バランスの確認", why: "65 歳以上" };
+          }
+        },
+        {
+          id: "sc-anxiety", cat: "screening", title: "不安症のスクリーニング",
+          us: { grade: "B", body: "19〜64 歳の成人（妊娠中・産後を含む）に不安症のスクリーニングを推奨（B）。65 歳以上は証拠不十分（I）。GAD-7、EPDS 不安サブスケール、GAS、GAI などを使う。スクリーニングツールだけでは診断にならず、陽性例は確定診断が必要。" },
+          jp: { body: "日本の生涯有病率は 8.1% と米国より低いが、治療を受けている患者は 5 人に 1 人と少なく、過小評価されている可能性が指摘されている。" },
+          gap: "",
+          src: [{ label: "ACP日本支部 不安障害", url: ACP + "screening/anxiety-disorders-screening/" }],
+          ev: function (p) {
+            if (p.age === null) { return null; }
+            if (p.age < 19) { return { st: NA, why: "19 歳以上が対象" }; }
+            if (p.age > 64) { return { st: NA, why: "65 歳以上は証拠不十分（グレード I）" }; }
+            return { st: DUE, prio: p.fd_anx ? MED : LOW, head: "不安症のスクリーニング（GAD-7 など）", why: p.fd_anx ? "不安感・緊張感・切迫感の訴えあり" : "19〜64 歳", note: "陽性ならスクリーニングだけで終えず、確定診断へ進める。" };
+          }
+        },
+        {
+          id: "sc-depression", cat: "screening", title: "うつ病のスクリーニング",
+          us: { grade: "B", body: "19 歳以上の全成人（妊娠中・産後・高齢者を含む）にうつ病のスクリーニングを推奨（B）。自殺リスクのスクリーニングは証拠不十分（I）。PHQ-9、PHQ-2、GDS、EPDS などを使う。" },
+          jp: { body: "日本うつ病学会のガイドラインは GDS や PHQ の有用性を認めるが、自殺リスク評価についての記載はない。12 か月有病率は 1〜2% と世界的に低い一方、自殺死亡率は人口 10 万人あたり 15.7 人と先進国で最高水準にある。" },
+          gap: "米国は自殺リスクのスクリーニングを「証拠不十分」とするが、日本は自殺死亡率が高く、臨床では希死念慮の確認が実務上重要になる。エビデンスの評価と現場の必要性がずれる項目。",
+          src: [{ label: "ACP日本支部 うつ病", url: ACP + "screening/depression-suicidal-risk-screening/" }],
+          ev: function (p) {
+            if (p.age === null) { return null; }
+            if (p.age < 19) { return { st: NA, why: "19 歳以上が対象" }; }
+            return { st: DUE, prio: p.fd_mood ? MED : LOW,
+                     head: "うつ病のスクリーニング（PHQ-2 / PHQ-9・高齢者は GDS）",
+                     why: p.fd_mood ? "2 週間以上の抑うつ気分・興味の減退あり" : "19 歳以上",
+                     note: p.age >= 65 ? "高齢者はクリニカルラウンジの「高齢者うつ病評価統合シート」も使える。" : "" };
+          }
+        },
+        {
+          id: "sc-ipv", cat: "screening", title: "家庭内暴力・高齢者虐待",
+          us: { grade: "B", body: "妊娠中・産後を含む生殖年齢の女性に、親密なパートナーからの暴力（IPV）のスクリーニングを行い、陽性者には継続的な支援を伴う多要素介入を提供する（B）。高齢者や脆弱な成人への介護者による虐待のスクリーニングは証拠不十分（I）。" },
+          jp: { body: "配偶者暴力相談支援センターへの相談は令和 4 年度に約 12.2 万件、DV 相談プラスが約 4.8 万件。配偶者暴力の経験率は 25.1%（2023 年 内閣府調査）。高齢者虐待の相談・通報は令和 5 年度に 4 万件を超え過去最多。配偶者暴力防止法は令和 7 年に改正されたが、医療者によるスクリーニングの記載はなく、日本の医療ガイドラインは未発表。" },
+          gap: "米国は生殖年齢の女性へのスクリーニングを推奨するが、日本には医療者向けの手順がない。「医療機関も相談の窓口になる」という位置づけにとどまっている。",
+          src: [{ label: "ACP日本支部 家庭内暴力", url: ACP + "screening/ipv-elder-abuse-screening/" }],
+          ev: function (p) {
+            if (p.age === null || p.sex === "") { return null; }
+            if (p.fd_ipv) { return { st: DUE, prio: HIGH, head: "暴力・虐待の確認と支援先への接続", why: "家庭内暴力・虐待が疑われる", note: "高齢者虐待は市町村への通報が必要。配偶者暴力相談支援センター・DV 相談プラスにつなぐ。" }; }
+            if (p.sex === "female" && p.age >= 15 && p.age <= 50) {
+              return { st: DUE, prio: LOW, head: "IPV（親密なパートナーからの暴力）のスクリーニング", why: "生殖年齢の女性（グレード B）" };
+            }
+            return { st: NA, why: p.age >= 65 ? "高齢者・脆弱な成人への虐待スクリーニングは証拠不十分（グレード I）" : "生殖年齢の女性が対象" };
+          }
+        },
+        {
+          id: "sc-drug", cat: "screening", title: "不健康な薬物使用",
+          us: { grade: "B", body: "18 歳以上の成人に、不健康な薬物使用についてスクリーニングの質問をすることを推奨（B）。検体検査ではなく問診で行う。正確な診断・効果的な治療・適切な紹介ができる体制があることが前提。" },
+          jp: { body: "15〜64 歳の不適切薬剤の経験率は 2.3% で、米国を含む先進国と比べ大幅に低い。薬物中毒による年間死亡は数十人（米国は 87,000 人）。日本にはスクリーニング・介入に関する明確なエビデンスがなく、米国基準の直接適用は難しい。" },
+          gap: "有病率が 2 桁違う。日本では一律のスクリーニングより、疑われる場面での聴取が現実的。",
+          src: [{ label: "ACP日本支部 不健康薬剤スクリーニング", url: ACP + "screening/unhealthy-drug-use-screening/" }],
+          ev: function (p) {
+            if (p.age === null) { return null; }
+            if (p.age < 18) { return { st: NA, why: "18 歳以上が対象" }; }
+            if (p.fd_drug) { return { st: DUE, prio: MED, head: "薬物使用の聴取と専門機関への紹介", why: "薬物使用が疑われる", note: "紹介先を確保したうえで聴取する。" }; }
+            return { st: DUE, prio: LOW, head: "薬物使用についての質問", why: "18 歳以上（問診で行う）" };
+          }
+        },
+        {
+          id: "sc-sti", cat: "screening", title: "クラミジア・淋菌",
+          us: { grade: "B", body: "性交歴のある 24 歳以下の女性、または性感染症のリスクが高い 25 歳以上の女性に、尿または子宮頸部の PCR 検査を行う。※ACP 日本支部の各論ページは作成予定。" },
+          jp: { body: "対策型の検診はなく、保健所の無料・匿名検査や自費検査が中心。" },
+          gap: "",
+          src: [SHEET],
+          ev: function (p) {
+            if (p.age === null || p.sex === "") { return null; }
+            if (p.sex !== "female") { return { st: NA, why: "USPSTF の推奨は女性が対象" }; }
+            if (p.sexual !== "yes") { return { st: NA, why: "性交歴が確認されていない" }; }
+            if (p.age <= 24) { return { st: DUE, prio: MED, head: "クラミジア・淋菌の PCR（尿／子宮頸部）", why: "性交歴のある 24 歳以下の女性" }; }
+            return { st: SDM, prio: LOW, head: "クラミジア・淋菌検査の要否を相談", why: "25 歳以上は性感染症のリスクが高い場合に実施" };
+          }
+        },
+
+        /* ---------------- カウンセリング ---------------- */
+        {
+          id: "co-smoking", cat: "counseling", title: "禁煙",
+          us: { grade: "A", body: "すべての成人に喫煙状況を確認し、喫煙者には禁煙を助言する（A）。妊娠していない成人には行動カウンセリングと FDA 承認薬（ニコチン置換療法、ブプロピオン徐放製剤、バレニクリン）の併用を推奨。妊婦には行動介入のみを推奨し、薬物療法の証拠は不十分。電子タバコは禁煙達成への影響を判断する証拠が不十分。" },
+          jp: { body: "禁煙外来はニコチン依存症管理料として保険算定できる（算定要件あり）。加熱式タバコ製品で有害化学物質への曝露を減らすことが、それらを無害にするわけではない。" },
+          gap: "",
+          src: [{ label: "ACP日本支部 禁煙", url: ACP + "counseling/smoking-cessation-adults-and-pregnant-women/" }],
+          ev: function (p) {
+            if (p.smoke === "current") {
+              return { st: DUE, prio: HIGH, head: p.preg === "pregnant" ? "禁煙の助言と行動介入（妊婦は薬物療法を行わない）" : "禁煙の助言と行動カウンセリング＋薬物療法", why: "現在喫煙中" + (p.py ? "・" + Math.round(p.py) + " pack-year" : ""), note: p.preg === "pregnant" ? "妊婦には行動介入のみ（薬物療法の証拠は不十分）。" : "禁煙外来はニコチン依存症管理料で算定できる。" };
+            }
+            if (p.smoke === "former") { return { st: DONE, why: "禁煙済み" + (p.quit !== null ? "（" + p.quit + " 年）" : "") }; }
+            return { st: NA, why: "喫煙歴なし" };
+          }
+        },
+        {
+          id: "co-obesity", cat: "counseling", title: "肥満への減量指導",
+          us: { grade: "B", body: "18 歳以上で BMI 30 以上の成人に、集中的な多要素の行動介入（減量指導）を提供する。" },
+          jp: { body: "特定保健指導（40〜74 歳）が腹囲・BMI を起点に動機付け支援・積極的支援を行う。日本の肥満の定義は BMI 25 以上で、健康障害を伴う場合を肥満症とする。" },
+          gap: "米国の介入閾値は BMI 30、日本の肥満の定義は BMI 25。日本人は低い BMI でも代謝異常を来しやすく、より低い値から介入対象になる。",
+          src: [SHEET],
+          ev: function (p) {
+            if (p.age === null || p.bmi === null) { return null; }
+            if (p.age < 18) { return { st: NA, why: "18 歳以上が対象" }; }
+            if (p.bmi >= 30) { return { st: DUE, prio: MED, head: "集中的な減量指導（多要素の行動介入）", why: "BMI " + p.bmi.toFixed(1) + "（30 以上）" }; }
+            if (p.bmi >= 25) { return { st: DUE, prio: LOW, head: "減量の相談（日本の基準では肥満）", why: "BMI " + p.bmi.toFixed(1) + "（日本は 25 以上を肥満、米国の介入閾値は 30）", note: p.age >= 40 && p.age <= 74 ? "特定保健指導の対象年齢。" : "" }; }
+            return { st: NA, why: "BMI " + p.bmi.toFixed(1) + "（介入閾値未満）" };
+          }
+        },
+        {
+          id: "co-folate", cat: "counseling", title: "葉酸の摂取",
+          us: { grade: "A", body: "妊娠を計画している、または妊娠する可能性のあるすべての人に、葉酸 0.4〜0.8 mg（400〜800 μg）を含むサプリメントを毎日摂取するよう推奨する（A）。" },
+          jp: { body: "2000 年に厚生省が妊娠を計画する女性へ 1 日 400 μg を推奨し、2002 年に母子健康手帳へ記載された。2019 年時点で 40 歳未満女性の平均摂取量は約 230 μg にとどまる。学会の正式な診療ガイドラインは未発表で、穀類への葉酸添加（fortification）も実施されていない。" },
+          gap: "米国は 400〜800 μg の幅を認め、食品への葉酸添加も行われている。日本は 400 μg 固定で添加もなく、実際の摂取量が推奨に届いていない。神経管閉鎖障害の発生は米国 約 6.4/1 万出生、日本 約 8/1 万出生（中絶を含む）。",
+          src: [{ label: "ACP日本支部 葉酸摂取", url: ACP + "counseling/folic-acid-neural-tube-defects/" }],
+          ev: function (p) {
+            if (p.sex !== "female" || p.age === null) { return p.sex === "male" ? { st: NA, why: "妊娠する可能性のある人が対象" } : null; }
+            if (p.preg === "planning") { return { st: DUE, prio: HIGH, head: "葉酸 400〜800 μg/日 のサプリメント", why: "妊娠を希望・可能性あり", note: "受胎前から妊娠初期にかけて継続する。" }; }
+            if (p.preg === "pregnant") { return { st: DUE, prio: MED, head: "葉酸 400〜800 μg/日 の継続", why: "妊娠中（" + (p.pregWeek !== null ? p.pregWeek + " 週" : "週数未入力") + "）" }; }
+            if (p.age >= 18 && p.age <= 49) { return { st: DUE, prio: LOW, head: "葉酸摂取について説明", why: "妊娠する可能性のある年代", note: "日本人女性の平均摂取量は約 230 μg で推奨に届いていない。" }; }
+            return { st: NA, why: "妊娠する可能性のある年代ではない" };
+          }
+        },
+        {
+          id: "co-cvd-life", cat: "counseling", title: "心血管予防の食事・運動カウンセリング",
+          us: { grade: "B", body: "心血管の危険因子がある成人に、健康的な食事と身体活動についての行動カウンセリングを推奨する（B）。危険因子のない成人は個別に判断（C）。介入は食事と運動を組み合わせ、中央値 12 回のセッションを 6〜18 か月かけて計 6 時間程度。医師以外に管理栄養士や理学療法士も実施できる。" },
+          jp: { body: "特定保健指導は、健康行動理論に基づき保健師・管理栄養士が行う日本に特有のプログラム。減塩を条件とした和食の推奨、脂質エネルギー比の管理などを含む。利用者は非利用者に比べ、脂質・腹囲・BMI の改善が有意に大きいと報告されている。" },
+          gap: "",
+          src: [{ label: "ACP日本支部 食事・運動", url: ACP + "counseling/lifestyle-counseling-for-cvd-prevention/" }],
+          ev: function (p) {
+            if (p.age === null) { return null; }
+            if (p.cvRisk) {
+              return { st: DUE, prio: MED, head: "食事・運動の行動カウンセリング", why: "心血管の危険因子あり", note: (p.age >= 40 && p.age <= 74) ? "特定保健指導の対象年齢。保健師・管理栄養士につなぐ。" : "" };
+            }
+            return { st: SDM, prio: LOW, head: "食事・運動の指導を行うか判断", why: "危険因子なし（グレード C・個別判断）" };
+          }
+        },
+        {
+          id: "co-statin", cat: "counseling", title: "心血管一次予防のスタチン",
+          us: { grade: "B", body: "40〜75 歳で心血管の危険因子（脂質異常症・糖尿病・高血圧・喫煙）を 1 つ以上もち、10 年間の心血管イベント発症リスクが 10% 以上なら中等度強度のスタチンを開始する（B）。7.5〜10% 未満は個別に判断（C）。76 歳以上は証拠不十分（I）。" },
+          jp: { body: "動脈硬化性疾患予防ガイドラインは久山町スコアで絶対リスクを推計する。日本の年齢調整 CVD 死亡率は 3.56/1000 人年で米国の 11.75/1000 人年より低く、脳卒中の比率が高い一方、脂質異常症と関連するアテローム血栓性梗塞の割合は米国より低い傾向がある。日本動脈硬化学会は米国基準をそのまま適用せず、日本の疫学に合わせた推奨を示している。" },
+          gap: "米国のリスクスコアは冠動脈疾患と脳卒中を統合したもの、日本の久山町スコアは冠動脈疾患とアテローム血栓性梗塞の合算。同じ「10 年リスク 10%」でも中身が違うため、そのまま持ち込めない。",
+          src: [{ label: "ACP日本支部 心血管（内服）", url: ACP + "counseling/statins-primary-prevention" }],
+          ev: function (p) {
+            if (p.age === null) { return null; }
+            if (p.cx_cvd) { return { st: NA, why: "心血管疾患の既往あり＝二次予防。一次予防の推奨の対象外" }; }
+            if (p.age > 75) { return { st: NA, why: "76 歳以上は証拠不十分（グレード I）" }; }
+            if (p.age < 40) { return { st: NA, why: "40〜75 歳が対象" }; }
+            var f = [];
+            if (p.cx_dl || (p.ldl !== null && p.ldl >= 140)) { f.push("脂質異常症"); }
+            if (p.cx_dm) { f.push("糖尿病"); }
+            if (p.cx_htn || (p.sbp !== null && p.sbp >= 140)) { f.push("高血圧"); }
+            if (p.smoke === "current") { f.push("喫煙"); }
+            if (!f.length) { return { st: NA, why: "心血管の危険因子が確認されていない" }; }
+            return { st: SDM, prio: MED, head: "久山町スコアで 10 年リスクを推計しスタチンを検討",
+                     why: "40〜75 歳・危険因子（" + f.join("・") + "）",
+                     note: "米国の 10 年リスク 10% はそのまま日本に当てはめられない。久山町スコアで評価する。" };
+          }
+        },
+
+        /* ---------------- サーベイランス（既知の所見を追う） ---------------- */
+        {
+          id: "sv-polyp", cat: "surveillance", title: "大腸ポリープ切除後",
+          us: { grade: "—", body: "USMSTF（米国多学会大腸がん対策委員会）2020：10 mm 未満の管状腺腫 1〜2 個なら 7〜10 年後、3〜4 個なら 3〜5 年後、5〜10 個・10 mm 以上・絨毛成分・高度異型があれば 3 年後に大腸内視鏡。" },
+          jp: { body: "大腸ポリープ診療ガイドライン 2020 は、内視鏡切除後のサーベイランス内視鏡を原則 3 年後に行うことを提案している（リスクに応じて短縮・延長）。" },
+          gap: "米国はリスク層別に 3〜10 年と幅をもたせるが、日本のガイドラインは 3 年を基本に置く。低リスク例では日本のほうが頻回になる。",
+          src: [],
+          ev: function (p) {
+            if (!p.svPolyp) { return { st: NA, why: "大腸ポリープ切除歴なし" }; }
+            if (p.svPolypPath === "hyperplastic") {
+              return { st: DONE, why: "過形成性ポリープのみ。通常の対策型検診（便潜血 年1回）に戻してよい" };
+            }
+            var high = (p.svPolypPath === "advanced") ||
+                       (p.svPolypSize !== null && p.svPolypSize >= 10) ||
+                       (p.svPolypN !== null && p.svPolypN >= 5);
+            var months = 36;
+            var why = high ? "高リスク所見（10 mm 以上・絨毛成分・高度異型・5 個以上）" : "腺腫・鋸歯状病変の切除後";
+            var s = after(p.svPolypDate, months);
+            return s.over
+              ? { st: DUE, prio: high ? MED : LOW, head: "サーベイランス大腸内視鏡", why: why, note: "日本のガイドラインは原則 3 年後。米国は低リスクなら 7〜10 年と幅がある。" }
+              : { st: SCHED, prio: LOW, head: "サーベイランス大腸内視鏡", why: why, when: s.when };
+          }
+        },
+        {
+          id: "sv-hcc", cat: "surveillance", title: "肝細胞癌サーベイランス",
+          us: { grade: "—", body: "AASLD は肝硬変患者に対し、腹部超音波（± AFP）を 6 か月ごとに行うことを推奨している。" },
+          jp: { body: "肝癌診療ガイドラインは、高危険群（B 型慢性肝炎・C 型慢性肝炎・非ウイルス性肝硬変）には 6 か月ごとの超音波＋腫瘍マーカー、超高危険群（B 型肝硬変・C 型肝硬変）には 3〜4 か月ごとの超音波＋腫瘍マーカーを行い、超高危険群では 6〜12 か月ごとの dynamic CT/MRI を追加してもよいとしている。" },
+          gap: "日本は「超高危険群」を分けて監視間隔を 3〜4 か月に短縮し、造影 CT/MRI も選択肢に入れる。米国より濃い監視体制になっている。",
+          src: [],
+          ev: function (p) {
+            if (!p.svLiver) { return { st: NA, why: "慢性肝疾患・肝硬変なし" }; }
+            var sup = (p.svLiverRisk === "superhigh");
+            var months = sup ? 4 : 6;
+            var s = after(p.svLiverDate, months);
+            var why = sup ? "超高危険群（B 型・C 型肝硬変）→ 3〜4 か月ごと" : "高危険群 → 6 か月ごと";
+            return s.over
+              ? { st: DUE, prio: HIGH, head: "腹部超音波＋腫瘍マーカー（肝細胞癌）", why: why, note: sup ? "6〜12 か月ごとの dynamic CT/MRI の追加も検討する。" : "" }
+              : { st: SCHED, prio: LOW, head: "腹部超音波＋腫瘍マーカー（肝細胞癌）", why: why, when: s.when };
+          }
+        },
+        {
+          id: "sv-aaa-fu", cat: "surveillance", title: "腹部大動脈瘤のフォロー",
+          us: { grade: "—", body: "SVS 2017 / ESVS 2019：30〜39 mm は 3 年ごと、40〜49 mm は 1 年ごと、50〜54 mm は 3〜6 か月ごと。手術適応は 55 mm 以上（ESVS は女性 50 mm 以上を Class 2b）。" },
+          jp: { body: "2020 年改訂版 大動脈瘤・大動脈解離診療ガイドライン（JCS/JSCVS/JATS/JSVS）：30〜39 mm は 1〜2 年ごと、40〜49 mm は 6 か月〜1 年ごと、50〜54 mm は 3〜6 か月ごと（Class 2a, Level C）。手術適応は 55 mm 以上の男女（Class 1, Level A）、症候性は速やかに（Class 1, Level C）、50 mm 以上の男女・囊状瘤・急速拡大（5 mm/6 か月以上）は Class 2a。日本の待機手術成績は良好（人工血管置換術 1.0%、EVAR 0.7%）で、50 mm 以上での手術適応も許容され、女性は 45 mm を超えた場合に相対的適応と考えることも許容される。" },
+          gap: "小径瘤の監視間隔は日本のほうが短い（30〜39 mm で欧米 3 年に対し日本 1〜2 年）。手術適応も、日本は実質 50 mm から動く施設が多い。",
+          src: [],
+          ev: function (p) {
+            if (!p.svAaa) { return { st: NA, why: "腹部大動脈瘤なし" }; }
+            if (p.svAaaSize === null) { return { st: DUE, prio: MED, head: "腹部大動脈瘤の最大短径を計測", why: "径が未入力。フォロー間隔は径で決まる" }; }
+            var d = p.svAaaSize, months, band;
+            if (d >= 55) { return { st: DUE, prio: HIGH, head: "血管外科へ紹介（手術適応）", why: "最大短径 " + d + " mm（55 mm 以上：Class 1, Level A）" }; }
+            if (d >= 50) { return { st: DUE, prio: HIGH, head: "血管外科へ紹介を検討", why: "最大短径 " + d + " mm（50 mm 以上：Class 2a。日本では 50 mm から適応とする施設が多い）" }; }
+            if (d > 45 && p.sex === "female") { return { st: SDM, prio: MED, head: "血管外科へ相談（女性の相対的適応）", why: "最大短径 " + d + " mm。女性は 45 mm を超えた場合に相対的適応と考えることも許容される" }; }
+            /* 間隔には幅がある。ここでは短いほうを既定にし、幅は band に出す */
+            if (d >= 40) { months = 6; band = "40〜49 mm → 6 か月〜1 年ごと"; }
+            else if (d >= 30) { months = 12; band = "30〜39 mm → 1〜2 年ごと"; }
+            else { return { st: DONE, why: "最大短径 " + d + " mm（30 mm 未満）。瘤としてのフォロー基準に達していない" }; }
+            var s = after(p.svAaaDate, months);
+            return s.over
+              ? { st: DUE, prio: MED, head: "腹部超音波で瘤径を再計測", why: "最大短径 " + d + " mm（" + band + "）", note: "間隔には幅があり、ここでは短いほうを既定にしている。禁煙と血圧 130/80 mmHg 未満を目標にした管理も併せて。" }
+              : { st: SCHED, prio: LOW, head: "腹部超音波で瘤径を再計測", why: "最大短径 " + d + " mm（" + band + "）", when: s.when };
+          }
+        },
+        {
+          id: "sv-ckd", cat: "surveillance", title: "CKD のモニタリングと紹介",
+          us: { grade: "—", body: "KDIGO は eGFR による G 区分と尿アルブミンによる A 区分の組み合わせでリスクを層別し、区分に応じて年間のモニタリング回数を決める。" },
+          jp: { body: "『エビデンスに基づく CKD 診療ガイドライン 2023』に基づく腎臓専門医・専門医療機関への紹介基準は、次の 3 つのいずれかを満たす場合：① 尿蛋白（+）もしくは 0.5 g/gCr 以上、② 尿蛋白（+/−）かつ血尿（+）、③ eGFR 45 mL/分/1.73m² 未満（40 歳未満、または尿蛋白（+/−）以上であれば 60 未満）。これ以外にも、3 か月以内に 30% 以上の腎機能悪化を認めれば速やかに紹介する。CKD の定義は、eGFR 60 mL/分/1.73m² 未満、または腎障害を示す所見が 3 か月を超えて持続すること。" },
+          gap: "",
+          src: [{ label: "厚労省／日本腎臓学会 腎臓専門医・専門医療機関への紹介基準", url: "https://www.mhlw.go.jp/content/001241596.pdf" }],
+          ev: function (p) {
+            if (!p.cx_ckd && p.egfr === null && p.acr === null && !p.uprotDip) {
+              return { st: NA, why: "CKD の指定も eGFR・尿検査の入力もない" };
+            }
+            if (p.egfr === null) { return { st: DUE, prio: MED, head: "eGFR と尿検査（尿蛋白・尿潜血）を確認", why: "CKD の評価に必要な値が未入力" }; }
+
+            /* 紹介基準①：尿蛋白（＋）もしくは 0.5 g/gCr 以上。
+               定量の閾値は測っているものによって違う。総蛋白/Cr なら 500 mg/gCr、
+               アルブミン/Cr なら A3 の 300 mg/gCr。同じ数字で判定してはいけない。 */
+            var isPcr = (p.uprotKind === "pcr");
+            var quantCut = isPcr ? 500 : 300;
+            var kindName = isPcr ? "尿蛋白/Cr" : "尿アルブミン/Cr";
+            var quantHigh = (p.acr !== null && p.acr >= quantCut);
+            var quantMod = (p.acr !== null && p.acr >= (isPcr ? 150 : 30));
+            var dipPos = (p.uprotDip === "pos");
+            var dipPm = (p.uprotDip === "pm" || dipPos);
+
+            if (quantHigh || dipPos) {
+              return { st: DUE, prio: HIGH, head: "腎臓専門医・専門医療機関へ紹介",
+                       why: dipPos ? "尿蛋白（＋）以上" : kindName + " " + p.acr + " mg/gCr（紹介基準 " + quantCut + " 以上）" };
+            }
+            /* 紹介基準②：尿蛋白（±）かつ血尿（＋） */
+            if (dipPm && p.hematuria === "pos") {
+              return { st: DUE, prio: HIGH, head: "腎臓専門医・専門医療機関へ紹介", why: "尿蛋白（±）かつ血尿（＋）" };
+            }
+            /* 紹介基準③：eGFR 45 未満。40 歳未満または尿蛋白（±）以上なら 60 未満 */
+            var age = p.age === null ? 60 : p.age;
+            var cut = (age < 40 || dipPm || quantMod) ? 60 : 45;
+            if (p.egfr < cut) {
+              return { st: DUE, prio: p.egfr < 30 ? HIGH : MED, head: "腎臓専門医・専門医療機関へ紹介",
+                       why: "eGFR " + p.egfr + "（紹介基準 " + cut + " 未満" + (cut === 60 ? "：40 歳未満または尿蛋白あり" : "") + "）" };
+            }
+            if (p.egfr < 60 || quantMod) {
+              return { st: SCHED, prio: LOW, head: "eGFR と尿検査を定期的に確認",
+                       why: "eGFR " + p.egfr + (quantMod ? " ／ " + kindName + " " + p.acr : "") + "（紹介基準は満たさない）",
+                       when: ymStr(ymNow() + 6), note: "3 か月以内に 30% 以上の腎機能悪化があれば速やかに紹介。" };
+            }
+            return { st: DONE, why: "eGFR " + p.egfr + "・尿検査とも紹介基準を満たさない" };
+          }
+        },
+        {
+          id: "sv-hep", cat: "surveillance", title: "B 型・C 型肝炎ウイルス陽性者のフォロー",
+          us: { grade: "—", body: "AASLD/IDSA は、SVS 達成後も進行した線維化・肝硬変がある症例では肝細胞癌サーベイランスを継続することを推奨している。" },
+          jp: { body: "HBs 抗原陽性のキャリアは ALT・HBV DNA・AFP を定期的に確認し、線維化が進んでいれば肝細胞癌サーベイランスの対象になる。HCV RNA 陽性は DAA 治療の適応を評価する（肝炎治療特別促進事業により医療費助成がある）。治療により SVR が得られても、線維化が進んでいた症例では肝細胞癌サーベイランスを続ける。" },
+          gap: "日本は肝炎治療特別促進事業で DAA の医療費助成があり、治療導入の経済的な障壁が低い。",
+          src: [],
+          ev: function (p) {
+            if (!p.svHep) { return { st: NA, why: "肝炎ウイルス陽性の指定なし" }; }
+            if (p.svHepType === "hcv") {
+              return { st: DUE, prio: HIGH, head: "DAA 治療の適応評価（肝臓専門医へ）", why: "HCV RNA 陽性・未治療", note: "肝炎治療特別促進事業により医療費助成を受けられる。" };
+            }
+            if (p.svHepType === "hbv") {
+              return { st: DUE, prio: MED, head: "ALT・HBV DNA・AFP の定期確認", why: "HBs 抗原陽性キャリア", note: "線維化が進んでいれば肝細胞癌サーベイランスの対象。" };
+            }
+            return { st: DUE, prio: LOW, head: "肝細胞癌サーベイランスの継続を判断", why: "HCV 治療後 SVR", note: "線維化が進んでいた症例では SVR 後もサーベイランスを続ける。" };
+          }
+        },
+        {
+          id: "sv-osteo", cat: "surveillance", title: "骨粗鬆症 治療中のフォロー",
+          us: { grade: "—", body: "治療開始後は骨密度で効果を判定する。ビスホスホネートの長期投与例では 3〜5 年で休薬（drug holiday）の可否を検討する。デノスマブは中止すると急速な骨密度低下と多発椎体骨折のリスクがあるため、中断せず後続治療につなぐ。" },
+          jp: { body: "骨粗鬆症の予防と治療ガイドラインも、骨密度は同一機器・同一部位で経過を追い、骨代謝マーカーは治療開始後 3〜6 か月で評価するとしている。ビスホスホネート・デノスマブの使用中は、侵襲的な歯科処置の前に口腔管理を行う（薬剤関連顎骨壊死の予防）。" },
+          gap: "",
+          src: [],
+          ev: function (p) {
+            if (!p.svOsteo) { return { st: NA, why: "骨粗鬆症の治療中ではない" }; }
+            var notes = [];
+            if (p.svOsteoDrug === "bp" && p.svOsteoYrs !== null && p.svOsteoYrs >= 3) {
+              notes.push("ビスホスホネート " + p.svOsteoYrs + " 年 → 休薬（drug holiday）の可否を検討する。");
+            }
+            if (p.svOsteoDrug === "denosumab") {
+              notes.push("デノスマブは中断すると多発椎体骨折のリスクがある。中止せず後続治療につなぐ。");
+            }
+            notes.push("侵襲的な歯科処置の前に口腔管理を。");
+            var s = after(p.svOsteoDate, 12);
+            return s.over
+              ? { st: DUE, prio: MED, head: "骨密度で治療効果を判定", why: "骨粗鬆症 治療中" + (p.svOsteoYrs !== null ? "（" + p.svOsteoYrs + " 年）" : ""), note: notes.join(" ") }
+              : { st: SCHED, prio: LOW, head: "骨密度で治療効果を判定", why: "骨粗鬆症 治療中", when: s.when, note: notes.join(" ") };
+          }
+        },
+        {
+          id: "sv-thyroid", cat: "surveillance", title: "甲状腺結節のフォロー",
+          us: { grade: "—", body: "ATA 2015 は、超音波パターンと結節径の組み合わせで穿刺吸引細胞診（FNA）の適応と経過観察の間隔を決める。悪性を強く疑うパターンは 10 mm 以上で FNA、良性らしい所見の小結節は 12〜24 か月ごとの超音波。" },
+          jp: { body: "甲状腺結節取扱い診療ガイドラインも、超音波所見と大きさから穿刺吸引細胞診の適応を判断する。" },
+          gap: "",
+          src: [],
+          note: "この項目は判断の入口だけを示すもの。実際の適応は超音波の詳細所見によるため、専門医の判断で置き換えること。",
+          ev: function (p) {
+            if (!p.svThyroid) { return { st: NA, why: "甲状腺結節なし" }; }
+            if (p.svThyroidSize === null) { return { st: DUE, prio: LOW, head: "甲状腺結節の径を計測", why: "径が未入力。方針は径と超音波所見で決まる" }; }
+            if (p.svThyroidRisk === "susp" && p.svThyroidSize >= 10) {
+              return { st: DUE, prio: MED, head: "穿刺吸引細胞診（FNA）を検討", why: "悪性を疑う所見・" + p.svThyroidSize + " mm" };
+            }
+            var s = after(p.svThyroidDate, p.svThyroidRisk === "susp" ? 12 : 24);
+            return s.over
+              ? { st: DUE, prio: LOW, head: "甲状腺超音波で経過観察", why: p.svThyroidSize + " mm・" + (p.svThyroidRisk === "susp" ? "悪性を疑う所見あり" : "悪性所見に乏しい") }
+              : { st: SCHED, prio: LOW, head: "甲状腺超音波で経過観察", why: p.svThyroidSize + " mm", when: s.when };
+          }
+        }
+      ];
+
+
+      /* =====================================================================
+         各論（学習用の入り口）
+         項目の実体は持たず、ITEMS の id を並べるだけ。順序に意味を持たせる。
+         key と gap に書く数値は、すでに ITEMS の us.body / jp.body に入っている
+         ものだけを使う。ここで新しい数値を持ち込まない（出典照合の範囲を出ない）。
+         ===================================================================== */
+      var TOPICS = [
+        {
+          id: "tp-ckd", name: "慢性腎臓病（CKD）", nameEn: "Chronic Kidney Disease",
+          lede: "腎機能が落ちている人に、予防医療として何を足すか。腎そのものの監視だけでなく、原因と合併症（糖尿病・血圧・脂質）、それに感染症のワクチンまでが射程に入る。CKD は日本の定期接種 B 類で 60〜64 歳の対象になる基礎疾患のひとつでもある。",
+          items: ["sv-ckd", "sc-htn", "sc-dm", "co-statin", "vx-flu", "vx-pneumo", "vx-covid", "vx-hbv"],
+          key: [
+            ["腎臓専門医への紹介", "次の3つのいずれか。① 尿蛋白（＋）もしくは 0.5 g/gCr 以上　② 尿蛋白（±）かつ血尿（＋）　③ eGFR 45 mL/分/1.73m² 未満（40 歳未満、または尿蛋白（±）以上なら 60 未満）"],
+            ["すぐ紹介する変化", "3 か月以内に 30% 以上の腎機能悪化"],
+            ["CKD の定義", "eGFR 60 mL/分/1.73m² 未満、または腎障害を示す所見が 3 か月を超えて持続"],
+            ["定量の閾値の違い", "尿アルブミン/Cr なら 300 mg/gCr、尿蛋白/Cr なら 500 mg/gCr（0.5 g/gCr）。同じ数字で判定しない"],
+            ["60〜64 歳の定期接種", "心臓・腎臓・呼吸器の機能障害または HIV による免疫機能障害があれば、インフルエンザ・肺炎球菌・新型コロナが定期接種 B 類の対象"]
+          ],
+          gap: "米国（KDIGO）は eGFR の G 区分と尿アルブミンの A 区分を掛け合わせて「年に何回みるか」を決める。日本の紹介基準は「腎臓専門医に送るかどうか」の3条件で線を引く。どちらも同じ検査を使うが、出す答えが違う。"
+        },
+        {
+          id: "tp-dm", name: "糖尿病", nameEn: "Diabetes",
+          lede: "糖尿病そのもののスクリーニングから、見つかった後の合併症・心血管リスク・ワクチンまで。日本では特定健診が 40 歳からなので、米国が拾う 35〜39 歳が制度の谷間になりやすい。",
+          items: ["sc-dm", "co-obesity", "co-cvd-life", "co-statin", "sc-htn", "sv-ckd", "vx-flu", "vx-pneumo", "vx-covid", "vx-hbv"],
+          key: [
+            ["スクリーニングの対象", "35〜70 歳で過体重・肥満。過体重は BMI 25 以上だが、アジア系は BMI 23 以上が適切なカットオフの可能性"],
+            ["間隔", "3 年ごとが合理的"],
+            ["糖尿病", "空腹時血糖 126 mg/dL 以上 ／ HbA1c 6.5% 以上 ／ 75gOGTT 200 mg/dL 以上"],
+            ["前糖尿病", "空腹時血糖 100〜125 ／ HbA1c 5.7〜6.4 ／ OGTT 140〜199。食事・運動療法を行う"],
+            ["肥満への介入", "米国は BMI 30 以上に集中的な行動介入。日本の肥満の定義は BMI 25 以上"],
+            ["スタチン", "40〜75 歳で危険因子が1つ以上あり、10 年リスク 10% 以上（米国）。日本は久山町スコアで推計する"]
+          ],
+          gap: "米国は 35 歳・BMI 23（アジア系）から拾い、日本の特定健診は 40 歳から。肥満の閾値も米国 30・日本 25 と逆向きにずれる。日本のほうが低い BMI で介入対象になるのに、スクリーニングの開始は遅い。"
+        },
+        {
+          id: "tp-bone", name: "骨粗鬆症・転倒", nameEn: "Bone Health & Falls",
+          lede: "測る前に「誰を測るか」、測ったあとに「どう追うか」、そして骨折を実際に減らす転倒予防まで。日本の節目検診は 70 歳で終わるため、いちばんリスクの高い層が制度から抜ける。",
+          items: ["sc-osteo", "sv-osteo", "sc-falls"],
+          key: [
+            ["測る対象（米国）", "65 歳以上の女性。65 歳未満は閉経後で危険因子があり、かつ臨床的リスク評価ツールで骨折リスクが高いと判断された場合（二段階）"],
+            ["男性", "証拠不十分（グレード I）"],
+            ["日本の骨粗鬆症検診", "40〜70 歳までの 5 歳刻みの節目年齢の女性。受診率 5.4%"],
+            ["治療中のフォロー", "骨代謝マーカーは開始後 3〜6 か月。骨密度は同一機器・同一部位で追う"],
+            ["休薬", "ビスホスホネートは 3〜5 年で休薬を検討。デノスマブは中断すると多発椎体骨折のリスクがあり、中止せず後続治療へ"],
+            ["転倒予防", "65 歳以上で転倒リスクが高ければ運動介入（B）。多因子介入は個別判断（C）"]
+          ],
+          gap: "米国は 65 歳以上の女性を主対象にするが、日本の節目検診は 70 歳で終わる。70 歳以上のハイリスク者が自治体検診の対象外になり、医療機関での DXA に頼ることになる。"
+        },
+        {
+          id: "tp-cancer", name: "がん検診", nameEn: "Cancer Screening",
+          lede: "対策型がん検診の5つ（胃・大腸・肺・乳・子宮頸）に、日本に対策型のない前立腺と、家族歴から入る BRCA・化学予防を加えた通し。日米差がいちばん大きく出る領域で、胃がんは日本にしかなく、肺がんは検査法そのものが違う。",
+          items: ["ca-lung", "ca-gastric", "ca-crc", "ca-breast", "ca-cervix", "ca-prostate", "ca-brca", "ca-breast-rx"],
+          key: [
+            ["肺（日本）", "40 歳以上に胸部エックス線 年1回。50 歳以上かつ喫煙指数（1日本数×年数）600 以上に喀痰細胞診"],
+            ["肺（米国）", "50〜80 歳・20 pack-year 以上・現在喫煙または禁煙 15 年未満に低線量 CT 年1回"],
+            ["胃", "日本のみ。50 歳以上、原則 2 年に 1 回（エックス線は当分の間 年1回・40 歳以上も可）"],
+            ["大腸", "日本は 40 歳以上に便潜血 2 日法 年1回。米国は 45〜75 歳（45〜49 は B、50〜75 は A、76〜85 は C）"],
+            ["乳", "日本は 40 歳以上・2 年に 1 回、推奨は 40〜69 歳。米国は 40〜74 歳・2 年ごと。視触診は日本で非推奨"],
+            ["子宮頸", "日本は細胞診 20 歳以上・2 年ごと、HPV 単独法 30 歳以上・5 年ごと。米国は 21〜29 歳 細胞診 3 年、30〜65 歳 細胞診 3 年／HPV 5 年／併用 5 年"],
+            ["前立腺", "米国は 55〜69 歳で共同意思決定（C）、70 歳以上は推奨しない（D）。日本に対策型検診はない"]
+          ],
+          gap: "①胃がんは日本にしかない（罹患率の差）。②肺は米国が低線量 CT のみを推奨し胸部エックス線を推奨しないのに対し、日本は胸部エックス線が対策型の柱。③子宮頸は日本のほうが若く・頻回。④上限年齢は米国が明示するが、日本の指針に中止年齢の規定がない。"
+        },
+        {
+          id: "tp-smoke", name: "喫煙者", nameEn: "Tobacco Use",
+          lede: "喫煙している人・していた人に紐づく項目をまとめて。禁煙そのものの介入に加え、肺がん検診の対象条件、腹部大動脈瘤のスクリーニング、心血管リスクが芋づるで出てくる。喫煙量の数え方が日米で違う点に注意。",
+          items: ["co-smoking", "ca-lung", "sc-aaa", "co-cvd-life", "co-statin"],
+          key: [
+            ["喫煙量の数え方", "米国は pack-year（1日本数 ÷ 20 × 年数）、日本の喀痰細胞診は喫煙指数（1日本数 × 年数）。同じ人でも数字が 20 倍違う"],
+            ["低線量 CT の条件", "50〜80 歳・20 pack-year 以上・現在喫煙または禁煙 15 年未満。禁煙 15 年を過ぎると対象から外れる"],
+            ["喀痰細胞診の条件", "原則 50 歳以上・喫煙指数 600 以上（過去の喫煙者を含む）"],
+            ["腹部大動脈瘤", "喫煙歴のある 65〜75 歳男性に腹部超音波を1回（B）。喫煙歴のない男性は選択的（C）"],
+            ["禁煙の介入", "行動カウンセリング＋薬物療法（ニコチン置換・ブプロピオン徐放・バレニクリン）。妊婦は行動介入のみ"]
+          ],
+          gap: "肺がん検診で、米国は低線量 CT のみを推奨し胸部エックス線を推奨しない。日本は胸部エックス線が対策型の柱で、低線量 CT は自治体検診では未整備のことが多く自費になる。腹部大動脈瘤も、日本は有病率が 0.3〜0.48%（欧米 4〜9%）と低く、推奨事項としてのスクリーニングがない。"
+        },
+        {
+          id: "tp-liver", name: "慢性肝疾患・肝炎ウイルス", nameEn: "Chronic Liver Disease",
+          lede: "肝炎ウイルスを見つけるところから、治療につなぐ、そして肝細胞癌を追うところまで。この領域は日本の制度のほうが手厚く、検診も治療費助成も枠組みが整っている。",
+          items: ["sc-hcv", "sv-hep", "sv-hcc", "vx-hbv", "vx-flu", "vx-pneumo"],
+          key: [
+            ["見つける", "18〜79 歳に 1 回（米国 B）。日本は肝炎ウイルス検診として B 型・C 型を併せて実施し、40 歳以上は健康増進事業、それ以外は特定感染症検査等事業で無料"],
+            ["HCV RNA 陽性", "DAA 治療の適応評価。肝炎治療特別促進事業で医療費助成がある"],
+            ["HBs 抗原陽性", "ALT・HBV DNA・AFP を定期的に確認"],
+            ["高危険群の監視", "B 型慢性肝炎・C 型慢性肝炎・非ウイルス性肝硬変 → 6 か月ごとに超音波＋腫瘍マーカー"],
+            ["超高危険群の監視", "B 型肝硬変・C 型肝硬変 → 3〜4 か月ごとに超音波＋腫瘍マーカー。6〜12 か月ごとの dynamic CT/MRI を追加してもよい"],
+            ["SVR 後", "線維化が進んでいた症例では、SVR 後も肝細胞癌サーベイランスを続ける"]
+          ],
+          gap: "検診では日本のほうが手厚い（C 型だけでなく B 型も含む包括的な検診＋治療費助成）。肝細胞癌の監視も、日本は「超高危険群」を分けて 3〜4 か月に間隔を詰め、造影 CT/MRI も選択肢に入れる。米国（6 か月ごとの超音波）より濃い。"
+        },
+        {
+          id: "tp-cv", name: "心血管リスク（高血圧・脂質）", nameEn: "Cardiovascular Risk",
+          lede: "血圧・脂質・血糖・体重・喫煙を、一次予防としてどう束ねるか。リスクスコアの中身が日米で違うため、「10 年リスク 10%」という数字をそのまま持ち込めないのがこの領域の勘所。",
+          items: ["sc-htn", "co-statin", "co-cvd-life", "co-obesity", "co-smoking", "sc-dm", "sc-aaa"],
+          key: [
+            ["高血圧の基準", "診察室 140/90 mmHg 以上、家庭血圧 135/85 mmHg 以上。診断確定の前に診察室外の血圧で確認する"],
+            ["血圧を測る頻度", "40 歳以上または高リスクは毎年。18〜39 歳でリスクがなく以前正常なら 3〜5 年ごと"],
+            ["スタチン（米国）", "40〜75 歳・危険因子1つ以上・10 年リスク 10% 以上で開始（B）。7.5〜10% 未満は個別判断（C）。76 歳以上は I"],
+            ["スタチン（日本）", "久山町スコアで絶対リスクを推計する"],
+            ["食事・運動", "危険因子があれば行動カウンセリング（B）。中央値 12 回、6〜18 か月で計 6 時間程度"],
+            ["日本の CVD 死亡率", "3.56/1000 人年（米国 11.75/1000 人年）"]
+          ],
+          gap: "米国のリスクスコアは冠動脈疾患と脳卒中を統合したもの、日本の久山町スコアは冠動脈疾患とアテローム血栓性梗塞の合算。日本は脳卒中の比率が高く、脂質異常症と関連する梗塞の割合は米国より低い。同じ「10 年リスク 10%」でも中身が違うので、そのまま当てはめられない。"
+        },
+        {
+          id: "tp-preg", name: "妊娠・妊娠希望", nameEn: "Pregnancy",
+          lede: "妊娠を希望する段階から妊娠中まで。週数で動く項目が多く、とくに RS ウイルスは 2026 年 4 月から日本で A 類の定期接種になったばかりで、対象週数が米国と違う。",
+          items: ["co-folate", "vx-rsv", "vx-tdap", "vx-mmr", "vx-flu", "co-smoking", "sc-ipv", "sc-depression", "sc-anxiety", "sc-sti"],
+          key: [
+            ["葉酸", "妊娠を計画している・可能性のあるすべての人に 400〜800 μg/日（米国 A）。日本の推奨は 400 μg で、40 歳未満女性の平均摂取量は約 230 μg"],
+            ["RS ウイルス（日本）", "令和 8 年 4 月 1 日から A 類定期接種。妊娠 28 週〜37 週に至るまで、母子免疫ワクチン（アブリスボ®）"],
+            ["RS ウイルス（米国）", "Abrysvo に限り妊娠 32 週 0 日〜36 週 6 日に 1 回"],
+            ["Tdap", "妊娠のたびに 27〜36 週で 1 回（米国）。日本では成人用 Tdap が未承認"],
+            ["風疹・麻疹", "生ワクチンは妊娠中に打てない。妊娠を希望する段階で抗体を確認する（接種後 2 か月避妊）"],
+            ["禁煙", "妊婦には行動介入のみ。薬物療法の証拠は不十分"],
+            ["IPV", "妊娠中・産後を含む生殖年齢の女性にスクリーニング（B）"]
+          ],
+          gap: "RS ウイルスは日本のほうが対象週数が広く（28〜37 週未満 vs 米国 32 週 0 日〜36 週 6 日）、しかも A 類の定期接種で公費。逆に Tdap は日本に成人用の製剤がなく、妊娠中の百日咳対策が米国のようには組めない。葉酸も日本は 400 μg 固定で食品への添加がなく、実際の摂取量が推奨に届いていない。"
+        },
+        {
+          id: "tp-elderly", name: "高齢者（65 歳以上）", nameEn: "Older Adults",
+          lede: "足すものと、やめどきを決めるものの両方。ワクチンは日本の定期接種 B 類が動く年齢帯で、逆にがん検診は上限を意識する時期に入る。日本の指針には中止年齢の規定がないため、判断が現場に委ねられる。",
+          items: ["vx-flu", "vx-pneumo", "vx-covid", "vx-rsv", "vx-zoster", "sc-falls", "sc-osteo", "sc-depression", "ca-breast", "ca-cervix", "ca-prostate", "ca-crc"],
+          key: [
+            ["肺炎球菌（日本）", "定期接種 B 類は「65 歳ちょうど」と所定の 60〜64 歳のみ、PCV20 を 1 回。66 歳以上に経過措置はなく自費"],
+            ["帯状疱疹（日本）", "2025 年度から定期接種 B 類。65 歳と、経過措置で 2025〜2029 年度は 70・75・80・85・90・95・100 歳"],
+            ["インフルエンザ（日本）", "65 歳以上が定期接種 B 類。令和 8 年度中から 75 歳以上は高用量 HA ワクチンも選べる"],
+            ["RS ウイルス", "米国は 75 歳以上全員に 1 回。日本の高齢者への接種は任意（公費助成なし）"],
+            ["転倒", "65 歳以上で転倒リスクが高ければ運動介入（B）。向精神薬の減量と家屋評価も効く"],
+            ["がん検診のやめどき", "前立腺は 70 歳以上に推奨しない（D）。乳がんは 75 歳以上が I。子宮頸は 65 歳超が D（適切な検診歴があり高リスクでない場合）。大腸は 76〜85 歳が C"]
+          ],
+          gap: "ワクチンは日本の制度が年齢を細かく区切るため、「65 歳ちょうど」「経過措置の年齢」を外すと自費になる。がん検診は逆に、米国が上限と中止を明示するのに対し日本の指針に中止年齢の規定がなく、やめる判断の根拠を現場で作る必要がある。"
+        },
+        {
+          id: "tp-immuno", name: "免疫不全・免疫抑制", nameEn: "Immunocompromised",
+          lede: "ステロイド・生物学的製剤・移植後・HIV・無脾・透析・悪性腫瘍治療中など。ワクチンの対象年齢が前倒しになる一方、生ワクチンが使えなくなるのがこの領域の骨格。",
+          items: ["vx-pneumo", "vx-zoster", "vx-flu", "vx-covid", "vx-hbv", "vx-mmr"],
+          key: [
+            ["肺炎球菌", "19〜49 歳でも免疫不全・髄液漏・人工内耳があれば対象。PCV15 を使った場合、免疫不全では 8 週後に PPSV23（通常は 1 年以上）"],
+            ["帯状疱疹", "免疫不全・免疫抑制状態では 19 歳以上から組換えワクチン 2 回。生ワクチンは使えない"],
+            ["麻疹・風疹・水痘・ムンプス", "いずれも生ワクチン。免疫抑制下では接種の可否を個別に判断する"],
+            ["B 型肝炎", "透析・HIV・慢性肝疾患などは高リスクとして接種対象"],
+            ["新型コロナ", "重症化リスクが高い群では利益が大きい"],
+            ["日本の定期接種", "60〜64 歳で HIV による免疫機能障害があれば、インフルエンザ・肺炎球菌・新型コロナが定期接種 B 類の対象"]
+          ],
+          gap: "米国は免疫不全を理由に年齢を前倒しする設計（帯状疱疹 19 歳、肺炎球菌 19 歳）が明確。日本の定期接種で免疫不全を理由に対象になるのは、HIV による免疫機能障害の 60〜64 歳など限られた枠で、それ以外は任意接種になる。"
+        },
+        {
+          id: "tp-mental", name: "こころ・依存", nameEn: "Mental Health & Substance Use",
+          lede: "問診で拾う領域。どれも「聞かなければ出てこない」ものばかりで、スクリーニングツールは診断ではなく入口にすぎない。日本では有病率が米国より低い一方、自殺死亡率は先進国で最高水準という、ずれた形の重さがある。",
+          items: ["sc-depression", "sc-anxiety", "sc-alcohol", "sc-drug", "sc-ipv", "co-smoking"],
+          key: [
+            ["うつ病", "19 歳以上の全成人に（B）。PHQ-9・PHQ-2・GDS・EPDS。自殺リスクのスクリーニングは I"],
+            ["不安症", "19〜64 歳に（B）。65 歳以上は証拠不十分（I）。GAD-7 など"],
+            ["飲酒", "節度ある飲酒はビール 500 mL ／ 日本酒 1 合 ／ ワイン小グラス 2 杯 相当まで"],
+            ["薬物使用", "18 歳以上に問診で聞く（B）。検体検査ではない。紹介先を確保したうえで聞く"],
+            ["IPV", "生殖年齢の女性に（B）。高齢者・脆弱な成人への虐待スクリーニングは I"],
+            ["日本の数字", "うつ病の 12 か月有病率 1〜2%、自殺死亡率 人口 10 万対 15.7。不安症の生涯有病率 8.1%、治療を受けているのは 5 人に 1 人"]
+          ],
+          gap: "米国は自殺リスクのスクリーニングを「証拠不十分」とするが、日本は自殺死亡率が先進国で最高水準で、臨床では希死念慮の確認が実務上重要になる。エビデンスの評価と現場の必要性がずれる。薬物使用も有病率が 2 桁違い（日本 2.3%）、一律のスクリーニングより疑われる場面での聴取が現実的。"
+        },
+        {
+          id: "tp-women", name: "女性のヘルスメンテナンス", nameEn: "Women's Health",
+          lede: "がん検診・遺伝性リスク・骨・妊娠可能性・暴力を、女性の外来でひととおり拾うための通し。年齢によって主役が入れ替わるので、若年は子宮頸と性感染症、中年は乳腺、閉経後は骨、という当たりを付けて読むとよい。",
+          items: ["ca-breast", "ca-cervix", "ca-brca", "ca-breast-rx", "sc-osteo", "co-folate", "sc-ipv", "sc-sti", "vx-hpv"],
+          key: [
+            ["乳がん", "日本は 40 歳以上・2 年に 1 回（推奨 40〜69 歳）、視触診は非推奨。高濃度乳房は 40 歳台で 54.9〜68.8%"],
+            ["子宮頸がん", "日本は細胞診 20 歳以上・2 年ごと、HPV 単独法 30 歳以上・5 年ごと（30 歳から 5 歳刻みの節目年齢）"],
+            ["BRCA", "乳がん・卵巣がん等の既往や家族歴があれば家族歴リスク評価ツールで評価 → 陽性なら遺伝カウンセリング（B）。2026 年 6 月から発症者の第一度近親者への検査が保険適用"],
+            ["骨密度", "65 歳以上の女性。65 歳未満は閉経後＋危険因子＋リスク評価ツールの二段階"],
+            ["葉酸", "妊娠の可能性がある人に 400〜800 μg/日"],
+            ["クラミジア・淋菌", "性交歴のある 24 歳以下の女性、または高リスクの 25 歳以上"],
+            ["HPV ワクチン", "日本の定期接種は小学校 6 年〜高校 1 年相当の女子。15 歳未満で開始すれば 9 価は 2 回"]
+          ],
+          gap: "子宮頸がんは日本のほうが若く・頻回に検診するが、上限の規定がない。乳がんは日本人に高濃度乳房が多く感度が下がるものの、超音波の追加は米国でも I（証拠不十分）で解決策になっていない。乳がんの化学予防は、リスク評価ツール（Gail モデル）が日本人に適用できず、タモキシフェンの予防投与も保険適用外で、米国の推奨をそのまま持ち込めない。"
+        }
+      ];
+
+      /* =====================================================================
+         描画
+         ===================================================================== */
+      var scope = "hit", catFilter = "", topicFilter = "";
+
+      /* id → ITEMS の要素。各論は id の参照しか持たないのでここで引く */
+      var BY_ID = {};
+      ITEMS.forEach(function (it) { BY_ID[it.id] = it; });
+
+      function gradeTag(g) {
+        if (!g || g === "—") { return ""; }
+        if (g === "ACIP") { return '<span class="tag tag--jp">ACIP</span>'; }
+        return '<span class="tag tag--grade" data-g="' + g + '">' + g + "</span>";
+      }
+      function gapTag(gap) { return gap ? '<span class="tag tag--gap">日米差</span>' : ""; }
+      function esc(s) {
+        return String(s == null ? "" : s)
+          .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      }
+
+      function actionLi(item, r) {
+        var li = document.createElement("li");
+        li.className = "action--" + (r.prio || LOW);
+        var html = '<span class="act-ttl">' + esc(r.head) + gradeTag(item.us.grade) + gapTag(item.gap) +
+                   (r.when ? '<span class="act-when">' + r.when + "</span>" : "") + "</span>";
+        if (r.why) { html += '<span class="act-why">' + esc(r.why) + "</span>"; }
+        if (r.note) { html += '<span class="act-line">' + esc(r.note) + "</span>"; }
+        html += '<span class="act-line"><a href="#card-' + item.id + '">根拠（米国／日本）を見る</a></span>';
+        li.innerHTML = html;
+        return li;
+      }
+
+      function cardHtml(item, r) {
+        var stLabel = "";
+        if (r) {
+          stLabel = { due: "いま実施", sdm: "共同意思決定", sched: "次回予定", done: "実施済み・期間内", na: "対象外" }[r.st] || "";
+        }
+        var h = '<div class="rec-card" id="card-' + item.id + '">';
+        h += '<div class="rec-card__h"><span class="cat">' + CAT_LABEL[item.cat] + "</span>" +
+             esc(item.title) + gradeTag(item.us.grade) + gapTag(item.gap) +
+             (stLabel ? '<span class="tag tag--jp">' + stLabel + (r.when ? " " + r.when : "") + "</span>" : "") +
+             "</div>";
+        h += '<div class="rec-cols">';
+        h += '<div class="rec-col"><h4>米国（USPSTF / ACIP）</h4><p>' + esc(item.us.body) + "</p></div>";
+        h += '<div class="rec-col"><h4>日本</h4><p>' + esc(item.jp.body) + "</p></div>";
+        h += "</div>";
+        if (item.gap) { h += '<div class="rec-gap"><b>差分</b>　' + esc(item.gap) + "</div>"; }
+        if (item.note) { h += '<div class="rec-gap"><b>注意</b>　' + esc(item.note) + "</div>"; }
+        if (item.src && item.src.length) {
+          h += '<div class="rec-src">出典：' + item.src.map(function (s) {
+            return '<a href="' + s.url + '" rel="noopener noreferrer" target="_blank">' + esc(s.label) + "</a>";
+          }).join(" ／ ") + "</div>";
+        }
+        h += "</div>";
+        return h;
+      }
+
+      /* ---- 各論タイル（一度だけ組み立てる） ---- */
+      function buildTopicTiles() {
+        var grid = el("topic-grid");
+        grid.innerHTML = TOPICS.map(function (t) {
+          return '<button type="button" class="topic-tile" data-topic="' + t.id + '" aria-pressed="false">' +
+                 '<span class="topic-tile__en" lang="en">' + esc(t.nameEn) + "</span>" +
+                 '<span class="topic-tile__ja">' + esc(t.name) + "</span>" +
+                 '<span class="topic-tile__n"><b>' + t.items.length + "</b> 項目</span>" +
+                 "</button>";
+        }).join("");
+      }
+
+      function topicBannerHtml(t) {
+        var h = '<div class="topic-banner">';
+        h += '<div class="topic-banner__h">' +
+             '<span class="topic-banner__en" lang="en">' + esc(t.nameEn) + "</span>" +
+             '<span class="topic-banner__ja">' + esc(t.name) + "</span>" +
+             '<button type="button" class="topic-banner__clear" id="topic-clear">解除</button>' +
+             "</div>";
+        h += '<p class="topic-banner__lede">' + esc(t.lede) + "</p>";
+        if (t.key && t.key.length) {
+          h += '<div class="topic-key"><h4>押さえる数字</h4><table class="topic-key__t"><tbody>' +
+               t.key.map(function (r) {
+                 return "<tr><th>" + esc(r[0]) + "</th><td>" + esc(r[1]) + "</td></tr>";
+               }).join("") + "</tbody></table></div>";
+        }
+        if (t.gap) {
+          h += '<div class="topic-banner__gap"><h4>日米差の勘所</h4><p>' + esc(t.gap) + "</p></div>";
+        }
+        h += "</div>";
+        return h;
+      }
+
+      function memoText(p, groups) {
+        var head = ["【予防医療プラン " + todayStr() + "】"];
+        var prof = [];
+        if (p.age !== null) { prof.push(p.age + " 歳"); }
+        prof.push(p.sex === "male" ? "男性" : (p.sex === "female" ? "女性" : "性別未入力"));
+        if (p.bmi !== null) { prof.push("BMI " + p.bmi.toFixed(1)); }
+        if (p.smoke === "current") { prof.push("現在喫煙 " + Math.round(p.py) + "PY"); }
+        else if (p.smoke === "former") { prof.push("禁煙" + (p.quit !== null ? " " + p.quit + " 年" : "")); }
+        head.push("背景：" + prof.join("／"));
+        head.push("");
+
+        function block(title, rows, withWhen) {
+          if (!rows.length) { return []; }
+          var out = ["■ " + title];
+          rows.forEach(function (x) {
+            var line = "・" + x.r.head;
+            if (withWhen && x.r.when) { line += "（" + x.r.when + " 予定）"; }
+            if (x.r.why) { line += " ／ " + x.r.why; }
+            out.push(line);
+            if (x.r.note) { out.push("　　" + x.r.note); }
+          });
+          out.push("");
+          return out;
+        }
+        var body = []
+          .concat(block("本日実施", groups.due, false))
+          .concat(block("本人と相談して決める", groups.sdm, false))
+          .concat(block("次回予定", groups.sched, true))
+          .concat(block("毎回の受診で確認する定型項目", groups.routine, false));
+
+        var na = groups.na.map(function (x) { return "・" + x.item.title + "：" + (x.r.why || ""); });
+        if (na.length) { body = body.concat(["■ 対象外・実施済み"], na, [""]); }
+
+        body.push("※ USPSTF・ACIP の推奨と日本の制度（対策型がん検診・定期接種 B 類・特定健診）を照合した結果。適用は個別に判断すること。");
+        return head.concat(body).join("\n");
+      }
+
+      function render() {
+        var p = collect();
+
+        /* 読み取り専用の計算欄 */
+        el("bmi-out").value = p.bmi === null ? "—" : p.bmi.toFixed(1);
+        el("py-out").value = (p.py > 0) ? (Math.round(p.py * 10) / 10) + " PY ／ 指数 " + Math.round(p.bi) : "—";
+
+        var groups = { due: [], sdm: [], sched: [], routine: [], na: [] };
+        var evals = {};
+
+        ITEMS.forEach(function (item) {
+          var r = null;
+          try { r = item.ev(p); } catch (e) { r = null; }
+          evals[item.id] = r;
+          if (!r) { return; }
+          if (r.st === DUE) {
+            /* 血圧・飲酒量・気分・暴力・薬物のように「問診で毎回拾えばよい」ものは別枠へ。
+               検査やワクチンのように実際に発注するものは、優先度が低くても上に残す。
+               ここを分けないと、今日動くべき項目が定型の中に埋もれる。 */
+            var routine = (r.prio === LOW &&
+                           (item.cat === "screening" || item.cat === "counseling"));
+            (routine ? groups.routine : groups.due).push({ item: item, r: r });
+          }
+          else if (r.st === SDM) { groups.sdm.push({ item: item, r: r }); }
+          else if (r.st === SCHED) { groups.sched.push({ item: item, r: r }); }
+          else { groups.na.push({ item: item, r: r }); }
+        });
+
+        var order = { high: 0, med: 1, low: 2 };
+        function byPrio(a, b) { return (order[a.r.prio] || 2) - (order[b.r.prio] || 2); }
+        groups.due.sort(byPrio);
+        groups.sdm.sort(byPrio);
+        groups.sched.sort(function (a, b) { return (a.r.when || "").localeCompare(b.r.when || ""); });
+
+        [["due", "list-due", "n-due", "empty-due"],
+         ["sdm", "list-sdm", "n-sdm", "empty-sdm"],
+         ["sched", "list-sched", "n-sched", "empty-sched"],
+         ["routine", "list-routine", "n-routine", "empty-routine"]]
+          .forEach(function (t) {
+            var box = el(t[1]), rows = groups[t[0]];
+            box.innerHTML = "";
+            el(t[2]).textContent = rows.length;
+            el(t[3]).hidden = rows.length > 0;
+            rows.forEach(function (x) { box.appendChild(actionLi(x.item, x.r)); });
+          });
+
+        el("n-na").textContent = groups.na.length;
+        el("list-na").innerHTML = groups.na.map(function (x) {
+          return "<li><b>" + esc(x.item.title) + "</b> — " + esc(x.r.why || "") + "</li>";
+        }).join("") || "<li>該当なし。</li>";
+
+        el("hdr-due").textContent = groups.due.length;
+        el("hdr-sched").textContent = groups.sched.length;
+
+        /* 根拠カード。各論を選んでいるときは、その並び順のまま全項目を出す */
+        var topic = topicFilter ? TOPICS.filter(function (t) { return t.id === topicFilter; })[0] : null;
+        var shown, banner = "";
+        if (topic) {
+          banner = topicBannerHtml(topic);
+          shown = topic.items.map(function (id) { return BY_ID[id]; })
+                             .filter(function (it) { return !!it; });
+          el("card-count").textContent = "各論「" + topic.name + "」" + shown.length + " 項目";
+        } else {
+          shown = ITEMS.filter(function (item) {
+            if (catFilter && item.cat !== catFilter) { return false; }
+            if (scope === "all") { return true; }
+            var r = evals[item.id];
+            return !!(r && (r.st === DUE || r.st === SDM || r.st === SCHED));
+          });
+          el("card-count").textContent = shown.length + " ／ 全 " + ITEMS.length + " 項目";
+        }
+        el("card-area").innerHTML = banner + (shown.length
+          ? shown.map(function (item) { return cardHtml(item, evals[item.id]); }).join("")
+          : '<p class="action-empty">表示できる項目がありません。「全項目」に切り替えるか、患者背景を入力してください。</p>');
+
+        /* 各論選択中は、既存の絞り込みは効かないので沈めておく */
+        Array.prototype.forEach.call(document.querySelectorAll(".card-toolbar .seg"), function (s) {
+          s.classList.toggle("is-off", !!topic);
+        });
+        Array.prototype.forEach.call(document.querySelectorAll(".topic-tile"), function (b) {
+          b.setAttribute("aria-pressed", b.getAttribute("data-topic") === topicFilter ? "true" : "false");
+        });
+        var clear = el("topic-clear");
+        if (clear) { clear.addEventListener("click", function () { setTopic(""); }); }
+
+        el("memo-text").value = memoText(p, groups);
+      }
+
+      /* =====================================================================
+         イベント
+         ===================================================================== */
+      document.addEventListener("input", render);
+      document.addEventListener("change", function (e) {
+        var t = e.target;
+        if (t && t.getAttribute && t.getAttribute("data-sv")) {
+          var body = el(t.getAttribute("data-sv"));
+          if (body) { body.hidden = !t.checked; }
+        }
+        render();
+      });
+
+      /* 各論の選択・解除。空文字を渡すと解除 */
+      function setTopic(id, scroll) {
+        topicFilter = (topicFilter === id) ? "" : id;   /* 同じタイルをもう一度押したら解除 */
+        render();
+        if (topicFilter && scroll) {
+          el("cards").scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+
+      el("topic-grid").addEventListener("click", function (e) {
+        var b = e.target.closest ? e.target.closest(".topic-tile") : null;
+        if (b) { setTopic(b.getAttribute("data-topic"), true); }
+      });
+
+      Array.prototype.forEach.call(document.querySelectorAll(".seg button"), function (b) {
+        b.addEventListener("click", function () {
+          var group = b.parentNode;
+          Array.prototype.forEach.call(group.querySelectorAll("button"), function (o) {
+            o.setAttribute("aria-pressed", o === b ? "true" : "false");
+          });
+          if (b.hasAttribute("data-scope")) { scope = b.getAttribute("data-scope"); }
+          else { catFilter = b.getAttribute("data-cat"); }
+          topicFilter = "";   /* カテゴリ・表示範囲を触ったら各論は解除する */
+          render();
+        });
+      });
+
+      el("btn-copy").addEventListener("click", function () {
+        var ta = el("memo-text");
+        ta.removeAttribute("readonly");
+        ta.select();
+        var ok = false;
+        try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+        ta.setAttribute("readonly", "readonly");
+        window.getSelection().removeAllRanges();
+        if (!ok && navigator.clipboard) { navigator.clipboard.writeText(ta.value); ok = true; }
+        this.textContent = ok ? "コピーしました" : "コピーできません";
+        var btn = this;
+        setTimeout(function () { btn.textContent = "コピー"; }, 1800);
+      });
+
+      el("btn-reset").addEventListener("click", function () {
+        if (!window.confirm("入力をすべて消します。よろしいですか。")) { return; }
+        Array.prototype.forEach.call(document.querySelectorAll("input, select"), function (n) {
+          if (n.type === "checkbox") { n.checked = false; }
+          else if (n.tagName === "SELECT") { n.selectedIndex = 0; }
+          else if (!n.readOnly) { n.value = ""; }
+        });
+        Array.prototype.forEach.call(document.querySelectorAll(".sv-body"), function (n) { n.hidden = true; });
+        render();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      buildTopicTiles();
+      render();
+    })();
+  </script>
+</body>
+</html>
