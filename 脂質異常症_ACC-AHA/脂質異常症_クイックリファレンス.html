@@ -21,6 +21,78 @@
       padding-bottom: 24px;
     }
 
+    /* ---- 1分でわかるキーポイント ---- */
+    .sp-only { display: none; }
+    @media (max-width: 520px) { .sp-only { display: inline; } }
+    .kp1 {
+      margin: 0 0 32px;
+      background: var(--lg-white);
+      border: 1px solid var(--lg-line-soft);
+      border-radius: var(--lg-r);
+      box-shadow: var(--lg-shadow);
+      overflow: hidden;
+    }
+    .kp1__hero { padding: 26px 28px 22px; background: var(--lg-ink); color: var(--lg-white); }
+    .kp1__kicker { display: block; font-family: var(--lg-en); font-size: .75rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; opacity: .7; }
+    .kp1__ttl { margin: .35em 0 0; font-family: var(--lg-mincho); font-size: clamp(1.3rem, 3.6vw, 1.75rem); font-weight: 900; line-height: 1.45; letter-spacing: .05em; color: var(--lg-white); }
+    .kp1__lede { margin: .6em 0 0; font-size: .875rem; opacity: .85; }
+
+    .kp1__flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; margin: 0; padding: 24px 28px 8px; list-style: none; counter-reset: none; }
+    .kp1__flow li { position: relative; display: flex; flex-direction: column; gap: .35em; padding: 16px 16px 14px; font-size: .8125rem; line-height: 1.75; background: color-mix(in srgb, var(--lg-green-lt) 8%, var(--lg-white)); border-radius: var(--lg-r-sm); }
+    .kp1__flow li + li::before {
+      content: "→"; position: absolute; left: -22px; top: 50%; transform: translateY(-50%);
+      font-size: 1.1rem; color: var(--lg-green-lt);
+    }
+    .kp1__flow b { font-family: var(--lg-mincho); font-size: 1rem; color: var(--lg-ink); letter-spacing: .04em; }
+    .kp1__flow strong { color: var(--lg-ink); }
+    .kp1__no { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; font-family: var(--lg-en); font-weight: 700; font-size: .95rem; color: var(--lg-white); background: var(--lg-ink); border-radius: 50%; }
+    @media (max-width: 760px) {
+      .kp1__flow { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+      .kp1__flow li + li::before { content: "↓"; left: 50%; top: -20px; transform: translateX(-50%); }
+    }
+
+    .kp1__charts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; padding: 16px 28px 4px; }
+    @media (max-width: 760px) { .kp1__charts { grid-template-columns: minmax(0, 1fr); } }
+    .kp1__fig { margin: 0; padding: 16px 18px 14px; border: 1px solid var(--lg-line-soft); border-radius: var(--lg-r-sm); }
+    .kp1__fig figcaption { margin-bottom: 12px; }
+    .kp1__fig figcaption b { display: block; font-family: var(--lg-mincho); font-size: .9375rem; color: var(--lg-ink); letter-spacing: .04em; }
+    .kp1__fig figcaption span { font-size: .6875rem; color: var(--lg-text-sub); }
+    .kp1__note, .kp1__example { margin: 10px 0 0; font-size: .75rem; line-height: 1.75; color: var(--lg-text-sub); }
+    .kp1__note a { color: var(--lg-blue); }
+    .kp1__example { padding: 8px 10px; color: var(--lg-text); background: var(--lg-paper2); border-radius: var(--lg-r-xs); }
+    .kp1__example strong { color: var(--lg-ink); }
+
+    /* 横棒（目標 LDL）と範囲の棒（追加低下）：単一系列。色は同じ緑の濃淡＝リスク・効果の大きさ */
+    @media (min-width: 521px) { .hbar__lab { white-space: nowrap; } }
+    .hbar__row, .rbar__row { display: grid; grid-template-columns: 12.5em minmax(0, 1fr) 4.2em; align-items: center; gap: 10px; margin-bottom: 9px; font-size: .75rem; }
+    @media (max-width: 520px) { .hbar__row { grid-template-columns: 7.8em minmax(0, 1fr) 3.6em; } }
+    .rbar__row { grid-template-columns: 6.5em minmax(0, 1fr) 4.6em; }
+    .hbar__lab, .rbar__lab { line-height: 1.35; color: var(--lg-text); }
+    .hbar__track, .rbar__track { position: relative; height: 14px; background: var(--lg-paper2); border-radius: 4px; }
+    .hbar__bar { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 4px 4px 0; }
+    .rbar__bar { position: absolute; top: 0; bottom: 0; border-radius: 4px; min-width: 8px; }
+    .s1 { background: var(--lg-green-lt); }
+    .s2 { background: var(--lg-green); }
+    .s3 { background: var(--lg-ink); }
+    .hbar__val, .rbar__val { font-family: var(--lg-en); font-weight: 600; font-size: .9rem; color: var(--lg-ink); white-space: nowrap; }
+    .rbar__axis { position: relative; height: 14px; margin: 0 calc(4.6em + 10px) 4px calc(6.5em + 10px); font-family: var(--lg-en); font-size: .6875rem; color: var(--lg-text-faint); }
+    .rbar__axis span { position: absolute; transform: translateX(-50%); }
+    .rbar__axis span:last-child { transform: translateX(-80%); }
+
+    .kp1__traps { margin: 16px 28px 0; padding: 14px 18px; background: color-mix(in srgb, var(--lg-amber) 8%, var(--lg-white)); border-radius: var(--lg-r-sm); }
+    .kp1__traps-ttl { margin: 0 0 6px; font-family: var(--lg-mincho); font-weight: 700; color: var(--lg-amber); letter-spacing: .05em; }
+    .kp1__traps ul { margin: 0; padding-left: 1.2em; font-size: .8125rem; line-height: 1.85; }
+    .kp1__traps b, .kp1__traps strong { color: var(--lg-ink); }
+
+    .kp1__talk { margin: 14px 28px 22px; }
+    .kp1__talk summary { cursor: pointer; font-size: .8125rem; font-weight: 700; color: var(--lg-ink); letter-spacing: .04em; }
+    .kp1__talk summary:hover { color: var(--lg-green); }
+    @media (max-width: 520px) {
+      .kp1__hero { padding: 22px 18px 18px; }
+      .kp1__flow, .kp1__charts { padding-left: 16px; padding-right: 16px; }
+      .kp1__traps, .kp1__talk { margin-left: 16px; margin-right: 16px; }
+    }
+
     /* ---- 注意書き ---- */
     .notice {
       margin: 0 0 28px;
@@ -352,6 +424,108 @@
       </p>
       <hr class="lg-pagehead__rule" />
     </div>
+
+    <!-- ============================================================
+         1分でわかるキーポイント
+         ============================================================ -->
+    <section class="kp1" id="brief" aria-labelledby="brief-ttl">
+      <div class="kp1__hero">
+        <span class="kp1__kicker" lang="en">1-minute brief</span>
+        <h2 class="kp1__ttl" id="brief-ttl">リスクで強さを決め、<br class="sp-only">目標に届くまで足す</h2>
+        <p class="kp1__lede">脂質異常症の治療は、この3ステップでほぼ説明できます。</p>
+      </div>
+
+      <ol class="kp1__flow">
+        <li>
+          <span class="kp1__no">1</span>
+          <b>リスクを測る</b>
+          <span>ASCVD の既往があれば<strong>二次予防</strong>。なければ PREVENT で10年リスク（日本は久山町スコア）。Lp(a) は一生に1回。</span>
+        </li>
+        <li>
+          <span class="kp1__no">2</span>
+          <b>スタチンと目標を決める</b>
+          <span>リスクが高いほど、スタチンは強く、<strong>目標 LDL は低く</strong>。</span>
+        </li>
+        <li>
+          <span class="kp1__no">3</span>
+          <b>届かなければ足す</b>
+          <span>まず<strong>エゼチミブ</strong>、それでも届かなければ <strong>PCSK9 阻害薬</strong>。</span>
+        </li>
+      </ol>
+
+      <div class="kp1__charts">
+        <figure class="kp1__fig">
+          <figcaption><b>リスクが高いほど、目標 LDL は低い</b><span>米国 2026 ACC/AHA の目標 LDL（mg/dL）</span></figcaption>
+          <div class="hbar" role="img" aria-label="目標LDL：二次予防・超高リスクは55未満、二次予防と一次予防の高リスクは70未満、一次予防の中間・境界は100未満">
+            <div class="hbar__row" title="二次予防・超高リスク：LDL<55（non-HDL<85）">
+              <span class="hbar__lab">二次予防・<br class="sp-only">超高リスク</span>
+              <span class="hbar__track"><span class="hbar__bar s3" style="width:55%"></span></span>
+              <span class="hbar__val">&lt;55</span>
+            </div>
+            <div class="hbar__row" title="二次予防・一次予防の高リスク（10年10%以上）：LDL<70（non-HDL<100）">
+              <span class="hbar__lab">二次予防／<br class="sp-only">一次・高リスク</span>
+              <span class="hbar__track"><span class="hbar__bar s2" style="width:70%"></span></span>
+              <span class="hbar__val">&lt;70</span>
+            </div>
+            <div class="hbar__row" title="一次予防の中間・境界（10年3〜10%未満）：LDL<100（non-HDL<130）">
+              <span class="hbar__lab">一次・中間／<br class="sp-only">境界</span>
+              <span class="hbar__track"><span class="hbar__bar s1" style="width:100%"></span></span>
+              <span class="hbar__val">&lt;100</span>
+            </div>
+          </div>
+          <p class="kp1__note">日本（2022）は二次予防 &lt;100。ACS 発症後1年以内・FH・糖尿病などでは &lt;70 を考慮。→ <a href="#quick">早見表</a></p>
+        </figure>
+
+        <figure class="kp1__fig">
+          <figcaption><b>足すと、どれだけ下がるか</b><span>スタチンに足したときの LDL の追加低下（目安）</span></figcaption>
+          <div class="rbar" role="img" aria-label="追加低下の目安：エゼチミブ20から25%、ベムペド酸15から20%、inclisiran約50%、PCSK9抗体50から60%">
+            <div class="rbar__axis" aria-hidden="true"><span style="left:0">0</span><span style="left:33.33%">20</span><span style="left:66.67%">40</span><span style="left:100%">60%</span></div>
+            <div class="rbar__row" title="エゼチミブ：約20〜25%">
+              <span class="rbar__lab">エゼチミブ</span>
+              <span class="rbar__track"><span class="rbar__bar s2" style="left:33.33%;width:8.33%"></span></span>
+              <span class="rbar__val">20〜25%</span>
+            </div>
+            <div class="rbar__row" title="ベムペド酸：約15〜20%">
+              <span class="rbar__lab">ベムペド酸</span>
+              <span class="rbar__track"><span class="rbar__bar s1" style="left:25%;width:8.33%"></span></span>
+              <span class="rbar__val">15〜20%</span>
+            </div>
+            <div class="rbar__row" title="inclisiran：約50%">
+              <span class="rbar__lab">inclisiran</span>
+              <span class="rbar__track"><span class="rbar__bar s1" style="left:81.5%;width:3%"></span></span>
+              <span class="rbar__val">約50%</span>
+            </div>
+            <div class="rbar__row" title="PCSK9抗体：約50〜60%">
+              <span class="rbar__lab">PCSK9 抗体</span>
+              <span class="rbar__track"><span class="rbar__bar s3" style="left:83.33%;width:16.67%"></span></span>
+              <span class="rbar__val">50〜60%</span>
+            </div>
+          </div>
+          <p class="kp1__example"><b>例</b>　LDL 110 で目標が &lt;70 なら、あと<strong>約4割</strong>下げる必要がある。エゼチミブ（約2割）だけでは届かない見込み → 次の手を用意しておく。</p>
+        </figure>
+      </div>
+
+      <div class="kp1__traps">
+        <p class="kp1__traps-ttl">落とし穴 3つ</p>
+        <ul>
+          <li><b>LDL 190 以上</b>はリスク計算をせずに高強度スタチン。<strong>FH を疑う</strong>。</li>
+          <li><b>日本の承認用量</b>は米国の高強度に届かない。<strong>強さより「目標に届いたか」</strong>で判断。</li>
+          <li><b>TG 500 以上</b>は<strong>膵炎の予防</strong>が目的（フィブラート）。</li>
+        </ul>
+      </div>
+
+      <details class="kp1__talk">
+        <summary>話す原稿（約1分）</summary>
+        <div class="ex" style="margin:12px 0 0">
+          <div class="ex__bar"><span>1分レクチャー用</span><button type="button" class="copybtn">コピー</button></div>
+<pre>脂質異常症の治療は3ステップです。
+まず、リスクを測ります。心筋梗塞や脳梗塞などの既往があれば二次予防。なければ PREVENT で10年リスクを出します。日本では久山町スコアを使います。
+次に、リスクに合わせてスタチンの強さと目標 LDL を決めます。リスクが高いほど目標は低く、二次予防なら70未満、超高リスクなら55未満です。
+そして、目標に届かなければ足します。まずエゼチミブ、それでも届かなければ PCSK9 阻害薬です。
+落とし穴は3つ。LDL 190以上は計算せずに高強度スタチンを始め、家族性高コレステロール血症を疑う。日本の承認用量は米国の高強度に届かないので、強さではなく目標に届いたかで判断する。中性脂肪500以上は膵炎の予防が目的です。</pre>
+        </div>
+      </details>
+    </section>
 
     <div class="notice">
       <b>このページの前提</b>
