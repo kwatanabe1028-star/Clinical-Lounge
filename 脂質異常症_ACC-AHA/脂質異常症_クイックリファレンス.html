@@ -237,6 +237,28 @@
     .ck small { color: var(--lg-text-sub); }
     .prev { margin: 0 0 12px; padding: 10px 12px; font-size: .78125rem; line-height: 1.7; color: var(--lg-text); background: color-mix(in srgb, var(--lg-green-lt) 8%, var(--lg-white)); border: 1px solid color-mix(in srgb, var(--lg-green-lt) 22%, var(--lg-white)); border-radius: var(--lg-r-sm); }
     .prev b { font-family: var(--lg-en); font-size: 1.05rem; color: var(--lg-ink); }
+    .scores { margin: 0 0 6px; padding: 0; list-style: none; font-size: .8125rem; line-height: 1.7; }
+    .scores li { padding: .5em .75em; margin-bottom: 6px; border-radius: var(--lg-r-xs); background: var(--lg-paper2); color: var(--lg-text-sub); }
+    .scores li.ok { background: color-mix(in srgb, var(--lg-green) 10%, var(--lg-white)); color: var(--lg-text); }
+    .scores b, .scorebar b { font-family: var(--lg-en); font-size: 1.05em; color: var(--lg-ink); }
+    /* スマホ：計算の欄にいる間だけ、画面下に2つのスコアを固定表示 */
+    .scorebar { display: none; }
+    @media (max-width: 900px) {
+      .scorebar {
+        position: fixed; left: 0; right: 0; bottom: 0; z-index: 90;
+        display: flex; flex-direction: column; gap: 2px;
+        padding: 8px 16px calc(8px + env(safe-area-inset-bottom));
+        font-size: .75rem; line-height: 1.6; color: var(--lg-text-sub);
+        background: color-mix(in srgb, var(--lg-white) 94%, transparent);
+        -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+        border-top: 1px solid var(--lg-line);
+        box-shadow: 0 -4px 16px rgb(28 53 48 / 8%);
+        transform: translateY(110%); transition: transform .25s ease;
+      }
+      .scorebar .ok { color: var(--lg-text); }
+      .scorebar.is-on { transform: none; }
+      body.has-scorebar { padding-bottom: 72px; }
+    }
     .grp-ttl { margin: 4px 0 8px; font-size: .75rem; font-weight: 700; color: var(--lg-text-sub); letter-spacing: .04em; }
 
     .out {
@@ -348,7 +370,7 @@
       <li><a href="#secondary"><span class="n">4</span>二次予防</a></li>
       <li><a href="#addon"><span class="n">5</span>スタチンに足す薬</a></li>
       <li><a href="#safety"><span class="n">6</span>経過観察・副作用</a></li>
-      <li><a href="#tg"><span class="n">7</span>高TG血症</a></li>
+      <li><a href="#htg"><span class="n">7</span>高TG血症</a></li>
       <li><a href="#special"><span class="n">8</span>特殊な患者</a></li>
       <li><a href="#xanthoma"><span class="n">9</span>黄色腫</a></li>
       <li><a href="#ref"><span class="n">—</span>出典</a></li>
@@ -499,6 +521,8 @@
               <span class="int" id="o-int">年齢と既往を入れてください</span>
             </div>
             <div class="out__body">
+              <h4>リスクスコア（自動計算）</h4>
+              <ul class="scores" id="o-scores"></ul>
               <h4>目標と現在の値</h4>
               <table class="goal" id="o-goal"><tbody><tr><td class="st--na">—</td></tr></tbody></table>
               <p class="derived" id="o-derived"></p>
@@ -801,7 +825,7 @@ P: いったん中止し症状が消えるか確認。消えたら別のスタ�
     <!-- ============================================================
          7. 高TG血症
          ============================================================ -->
-    <section class="sec" id="tg">
+    <section class="sec" id="htg">
       <div class="lg-secttl">
         <span class="lg-secttl__en" lang="en">Hypertriglyceridemia</span>
         <span class="lg-secttl__jp">高TG血症</span>
@@ -913,6 +937,7 @@ P: 妊娠を試みる1〜2か月前にスタチンを中止する方針を説明
   </div>
 </main>
 
+<div class="scorebar" id="scorebar" aria-live="polite" aria-label="リスクスコアの自動計算結果"></div>
 <div id="lg-footer"></div>
 <script src="../assets/lounge.js"></script>
 <script>
@@ -1134,7 +1159,9 @@ P: 妊娠を試みる1〜2か月前にスタチンを中止する方針を説明
     }
     if (p.r10 == null) {
       r.cat = "一次予防（10年リスク未入力）";
-      r.intensity = "PREVENT の10年リスクを入れてください";
+      r.intensity = (p.prev && p.prev.missing.length) ? p.prev.missing.join("・") + " を入れると PREVENT を自動で計算します"
+        : (p.prev && p.prev.range.length) ? "PREVENT の範囲外（" + p.prev.range.join("、") + "）。10年リスクを手で入れてください"
+        : "PREVENT の10年リスクを入れてください";
       r.ready = false; return r;
     }
     var hiRF = p.smoke || p.fh || p.famhx || (p.dm && p.age > 40);
@@ -1379,6 +1406,18 @@ P: 妊娠を試みる1〜2か月前にスタチンを中止する方針を説明
     }
     $("hs-out").innerHTML = hh;
 
+    // 結果の枠の先頭とスマホの下部バーに、2つのスコアを常に出す
+    var prevS, hsS, prevOk = false, hsOk = false;
+    if (pv.skip) prevS = "PREVENT：対象外（ASCVD の既往あり）";
+    else if (pv.r10 != null) { prevOk = true; prevS = "PREVENT 10年 <b>" + pv.r10.toFixed(1) + "%</b>" + (pv.r30 != null ? "・30年 <b>" + pv.r30.toFixed(1) + "%</b>" : ""); }
+    else if (pv.range.length) prevS = "PREVENT：範囲外（" + esc(pv.range.join("、")) + "）";
+    else prevS = "PREVENT：未入力 — " + esc(pv.missing.join("・"));
+    if (hs) { hsOk = true; hsS = "久山町 <b>" + hs.total + "点</b>・<b>" + (hs.risk == null ? "1.0%未満" : hs.risk.toFixed(1) + "%") + "</b>（" + { low: "低", mid: "中", high: "高" }[hs.cls] + "リスク）"; }
+    else if (p.age != null && (p.age < 40 || p.age >= 80)) hsS = "久山町：対象外（40〜79歳）";
+    else hsS = "久山町：未入力 — " + esc(miss.join("・"));
+    $("o-scores").innerHTML = '<li class="' + (prevOk ? "ok" : "") + '">' + prevS + '</li><li class="' + (hsOk ? "ok" : "") + '">' + hsS + "</li>";
+    $("scorebar").innerHTML = '<span class="' + (prevOk ? "ok" : "") + '">' + prevS + '</span><span class="' + (hsOk ? "ok" : "") + '">' + hsS + "</span>";
+
     $("o-cat").textContent = r.cat || "—";
     $("o-int").textContent = r.intensity || "";
 
@@ -1449,6 +1488,16 @@ P: 妊娠を試みる1〜2か月前にスタチンを中止する方針を説明
   // ---------------------------------------------------------------
   // イベント
   // ---------------------------------------------------------------
+  // 入力欄が画面に入っている間だけ下部バーを出す（スマホ幅のみ CSS で表示）
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (es) {
+      var on = es[0].isIntersecting;
+      $("scorebar").classList.toggle("is-on", on);
+      document.body.classList.toggle("has-scorebar", on);
+    }, { rootMargin: "0px 0px -40% 0px" }).observe($("calc-in"));
+  } else {
+    $("scorebar").classList.add("is-on");
+  }
   $("calc-in").addEventListener("input", render);
   $("calc-in").addEventListener("change", render);
 
