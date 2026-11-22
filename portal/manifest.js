@@ -1,15 +1,15 @@
 /* Auto-generated from desks.json / news.json — do not edit by hand. */
 window.PORTAL_MANIFEST = {
-  "version": "1.7.0",
+  "version": "1.7.1",
   "updated": "2026-11-23",
-  "changelogNote": "デスク「循環器・代謝」と脂質異常症クイックリファレンスを追加",
+  "changelogNote": "デスク「循環器・代謝」を臓器別の「循環器」に改名",
   "desks": [
     {
-      "id": "desk-cardiometabolic",
+      "id": "desk-cardiology",
       "roleLabel": "Clinical desk",
-      "nameEn": "Cardiometabolic",
-      "name": "循環器・代謝",
-      "lede": "外来で引く循環器・代謝の要点。リスク区分から目標値と次の一手を出し、カルテ記載例もそのまま使える。",
+      "nameEn": "Cardiology",
+      "name": "循環器",
+      "lede": "外来で引く循環器の要点。リスク区分から目標値と次の一手を出し、カルテ記載例もそのまま使える。",
       "keywords": [
         "循環器",
         "代謝",
