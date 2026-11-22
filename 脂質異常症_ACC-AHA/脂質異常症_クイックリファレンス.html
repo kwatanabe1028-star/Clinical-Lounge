@@ -414,7 +414,9 @@
 
           <fieldset>
             <legend>リスクの見積もり（ASCVD の既往がない人）</legend>
+            <p class="grp-ttl">自動計算の結果（米国：PREVENT／日本：久山町スコア）</p>
             <div class="prev" id="prev-out" aria-live="polite">PREVENT（ASCVD）：年齢・性別・収縮期血圧・eGFR・総コレステロール・HDL を入れると自動で計算します</div>
+            <div class="prev" id="hs-out" aria-live="polite">久山町スコア：年齢・性別・収縮期血圧・LDL・HDL を入れると自動で計算します</div>
             <div class="row">
               <label class="f"><span>10年リスク（%）を手で入れる</span><input type="number" id="r10" min="0" max="100" step="0.1" placeholder="空欄なら自動"></label>
               <label class="f"><span>30年リスク（%）を手で入れる</span><input type="number" id="r30" min="0" max="100" step="0.1" placeholder="空欄なら自動"></label>
@@ -1324,7 +1326,7 @@ P: 妊娠を試みる1〜2か月前にスタチンを中止する方針を説明
     var hs = hisayama(p);
     var T = { low: ["低リスク", 160, 190], mid: ["中リスク", 140, 170], high: ["高リスク", 120, 150] };
     var t = T[hs ? hs.cls : p.hisa];
-    var hsText = hs ? "久山町スコア " + hs.total + "点 → 10年の発症リスク " + (hs.risk == null ? "1.0% 未満" : hs.risk + "%") + "。" : "";
+    var hsText = hs ? "久山町スコア " + hs.total + "点 → 10年の発症リスク " + (hs.risk == null ? "1.0% 未満" : hs.risk.toFixed(1) + "%") + "。" : "";
     if (!t) return { cat: "一次予防（久山町スコア未計算）", ldl: null, nonhdl: null, note: join(note, "収縮期血圧を入れると久山町スコアを自動で計算します（年齢・性別・LDL・HDL も必要）。") };
     return { cat: "一次予防・" + t[0], ldl: t[1], nonhdl: t[2], hs: hsText, note: join(note, hs ? "" : "区分は手で選んだもの。", p.age >= 75 ? "75歳以上の一次予防は主治医の判断。" : "") };
   }
@@ -1348,11 +1350,34 @@ P: 妊娠を試みる1〜2か月前にスタチンを中止する方針を説明
     var pv = p.prev, ph;
     if (pv.skip) ph = "PREVENT：" + pv.skip + "。";
     else if (pv.r10 != null) {
-      ph = "PREVENT（ASCVD）自動計算：10年 <b>" + pv.r10 + "%</b>" + (pv.r30 != null ? "　30年 <b>" + pv.r30 + "%</b>" : "　30年は 30〜59歳のみ");
+      ph = "PREVENT（ASCVD）自動計算：10年 <b>" + pv.r10.toFixed(1) + "%</b>" + (pv.r30 != null ? "　30年 <b>" + pv.r30.toFixed(1) + "%</b>" : "　30年は 30〜59歳のみ");
       if (p.r10Manual || p.r30Manual) ph += "<br>手で入れた値を優先して判定しています。";
     } else if (pv.range.length) ph = "PREVENT：範囲外のため計算しません — " + esc(pv.range.join("、"));
     else ph = "PREVENT（ASCVD）：" + esc(pv.missing.join("・")) + " を入れると自動で計算します";
     $("prev-out").innerHTML = ph;
+
+    // 久山町スコア：入力欄のそばに結果か不足項目を常に出す
+    var hs = hisayama(p), hh;
+    if (hs) {
+      var clsName = { low: "低リスク", mid: "中リスク", high: "高リスク" }[hs.cls];
+      hh = "久山町スコア 自動計算：<b>" + hs.total + "</b>点 → 10年の発症リスク <b>" + (hs.risk == null ? "1.0% 未満" : hs.risk.toFixed(1) + "%") + "</b>（" + clsName + "）" +
+        "<br><span style=\"color:var(--lg-text-sub)\">内訳：性別 " + hs.pt.sex + "・血圧 " + hs.pt.sbp + "・糖代謝異常 " + hs.pt.igt + "・LDL " + hs.pt.ldl + "・HDL " + hs.pt.hdl + "・喫煙 " + hs.pt.smoke + "</span>";
+      var over = [];
+      if (p.cad || (p.stroke && p.athero)) over.push("二次予防に当たるため、目標値はスコアでは決めない");
+      else if (p.dm || p.ckd || p.pad) over.push("糖尿病・CKD・PAD があるため、スコアに関係なく高リスク");
+      if (p.fh) over.push("FH は別の目標値（LDL<100）");
+      if (over.length) hh += "<br>" + esc(over.join("。")) + "。";
+    } else {
+      var miss = [];
+      if (p.age == null) miss.push("年齢");
+      if (!p.sex) miss.push("性別");
+      if (p.sbp == null) miss.push("収縮期血圧");
+      if (p.base == null) miss.push(p.tx === 0 ? "LDL（直接法か TC・HDL・TG）" : "治療前の LDL");
+      if (p.hdl == null) miss.push("HDL");
+      if (p.age != null && (p.age < 40 || p.age >= 80)) hh = "久山町スコア：40〜79歳が対象のため計算しません";
+      else hh = "久山町スコア：" + esc(miss.join("・")) + " を入れると自動で計算します";
+    }
+    $("hs-out").innerHTML = hh;
 
     $("o-cat").textContent = r.cat || "—";
     $("o-int").textContent = r.intensity || "";
