@@ -361,8 +361,9 @@
     .flags li { padding: .45em .7em; margin-bottom: 6px; border-radius: var(--lg-r-xs); background: color-mix(in srgb, var(--lg-amber) 9%, var(--lg-white)); }
     .flags li.d { background: color-mix(in srgb, var(--lg-danger) 9%, var(--lg-white)); }
     .flags li.i { background: color-mix(in srgb, var(--lg-green-lt) 9%, var(--lg-white)); }
-    .jpbox { margin-top: 14px; padding: 12px 14px; font-size: .78125rem; line-height: 1.8; border-radius: var(--lg-r-sm); background: color-mix(in srgb, var(--lg-amber) 8%, var(--lg-white)); border: 1px solid color-mix(in srgb, var(--lg-amber) 24%, var(--lg-white)); }
-    .jpbox b { color: var(--lg-amber); }
+    /* 日本の結果は米国と同じ部品（区分の行・目標の表・次の一手）で出す。橙の囲みにしない（japan-rules 3） */
+    .jpblk .jpcat { margin: 0 0 6px; font-size: .8125rem; line-height: 1.75; color: var(--lg-text); }
+    .jpblk .jpcat b { color: var(--lg-ink); }
     .derived { font-size: .75rem; color: var(--lg-text-sub); margin: 6px 0 0; line-height: 1.7; }
     textarea.memo {
       width: 100%;
@@ -473,7 +474,7 @@
               <span class="hbar__val">&lt;100</span>
             </div>
           </div>
-          <p class="kp1__note">日本（2022）は二次予防 &lt;100。ACS 発症後1年以内・FH・糖尿病などでは &lt;70 を考慮。→ <a href="#quick">早見表</a></p>
+          <p class="kp1__note">日本（2022）は二次予防 &lt;100。急性冠症候群・FH・糖尿病などを合併すれば &lt;70 を考慮。→ <a href="#quick">早見表</a></p>
         </figure>
 
         <figure class="kp1__fig">
@@ -530,7 +531,7 @@
     <div class="notice">
       <b>このページの前提</b>
       <ul>
-        <li>軸は <b>2026 ACC/AHA 脂質異常症ガイドライン（米国）</b>です。日本の基準と違うところは、橙色の「日本で使うときの注意」に分けて書いています。</li>
+        <li>根拠は <b>2026 ACC/AHA 脂質異常症ガイドライン（米国）</b>と、<b>動脈硬化性疾患予防ガイドライン 2022年版</b>・<b>成人家族性高コレステロール血症診療ガイドライン 2022</b>（日本）です。目標値・用量・保険の条件は本文の表に米国と日本を並べ、計算とカルテ文は日本の方針を先に出します。橙色の「日本で使うときの注意」には、運用上の注意と日米で違う理由を書いています。</li>
         <li><b>米国の用量をそのまま処方しないでください。</b>米国の「高強度スタチン」の量（例：アトルバスタチン 80 mg）は、日本の承認用量を超えます。用量は日本の添付文書に従ってください。</li>
         <li>入力した値は保存も送信もしません。個人が特定される情報は入れないでください。</li>
       </ul>
@@ -559,7 +560,7 @@
         <span class="lg-secttl__jp">目標と次の一手</span>
       </div>
       <p class="lede">
-        背景と脂質の値を入れると、米国ガイドラインのリスク区分・スタチンの強さ・目標値・次の一手と、日本のガイドラインの目標値を並べて出します。
+        背景と脂質の値を入れると、日本（動脈硬化性疾患予防ガイドライン 2022）と米国（2026 ACC/AHA）のそれぞれで、リスク区分・目標値・次の一手を並べて出します。
         PREVENT 式の10年・30年リスクと久山町スコアも、入力から自動で計算します。
       </p>
 
@@ -690,21 +691,21 @@
         <div class="calc__out">
           <div class="out" aria-live="polite">
             <div class="out__head">
-              <span class="k" lang="en">US · 2026 ACC/AHA</span>
+              <span class="k" lang="en">JP · 2022 GL ／ US · 2026 ACC/AHA</span>
               <span class="cat" id="o-cat">—</span>
               <span class="int" id="o-int">年齢と既往を入れてください</span>
             </div>
             <div class="out__body">
               <h4>リスクスコア（自動計算）</h4>
               <ul class="scores" id="o-scores"></ul>
-              <h4>目標と現在の値</h4>
+              <h4>日本（動脈硬化性疾患予防ガイドライン 2022）</h4>
+              <div class="jpblk" id="o-jp"><p class="jpcat">—</p></div>
+              <h4>米国（2026 ACC/AHA）</h4>
               <table class="goal" id="o-goal"><tbody><tr><td class="st--na">—</td></tr></tbody></table>
               <p class="derived" id="o-derived"></p>
-              <h4>次の一手</h4>
               <ol class="steps" id="o-steps"><li>入力を待っています</li></ol>
               <h4>気をつけること</h4>
               <ul class="flags" id="o-flags"></ul>
-              <div class="jpbox" id="o-jp"><b>日本のガイドライン（2022）</b><br>—</div>
               <h4>カルテに貼る文</h4>
               <textarea class="memo" id="o-memo" readonly aria-label="カルテ貼付用テキスト"></textarea>
               <div class="bar">
@@ -766,26 +767,31 @@
         </div>
       </div>
 
-      <div class="jp">
-        <span class="ttl">日本で使うときの注意 — 目標値（動脈硬化性疾患予防ガイドライン 2022）</span>
+      <div class="box">
+        <h3><span class="en">JP · 動脈硬化性疾患予防ガイドライン 2022</span>リスク区分 → 治療方針 → 管理目標値</h3>
         <div class="tbl-wrap">
           <table class="tbl">
-            <thead><tr><th>区分</th><th class="num">LDL</th><th class="num">non-HDL</th></tr></thead>
+            <thead><tr><th>区分</th><th>治療方針の原則</th><th class="num">LDL</th><th class="num">non-HDL</th></tr></thead>
             <tbody>
-              <tr><td>一次予防・低リスク</td><td class="num">&lt;160</td><td class="num">&lt;190</td></tr>
+              <tr><td>一次予防・低リスク</td><td rowspan="4">まず生活習慣の改善を行った後、薬物療法の適用を考慮する<span class="sub">原則3〜6か月の生活習慣改善のあと。LDL 180 以上が続けば、生活習慣改善とともに薬物療法を考慮してもよい</span></td><td class="num">&lt;160</td><td class="num">&lt;190</td></tr>
               <tr><td>一次予防・中リスク</td><td class="num">&lt;140</td><td class="num">&lt;170</td></tr>
               <tr><td>一次予防・高リスク（糖尿病・CKD・PAD を含む）</td><td class="num">&lt;120</td><td class="num">&lt;150</td></tr>
               <tr><td>糖尿病で PAD・細小血管症（網膜症・腎症・神経障害）・喫煙のいずれかがある</td><td class="num">&lt;100<span class="sub">考慮</span></td><td class="num">&lt;130<span class="sub">考慮</span></td></tr>
-              <tr><td>二次予防（冠動脈疾患・アテローム血栓性脳梗塞）</td><td class="num">&lt;100</td><td class="num">&lt;130</td></tr>
-              <tr><td>二次予防で ACS 発症後1年以内・FH・糖尿病・冠動脈疾患とアテローム血栓性脳梗塞の合併のいずれか</td><td class="num">&lt;70<span class="sub">考慮</span></td><td class="num">&lt;100<span class="sub">考慮</span></td></tr>
-              <tr><td>家族性高コレステロール血症（成人・一次予防）</td><td class="num">&lt;100</td><td class="num">—</td></tr>
+              <tr><td>二次予防（冠動脈疾患・アテローム血栓性脳梗塞）</td><td rowspan="2">生活習慣の是正とともに薬物治療を考慮する</td><td class="num">&lt;100</td><td class="num">&lt;130</td></tr>
+              <tr><td>二次予防で急性冠症候群（ACS）・FH・糖尿病・冠動脈疾患とアテローム血栓性脳梗塞の合併のいずれか</td><td class="num">&lt;70<span class="sub">考慮</span></td><td class="num">&lt;100<span class="sub">考慮</span></td></tr>
+              <tr><td>家族性高コレステロール血症（成人・一次予防）<span class="sub">成人FH診療ガイドライン 2022</span></td><td>生活習慣の改善と同時に脂質低下療法を始める</td><td class="num">&lt;100</td><td class="num">—</td></tr>
             </tbody>
           </table>
         </div>
-        <ul style="margin-top:.6em">
-          <li>一次予防のリスク区分は<b>久山町スコア</b>（40〜79歳）で決めます。性別・収縮期血圧・糖代謝異常（糖尿病を除く）・LDL・HDL・喫煙の点数を足し、年代ごとの表で10年の発症リスクを出します。<b>2% 未満が低リスク、2〜10% 未満が中リスク、10% 以上が高リスク</b>。上の計算で自動的に出ます。</li>
-          <li>TG は空腹時 150 未満、随時 175 未満。HDL は 40 以上。</li>
+        <p class="derived">どの区分でも TG は空腹時 150 未満・随時 175 未満、HDL は 40 以上を目指す。単位は mg/dL。一次予防の区分は久山町スコア（40〜79歳）で決める（下の注意と 0章の計算）。</p>
+      </div>
+
+      <div class="jp">
+        <span class="ttl">日本で使うときの注意</span>
+        <ul>
+          <li>一次予防のリスク区分は<b>久山町スコア</b>で決めます。性別・収縮期血圧・糖代謝異常（糖尿病を除く）・LDL・HDL・喫煙の点数を足し、年代ごとの表で10年の発症リスクを出します。<b>2% 未満が低リスク、2〜10% 未満が中リスク、10% 以上が高リスク</b>。上の計算で自動的に出ます。</li>
           <li>米国と違い、<b>「スタチンの強さ」より「目標値に届いたか」</b>で考えます。日本の承認用量では米国の高強度の量に届かないため、届かなければエゼチミブなどを足します。</li>
+          <li>日本のガイドラインには米国の「超高リスク」にあたる区分はありません。二次予防で条件に当たるときに LDL&lt;70 を「考慮」します。</li>
         </ul>
       </div>
     </section>
@@ -912,14 +918,29 @@ P: スタチンは延期し生活習慣の改善を続ける。3〜7年後に CA
           <li><b>75歳超</b>：すでに飲めているスタチンは続ける。目標値は若い人と同じ。</li>
         </ul>
       </div>
+      <div class="box">
+        <h3><span class="en">JP · 動脈硬化性疾患予防ガイドライン 2022</span>日本の二次予防</h3>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>項目</th><th>米国（2026 ACC/AHA）</th><th>日本（2022）</th></tr></thead>
+            <tbody>
+              <tr><td>二次予防に入る病気</td><td>ACS・心筋梗塞・狭心症・血行再建、脳卒中・TIA、末梢動脈疾患、大動脈瘤</td><td>冠動脈疾患とアテローム血栓性脳梗塞（明らかなアテロームを伴うその他の脳梗塞を含む）<span class="sub">PAD は一次予防の高リスクに入る。TIA・大動脈瘤だけのときは二次予防の対象に挙がっていない</span></td></tr>
+              <tr><td>区分</td><td>超高リスクとそれ以外</td><td>二次予防と、条件つきで厳しい目標を考慮する群（超高リスクの区分はない）</td></tr>
+              <tr><td>目標 LDL</td><td class="num">&lt;70（超高リスク &lt;55）</td><td class="num">&lt;100<span class="sub">急性冠症候群（ACS）・FH・糖尿病・冠動脈疾患とアテローム血栓性脳梗塞の合併のいずれかで &lt;70 を考慮（ACS の時期の決まりはない）</span></td></tr>
+              <tr><td>目標 non-HDL</td><td class="num">&lt;100（超高リスク &lt;85）</td><td class="num">&lt;130<span class="sub">上の条件で &lt;100 を考慮</span></td></tr>
+              <tr><td>治療の始め方</td><td>高強度スタチン（75歳以下で開始）</td><td>生活習慣の是正とともに薬物治療を考慮する。スタチンは日本の承認用量で</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
       <div class="ex">
-        <div class="ex__bar"><span>カルテ記載例 — 超高リスクで治療を強化</span><button type="button" class="copybtn">コピー</button></div>
-<pre>#陳旧性心筋梗塞（PCI 後）、2型糖尿病、高血圧 — 二次予防（超高リスク）
-ストロングスタチン最大用量で LDL 78 / non-HDL 104 mg/dL。服薬は守れている。
-A: 主要イベント1つ＋高リスク状態3つ（PCI・糖尿病・高血圧）で超高リスク。
-   目標 LDL&lt;55・non-HDL&lt;85 に届いていない。
-P: エゼチミブ 10 mg を追加。4〜12週後に脂質を再検。
-   届かなければ PCSK9 阻害薬の追加を検討する。</pre>
+        <div class="ex__bar"><span>カルテ記載例 — 二次予防で治療を強化</span><button type="button" class="copybtn">コピー</button></div>
+<pre>#陳旧性心筋梗塞（PCI 後）、2型糖尿病、高血圧 — 二次予防
+ロスバスタチン 1日 10 mg（日本の通常の上限量）で LDL 78 / non-HDL 104 mg/dL。服薬は守れている。
+A: 日本 2022：二次予防で糖尿病あり。目標 LDL&lt;70・non-HDL&lt;100（考慮）に届いていない。
+   米国 2026：主要イベント1つ＋高リスク状態3つ（PCI・糖尿病・高血圧）で超高リスク。目標 LDL&lt;55。
+P: エゼチミブ 1日 10 mg を追加。4〜12週後に脂質を再検。
+   届かなければ PCSK9 阻害薬を検討（効能・効果の条件：心血管イベントの発現リスクが高く、スタチンで効果不十分）。</pre>
       </div>
     </section>
 
@@ -937,15 +958,15 @@ P: エゼチミブ 10 mg を追加。4〜12週後に脂質を再検。
       <div class="box">
         <div class="tbl-wrap">
           <table class="tbl">
-            <thead><tr><th>薬</th><th>LDL 低下</th><th>イベント抑制</th><th>主な副作用</th></tr></thead>
+            <thead><tr><th>薬</th><th>LDL 低下</th><th>イベント抑制</th><th>主な副作用</th><th>日本（販売・用量・効能・効果の条件）</th></tr></thead>
             <tbody>
-              <tr><td>エゼチミブ</td><td>中</td><td>あり</td><td>下痢・関節痛・腹痛、スタチン併用で肝酵素上昇</td></tr>
-              <tr><td>PCSK9 抗体<span class="sub">エボロクマブ・アリロクマブ</span></td><td>最大</td><td>あり</td><td>鼻咽頭炎・注射部位反応</td></tr>
-              <tr><td>inclisiran<span class="sub">PCSK9 を標的にした siRNA</span></td><td>大</td><td>まだ確定していない</td><td>注射部位反応・関節痛・尿路感染・下痢</td></tr>
-              <tr><td>ベムペド酸</td><td>中</td><td>あり（スタチン不耐の人）</td><td>筋痙攣・貧血・高尿酸血症/痛風・腱断裂・肝酵素上昇</td></tr>
-              <tr><td>胆汁酸吸着薬</td><td>中</td><td>あり（コレスチラミン）</td><td>便秘・腹部膨満、他の薬の吸収を妨げる。TG がもともと高いと上がる</td></tr>
-              <tr><td>イコサペント酸エチル</td><td>—</td><td>あり</td><td>肺炎・心房細動</td></tr>
-              <tr><td>フィブラート</td><td>小</td><td>まだ確定していない</td><td>筋炎（スタチン併用でとくに）・悪心・腹痛</td></tr>
+              <tr><td>エゼチミブ</td><td>中</td><td>あり</td><td>下痢・関節痛・腹痛、スタチン併用で肝酵素上昇</td><td>ゼチーア。1日 10 mg</td></tr>
+              <tr><td>PCSK9 抗体<span class="sub">エボロクマブ・アリロクマブ</span></td><td>最大</td><td>あり</td><td>鼻咽頭炎・注射部位反応</td><td>エボロクマブ（レパーサ）。アリロクマブ（プラルエント）は 2022年4月に薬価削除され、保険では使えない<span class="sub">条件：心血管イベントの発現リスクが高く、かつスタチンで効果不十分かスタチンが適さない</span></td></tr>
+              <tr><td>inclisiran<span class="sub">PCSK9 を標的にした siRNA</span></td><td>大</td><td>まだ確定していない</td><td>注射部位反応・関節痛・尿路感染・下痢</td><td>インクリシラン（レクビオ）。300 mg を初回・3か月後、以後6か月ごと<span class="sub">条件はレパーサと同じ</span></td></tr>
+              <tr><td>ベムペド酸</td><td>中</td><td>あり（スタチン不耐の人）</td><td>筋痙攣・貧血・高尿酸血症/痛風・腱断裂・肝酵素上昇</td><td>ネクセトール（2025年承認）。1日 180 mg<span class="sub">スタチンで効果不十分か、スタチンが適さない人に使う。妊婦は禁忌</span></td></tr>
+              <tr><td>胆汁酸吸着薬</td><td>中</td><td>あり（コレスチラミン）</td><td>便秘・腹部膨満、他の薬の吸収を妨げる。TG がもともと高いと上がる</td><td>コレスチミド（コレバイン）。コレスチラミン（クエストラン）は 2026年5月から供給停止（レフルノミドの除去目的の発注を除く）</td></tr>
+              <tr><td>イコサペント酸エチル</td><td>—</td><td>あり</td><td>肺炎・心房細動</td><td>エパデールS：1日 1.8 g、TG の異常があれば 1日 2.7 g まで。エパデールEM：1日 2 g、4 g まで<span class="sub">米国の試験の量は 1日 4 g</span></td></tr>
+              <tr><td>フィブラート</td><td>小</td><td>まだ確定していない</td><td>筋炎（スタチン併用でとくに）・悪心・腹痛</td><td>選択的 PPARα モジュレーターのペマフィブラート（パルモディア）も使える</td></tr>
             </tbody>
           </table>
         </div>
@@ -954,9 +975,9 @@ P: エゼチミブ 10 mg を追加。4〜12週後に脂質を再検。
       <div class="jp">
         <span class="ttl">日本で使うときの注意</span>
         <ul>
-          <li>日本で使える PCSK9 阻害薬は<b>エボロクマブ（レパーサ）</b>と<b>inclisiran（レクビオ）</b>。アリロクマブ（プラルエント）は販売されていない。どちらも最大耐用量のスタチンで効果が不十分な場合などに限られ、レクビオは心血管イベントのリスクが高いことも条件になる。</li>
-          <li><b>ベムペド酸</b>は日本でも <b>ネクセトール</b>として 2025年に承認された。対象はスタチンで効果が不十分か、スタチンが使えない高コレステロール血症・FH。</li>
-          <li>イコサペント酸エチルは、米国の試験で使われた量が1日 4 g。日本の製剤は種類で用量が違う（エパデールS は1日 1.8〜2.7 g、エパデールEM は1日 2 g・最大 4 g）ので、添付文書で確かめる。</li>
+          <li><b>PCSK9 阻害薬（レパーサ・レクビオ）の効能・効果の条件は両剤とも同じ</b>：「心血管イベントの発現リスクが高い」と「スタチンで効果不十分、又はスタチンが適さない」の両方を満たすとき。リスクが高い例は冠動脈疾患・アテローム血栓性脳梗塞・糖尿病・CKD・PAD・久山町スコアの高リスク・FH。</li>
+          <li>両剤とも厚労省の<b>最適使用推進ガイドライン</b>がある。FH・冠動脈疾患・アテローム血栓性脳梗塞以外では、最大耐用量のスタチンを原則3か月以上使っても目標に届かないことが目安。使う施設と医師にも要件がある（循環器・動脈硬化の研修歴など）。</li>
+          <li>イコサペント酸エチルは製剤で用量が違うので、処方前に添付文書で確かめる。</li>
         </ul>
       </div>
     </section>
@@ -984,6 +1005,24 @@ P: エゼチミブ 10 mg を追加。4〜12週後に脂質を再検。
           <li><b>飲み合わせ</b>：多くはスタチンの血中濃度を上げ、ミオパチーを起こしやすくする（代表例：シクロスポリン、マクロライド、アゾール系抗真菌薬、HIV プロテアーゼ阻害薬）。フィブラート・ダビガトランとも相互作用があり、ワルファリンの効果を強めて INR が上がることがある。</li>
           <li><b>妊娠</b>：原則として使わない（8章）。</li>
         </ul>
+      </div>
+      <div class="box">
+        <h3><span class="en">JP · 日本動脈硬化学会・添付文書</span>日本のスタチン不耐の定義と併用禁忌</h3>
+        <ul class="kp">
+          <li><b>スタチン不耐</b>（スタチン不耐診療指針 2018）：スタチンの有害事象で日常生活に許容しがたい障害が出て、中止や減量に至るもの。最初のスタチンで有害事象が出て、<b>1種類以上の別のスタチンでも</b>出るため続けられない場合（つまり2種類以上）を不耐とする。2剤目は代謝の経路が違うスタチンを低用量から。</li>
+          <li>2026年の改訂（フォーカスアップデート）で、1剤目だけで続けられなくなった例は「<b>スタチン服用困難</b>」と呼び、2剤目などを試して不耐と診断した例を「スタチン不耐」と呼び分けることになった。</li>
+        </ul>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>スタチン</th><th>日本の添付文書の併用禁忌</th></tr></thead>
+            <tbody>
+              <tr><td>ロスバスタチン・ピタバスタチン</td><td>シクロスポリン</td></tr>
+              <tr><td>アトルバスタチン</td><td>グレカプレビル・ピブレンタスビル（マヴィレット）</td></tr>
+              <tr><td>シンバスタチン</td><td>イトラコナゾール・ミコナゾール・ポサコナゾール・アタザナビル・コビシスタット含有製剤など</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="derived">併用禁忌は代表例。処方のたびに最新の添付文書で確かめる。</p>
       </div>
       <div class="ex">
         <div class="ex__bar"><span>カルテ記載例 — スタチンで筋肉痛</span><button type="button" class="copybtn">コピー</button></div>
@@ -1056,10 +1095,23 @@ P: 禁酒と糖質の制限を指導。血糖コントロールを強化。甲�
           <li><b>HIV</b>：40〜75歳は計算したリスクに関係なくスタチンを勧める。抗レトロウイルス薬との相互作用に注意。</li>
         </ul>
       </div>
+      <div class="box">
+        <h3><span class="en">US · JP</span>米国と日本で違うところ</h3>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>場面</th><th>米国（2026 ACC/AHA）</th><th>日本</th></tr></thead>
+            <tbody>
+              <tr><td>75歳以上の一次予防</td><td>利益と負担を話し合い、始めるなら中強度から。迷えば CAC</td><td>後期高齢者（75歳以上）の一次予防の脂質低下治療は「提案できる」（84歳以下が対象）。75〜79歳は久山町スコアの区分と管理目標値を使う。80歳以上はスコアを管理目標値に直接結びつけず、個別に治療する（動脈硬化性疾患予防GL 2022 第3章・第7章）</td></tr>
+              <tr><td>妊娠・妊娠の可能性</td><td>原則使わない。FH・ASCVD では専門医と相談して続けることもある</td><td>スタチンは<b>禁忌</b>（各スタチンの添付文書）。ベムペド酸も妊婦は禁忌</td></tr>
+              <tr><td>授乳</td><td>勧められない</td><td>スタチンは<b>禁忌</b>（各スタチンの添付文書）</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
       <div class="ex">
         <div class="ex__bar"><span>カルテ記載例 — 妊娠を希望</span><button type="button" class="copybtn">コピー</button></div>
 <pre>#脂質異常症（スタチン内服中）、妊娠を希望
-A: スタチンは妊娠中は原則使わない。
+A: スタチンは日本の添付文書で妊婦・妊娠の可能性のある女性・授乳婦に禁忌。
 P: 妊娠を試みる1〜2か月前にスタチンを中止する方針を説明。
    妊娠がわかったら直ちに中止。授乳中も再開しない。</pre>
       </div>
@@ -1088,6 +1140,19 @@ P: 妊娠を試みる1〜2か月前にスタチンを中止する方針を説明
           </table>
         </div>
       </div>
+      <div class="box">
+        <h3><span class="en">JP · 成人FH診療ガイドライン 2022</span>日本の FH 診断で使う黄色腫</h3>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>アキレス腱肥厚の基準</th><th class="num">男性</th><th class="num">女性</th></tr></thead>
+            <tbody>
+              <tr><td>X線</td><td class="num">8.0 mm 以上</td><td class="num">7.5 mm 以上</td></tr>
+              <tr><td>超音波</td><td class="num">6.0 mm 以上</td><td class="num">5.5 mm 以上</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="derived">FH の診断基準の黄色腫は、腱黄色腫（アキレス腱の肥厚を含む）と皮膚結節性黄色腫。眼瞼黄色腫は含めない（2章）。</p>
+      </div>
     </section>
 
     <!-- ============================================================
@@ -1103,7 +1168,12 @@ P: 妊娠を試みる1〜2か月前にスタチンを中止する方針を説明
         <li>Lloyd-Jones DM, et al. 2022 ACC expert consensus decision pathway on the role of nonstatin therapies for LDL-cholesterol lowering. <cite>J Am Coll Cardiol</cite>. 2022.</li>
         <li>Virani SS, et al. 2021 ACC expert consensus decision pathway on the management of ASCVD risk reduction in patients with persistent hypertriglyceridemia. <cite>J Am Coll Cardiol</cite>. 2021;78:960-993.</li>
         <li>Newman CB, et al. Statin safety and associated adverse events: a scientific statement from the AHA. <cite>Arterioscler Thromb Vasc Biol</cite>. 2019;39:e38-e81.</li>
-        <li>日本動脈硬化学会. <cite>動脈硬化性疾患予防ガイドライン 2022年版</cite>.（久山町スコアの点数表と年代別の発症リスク表を含む）</li>
+        <li>日本動脈硬化学会. <cite>動脈硬化性疾患予防ガイドライン 2022年版</cite>. 2022.（久山町スコアの点数表と年代別の発症リスク表を含む）</li>
+        <li>日本動脈硬化学会. <cite>成人家族性高コレステロール血症診療ガイドライン 2022</cite>. 2022.</li>
+        <li>日本動脈硬化学会. <cite>スタチン不耐に関する診療指針 2018</cite>. 2018／同 2026 フォーカスアップデート. 2026.</li>
+        <li>厚生労働省. 最適使用推進ガイドライン エボロクマブ（令和8年＝2026年10月 簡略版）・インクリシラン（令和5年＝2023年11月）.</li>
+        <li>厚生労働省. 保医発1124第4号（令和3年＝2021年11月）：薬価基準から削除する品目（プラルエント）.</li>
+        <li>サノフィ. クエストラン 供給に関するお知らせ（第2報）. 2026.</li>
         <li>各薬剤の添付文書（PMDA 医療用医薬品情報検索）。</li>
       </ol>
       <p>本ページは学習・診療の参照用の要約です。個々の患者への適用は、最新の添付文書・ガイドラインと臨床判断で確かめてください。</p>
@@ -1512,24 +1582,83 @@ P: 妊娠を試みる1〜2か月前にスタチンを中止する方針を説明
     var sec = p.cad || athStroke;
     var strokeNote = (p.stroke && !p.athero) ? "脳梗塞はアテローム血栓性（明らかなアテロームを伴うその他の脳梗塞を含む）のときだけ二次予防として扱います。該当すれば「脳梗塞はアテローム血栓性」にチェック。" : "";
     if (sec) {
-      var strict = p.acs12 || p.fh || p.dm || (p.cad && athStroke);
-      var miNote = (p.mi && !strict) ?"LDL<70 を考慮する条件は「ACS 発症後1年以内」。1年を超えた心筋梗塞の既往はこの条件に当たらない。" : "";
+      // GL 2022 表3-2 脚注・表3-3：条件は「急性冠症候群」で、時期の決まりはない。心筋梗塞の既往も ACS の既往として扱う
+      var strict = p.acs12 || p.mi || p.fh || p.dm || (p.cad && athStroke);
+      var miNote = (p.mi && !p.acs12 && !p.fh && !p.dm && !(p.cad && athStroke)) ? "このページでは、心筋梗塞の既往も急性冠症候群の既往として扱っています（GL 2022 は急性冠症候群の時期を決めておらず、明記はない）。" : "";
       var n2 = [miNote, strokeNote].filter(Boolean).join(" ");
-      if (strict) return { cat: "二次予防（ACS 発症後1年以内・FH・糖尿病・冠動脈疾患とアテローム血栓性脳梗塞の合併のいずれか）", ldl: 70, nonhdl: 100, consider: true, note: n2 };
+      if (strict) return { cat: "二次予防（急性冠症候群（ACS）・FH・糖尿病・冠動脈疾患とアテローム血栓性脳梗塞の合併のいずれか）", ldl: 70, nonhdl: 100, consider: true, note: n2 };
       return { cat: "二次予防", ldl: 100, nonhdl: 130, note: n2 };
     }
-    var note = [(p.pad || p.tia || p.aaa) ? "PAD・TIA・大動脈瘤だけの場合、日本のガイドラインでは一次予防として扱います（PAD は高リスク）。" : "", strokeNote].filter(Boolean).join(" ");
+    var note = [(p.pad || p.tia || p.aaa) ? "日本のガイドラインの二次予防は冠動脈疾患とアテローム血栓性脳梗塞です。PAD は一次予防の高リスクに入ります（TIA・大動脈瘤は二次予防の対象に挙がっていません）。" : "", strokeNote].filter(Boolean).join(" ");
     if (p.fh) return { cat: "家族性高コレステロール血症（成人・一次予防）", ldl: 100, nonhdl: null, note: note };
     if (p.dm && (p.pad || p.dmMicro || p.smoke)) return { cat: "一次予防・糖尿病で PAD・細小血管症・喫煙のいずれか", ldl: 100, nonhdl: 130, consider: true, note: note };
     if (p.dm || p.ckd || p.pad) return { cat: "一次予防・高リスク（糖尿病・CKD・PAD）", ldl: 120, nonhdl: 150, note: note };
     var join = function () { return Array.prototype.filter.call(arguments, Boolean).join(" "); };
-    if (p.age < 40 || p.age >= 80) return { cat: "一次予防（久山町スコアの対象年齢外）", ldl: null, nonhdl: null, note: join(note, "久山町スコアは 40〜79歳が対象。", p.age >= 75 ? "75歳以上の一次予防は主治医の判断。" : "") };
+    if (p.age < 40 || p.age >= 80) return { cat: "一次予防（久山町スコアの対象年齢外）", ldl: null, nonhdl: null, note: join(note, "久山町スコアは 40〜79歳が対象。",
+      p.age >= 80 ? "80歳以上の一次予防は、スコアを管理目標値に直接結びつけず、患者の状態を見て個別に治療する（GL 2022）。" : "40歳未満の脂質管理の是非は主治医の判断に委ねる（GL 2022）。") };
     var hs = hisayama(p);
     var T = { low: ["低リスク", 160, 190], mid: ["中リスク", 140, 170], high: ["高リスク", 120, 150] };
     var t = T[hs ? hs.cls : p.hisa];
     var hsText = hs ? "久山町スコア " + hs.total + "点 → 10年の発症リスク " + (hs.risk == null ? "1.0% 未満" : hs.risk.toFixed(1) + "%") + "。" : "";
     if (!t) return { cat: "一次予防（久山町スコア未計算）", ldl: null, nonhdl: null, note: join(note, "収縮期血圧を入れると久山町スコアを自動で計算します（年齢・性別・LDL・HDL も必要）。") };
-    return { cat: "一次予防・" + t[0], ldl: t[1], nonhdl: t[2], hs: hsText, note: join(note, hs ? "" : "区分は手で選んだもの。", p.age >= 75 ? "75歳以上の一次予防は主治医の判断。" : "") };
+    return { cat: "一次予防・" + t[0], ldl: t[1], nonhdl: t[2], hs: hsText, note: join(note, hs ? "" : "区分は手で選んだもの。", p.age >= 75 ? "後期高齢者（75歳以上、84歳以下）の一次予防の脂質低下治療は「提案できる」（GL 2022 第7章）。" : "") };
+  }
+
+  // ---------------------------------------------------------------
+  // 日本の次の一手（動脈硬化性疾患予防GL 2022 表3-2・第3章1.5、各薬の電子添文、最適使用推進ガイドライン）
+  // ---------------------------------------------------------------
+  // PCSK9 阻害薬の効能・効果の条件「心血管イベントの発現リスクが高い」に当たる入力（最適使用推進ガイドラインの例示）
+  function jpHighRisk(p) {
+    var r = [];
+    if (p.fh) r.push("FH");
+    if (p.cad) r.push("冠動脈疾患");
+    if (p.stroke && p.athero) r.push("アテローム血栓性脳梗塞");
+    if (p.dm) r.push("糖尿病");
+    if (p.ckd) r.push("CKD");
+    if (p.pad) r.push("PAD");
+    var hs = hisayama(p);
+    var cut = p.age == null ? null : p.age >= 50 && p.age < 60 ? 19 : p.age >= 60 && p.age < 70 ? 13 : p.age >= 70 && p.age < 80 ? 8 : null;
+    if (hs && cut != null && hs.total >= cut) r.push("久山町スコア " + hs.total + "点（高リスクの目安 " + cut + "点以上）");
+    else if (!hs && p.hisa === "high") r.push("一次予防・高リスク（手で選んだ区分）");
+    return r;
+  }
+  function jpEval(p, j) {
+    var res = { met: null, need: null, steps: [], ready: false };
+    if (!j) return res;
+    var s = res.steps;
+    var sec = j.cat.indexOf("二次予防") === 0;
+    if (j.ldl == null) {
+      if (p.age != null && p.age >= 80 && !sec) { s.push("80歳以上の一次予防は、患者の状態を見て個別に治療を判断する（GL 2022）。"); res.ready = true; }
+      else if (p.age != null && p.age < 40 && !sec) { s.push("40歳未満の脂質管理の是非は主治医の判断（GL 2022）。"); res.ready = true; }
+      return res;
+    }
+    res.ready = true;
+    if (p.ldl == null) { s.push("LDL か TC・HDL・TG を入れると達成状況を判定します。"); return res; }
+    res.met = p.ldl < j.ldl;
+    if (!res.met) res.need = Math.ceil((p.ldl - j.ldl + 1) / p.ldl * 100);
+    if (p.tx === 0) {
+      if (sec) s.push("生活習慣の是正とともに薬物治療（スタチン）を考慮する（用量は日本の添付文書に従う）。");
+      else if (p.fh) s.push("FH は生活習慣の改善と同時に脂質低下療法を始める（成人家族性高コレステロール血症診療ガイドライン 2022）。");
+      else if (res.met) s.push("日本の目標は達成。生活習慣の改善を続け、定期的に脂質とリスクを見直す。");
+      else {
+        s.push("まず生活習慣の改善を行い（原則3〜6か月）、効果を見てから薬物療法の適用を考える。");
+        if (p.base != null && p.base >= 180) s.push("LDL 180 以上が続くなら、生活習慣の改善とともに薬物療法を考えてもよい。");
+      }
+      return res;
+    }
+    if (res.met) { s.push("日本の目標は達成。いまの治療を続ける。"); return res; }
+    s.push("まず服薬が守れているかと生活習慣を確認する。");
+    if (p.tx === 1 && !p.intol) s.push("スタチンを日本の承認用量の上限まで増やすか、エゼチミブ（1日 10 mg）を足す。");
+    else if (p.tx <= 2) s.push("エゼチミブ（1日 10 mg）を足す。");
+    else if (p.tx === 3) {
+      var hr = jpHighRisk(p);
+      if (hr.length) s.push("PCSK9 阻害薬（エボロクマブ・インクリシラン）を考える。効能・効果の条件は「心血管イベントの発現リスクが高い（この人は " + hr.join("・") + "）」かつ「スタチンで効果不十分、又はスタチンが適さない」。最適使用推進ガイドラインの施設・医師の要件も確かめる。");
+      else s.push("PCSK9 阻害薬は、効能・効果の条件「心血管イベントの発現リスクが高い」（冠動脈疾患・アテローム血栓性脳梗塞・糖尿病・CKD・PAD・FH・久山町スコアの高リスクなど）に当たらない。続けるか強めるかは脂質の専門医に相談。");
+      s.push("スタチンで効果不十分か、スタチンが適さないときは、ベムペド酸（1日 180 mg）も選べる。");
+    } else s.push("脂質の専門医に相談。");
+    if (p.intol) s.push("スタチン不耐（2種類以上のスタチンで有害事象が出て続けられない）は、日本動脈硬化学会のスタチン不耐診療指針に沿って対応する。");
+    if (res.need != null) s.push("日本の目標まで、いまから約 " + res.need + "% の低下が必要。");
+    return res;
   }
 
   // ---------------------------------------------------------------
@@ -1592,8 +1721,9 @@ P: 妊娠を試みる1〜2か月前にスタチンを中止する方針を説明
     $("o-scores").innerHTML = '<li class="' + (prevOk ? "ok" : "") + '">' + prevS + '</li><li class="' + (hsOk ? "ok" : "") + '">' + hsS + "</li>";
     $("scorebar").innerHTML = '<span class="' + (prevOk ? "ok" : "") + '">' + prevS + '</span><span class="' + (hsOk ? "ok" : "") + '">' + hsS + "</span>";
 
-    $("o-cat").textContent = r.cat || "—";
-    $("o-int").textContent = r.intensity || "";
+    var je = jpEval(p, j);
+    $("o-cat").textContent = j ? "日本：" + j.cat.split("（")[0] + (j.ldl != null ? "（LDL<" + j.ldl + (j.consider ? " 考慮" : "") + "）" : "") : (r.cat || "—");
+    $("o-int").textContent = r.ready ? "米国：" + r.cat + (r.intensity ? "。" + r.intensity : "") : (r.intensity || "");
 
     var gt = $("o-goal");
     if (r.goals) {
@@ -1615,27 +1745,40 @@ P: 妊娠を試みる1〜2か月前にスタチンを中止する方針を説明
     $("o-flags").innerHTML = allFlags.length ? allFlags.map(function (x) { return '<li class="' + x[0] + '">' + esc(x[1]) + "</li>"; }).join("") : '<li class="i">特になし</li>';
 
     if (j) {
-      var h = "<b>日本のガイドライン（2022）</b><br>" + (j.hs ? esc(j.hs) + "<br>" : "") + esc(j.cat);
+      var h = '<p class="jpcat">' + (j.hs ? esc(j.hs) + "<br>" : "") + "<b>" + esc(j.cat) + "</b>";
       if (j.ldl != null) {
         h += "：LDL&lt;" + j.ldl + (j.nonhdl != null ? "・non-HDL&lt;" + j.nonhdl : "") + (j.consider ? "（考慮）" : "");
         if (p.ldl != null) h += "　" + badge(p.ldl < j.ldl);
       }
-      if (j.note) h += "<br><span style=\"color:var(--lg-text-sub)\">" + esc(j.note) + "</span>";
-      h += "<br>TG：" + (p.fasting === "fast" ? "空腹時 150 未満" : "随時 175 未満") + "。用量は日本の添付文書に従う。";
+      h += "</p>";
+      if (j.ldl != null) {
+        var tgGoal = p.fasting === "fast" ? 150 : 175, cs = j.consider ? "（考慮）" : "";
+        var row = function (k, g, v) { return "<tr><th>" + k + '</th><td class="v">' + g + '</td><td class="v">' + (v != null ? v : "—") + "</td><td>" + badge(v != null ? v < Number(g.replace(/[^0-9]/g, "")) : null) + "</td></tr>"; };
+        h += '<table class="goal"><thead><tr><th>項目</th><th>目標</th><th>現在</th><th></th></tr></thead><tbody>' +
+          row("LDL", "&lt;" + j.ldl + cs, p.ldl) +
+          (j.nonhdl != null ? row("non-HDL", "&lt;" + j.nonhdl + cs, p.nonhdl) : "") +
+          row("TG（" + (p.fasting === "fast" ? "空腹時" : "随時") + "）", "&lt;" + tgGoal, p.tg) +
+          "</tbody></table>";
+      }
+      if (je.steps.length) h += '<ol class="steps">' + je.steps.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ol>";
+      if (j.note) h += '<p class="derived">' + esc(j.note) + "</p>";
+      h += '<p class="derived">用量は日本の添付文書に従う。</p>';
       $("o-jp").innerHTML = h;
     } else {
-      $("o-jp").innerHTML = "<b>日本のガイドライン（2022）</b><br>—";
+      $("o-jp").innerHTML = '<p class="jpcat">—</p>';
     }
 
-    $("o-memo").value = memo(p, r, e, j);
+    $("o-memo").value = memo(p, r, e, j, je);
   }
 
-  function memo(p, r, e, j) {
+  function memo(p, r, e, j, je) {
     if (p.age == null) return "";
     var L = [];
     var ctx = r.route === "sec" ? "二次予防" : (r.route === "dm" ? "糖尿病" : (r.route === "ldl190" ? "LDL 190以上" : "一次予防"));
     var head = "#脂質異常症（" + ctx;
-    if (!p.ascvd && p.r10 != null) head += "、PREVENT 10年 ASCVD リスク " + p.r10 + "%" + (p.r30 != null ? "・30年 " + p.r30 + "%" : "");
+    // リスクの%は小数1桁にそろえる（手入力の 4.0 も「4.0%」）
+    var f1 = function (x) { return (Math.round(x * 10) / 10).toFixed(1); };
+    if (!p.ascvd && p.r10 != null) head += "、PREVENT 10年 ASCVD リスク " + f1(p.r10) + "%" + (p.r30 != null ? "・30年 " + f1(p.r30) + "%" : "");
     head += "）";
     L.push(head);
     var lab = [];
@@ -1648,13 +1791,30 @@ P: 妊娠を試みる1〜2か月前にスタチンを中止する方針を説明
     if (lab.length) L.push("脂質（mg/dL）: " + lab.join(" / "));
     var txName = ["未治療", "中強度スタチン", "高強度（最大耐用量）スタチン", "スタチン＋エゼチミブ", "スタチン＋エゼチミブ＋PCSK9阻害薬"][p.tx];
     L.push("治療: " + txName + (e.pctNow != null ? "（治療前 LDL " + p.base + " から " + e.pctNow + "% 低下）" : ""));
-    var a = "A: 米国 2026 ACC/AHA で" + r.cat + "。" + (r.intensity ? r.intensity + "。" : "");
+    // A：日本のガイドラインを先頭に、米国を次の行に並べる（日本を「参考」にしない。japan-rules 2）
+    var a = "米国 2026 ACC/AHA で" + r.cat + "。" + (r.intensity ? r.intensity + "。" : "");
     if (r.goals) a += "目標 LDL<" + r.goals.ldl + "・non-HDL<" + r.goals.nonhdl + (r.goals.pct ? "・LDL " + r.goals.pctLabel + "低下" : "") + (p.tx === 0 ? "" : e.met === true ? "（達成）" : e.met === false ? "（未達）" : "") + "。";
-    L.push(a);
-    if (j && j.ldl != null) L.push("   日本 2022（参考）: " + (j.hs ? j.hs : "") + j.cat +"、LDL<" + j.ldl + (j.nonhdl != null ? "・non-HDL<" + j.nonhdl : "") + (j.consider ? "（考慮）" : "") + "。");
-    if (e.steps.length) {
-      L.push("P: " + e.steps[0]);
-      for (var i = 1; i < e.steps.length; i++) L.push("   " + e.steps[i]);
+    if (j) {
+      var ja = "A: 日本 2022（動脈硬化性疾患予防GL）で" + (j.hs ? j.hs : "") + j.cat + "。";
+      if (j.ldl != null) ja += "目標 LDL<" + j.ldl + (j.nonhdl != null ? "・non-HDL<" + j.nonhdl : "") + (j.consider ? "（考慮）" : "") + (je.met === true ? "（達成）" : je.met === false ? "（未達）" : "") + "。";
+      L.push(ja);
+      L.push("   " + a);
+    } else {
+      L.push("A: " + a);
+    }
+    // P：日本の次の一手を先に。米国の推奨は「米国では」として続ける
+    var P = [];
+    if (je && je.ready && je.steps.length) {
+      P = je.steps.slice();
+      var usOnly = e.steps.filter(function (x) { return je.steps.indexOf(x) < 0; });  // 日本と同じ文は繰り返さない
+      if (usOnly.length) { P.push("米国では: " + usOnly[0]); for (var k = 1; k < usOnly.length; k++) P.push("  " + usOnly[k]); }
+    } else if (e.steps.length) {
+      P.push("（日本の区分が決まるまでは米国 2026 に基づく）" + e.steps[0]);
+      for (var m = 1; m < e.steps.length; m++) P.push(e.steps[m]);
+    }
+    if (P.length) {
+      L.push("P: " + P[0]);
+      for (var i = 1; i < P.length; i++) L.push("   " + P[i]);
     }
     return L.join("\n");
   }
