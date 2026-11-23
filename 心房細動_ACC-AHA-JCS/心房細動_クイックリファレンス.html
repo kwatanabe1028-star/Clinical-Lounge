@@ -417,6 +417,165 @@
     .doses li b { display: block; font-size: .75rem; color: var(--lg-text-sub); font-weight: 700; }
     .doses li span { display: block; color: var(--lg-text); }
   </style>
+  <style>
+    /* ---- フローチャート（fc）：上室頻拍ページで追加。縁の太いバーは使わない（問いは白地＋細線、手順は薄塗り、いまここは反転） ---- */
+    .fc { margin: 0 0 20px; padding: 18px 20px 14px; background: var(--lg-white); border: 1px solid var(--lg-line-soft); border-radius: var(--lg-r); }
+    .fc--tool { margin: 6px 0 14px; padding: 14px 0 0; border: 0; border-top: 1px solid var(--lg-line-soft); border-radius: 0; }
+    .fc [hidden] { display: none !important; }
+    .fc__cap { display: block; margin-bottom: 12px; }
+    .fc__cap b { display: block; font-family: var(--lg-mincho); font-size: .9375rem; color: var(--lg-ink); letter-spacing: .04em; }
+    .fc__cap span { display: block; margin-top: 2px; font-size: .6875rem; line-height: 1.7; color: var(--lg-text-sub); overflow-wrap: anywhere; }
+    .fc a { color: var(--lg-blue); }
+    .fc__legend { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin: 0 0 10px; font-size: .6875rem; color: var(--lg-text-sub); }
+    .fc__legend span { padding: 1px 8px; border-radius: 999px; border: 1px solid var(--lg-line); }
+    .fc__legend .lg1 { color: var(--lg-white); background: var(--lg-ink); border-color: var(--lg-ink); }
+    .fc__legend .lg2 { opacity: .7; background: var(--lg-paper2); }
+    .fc__legend .lg3 { border-style: dashed; text-decoration: line-through; color: var(--lg-text-faint); }
+
+    .fc__cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; transition: opacity .2s; }
+    .fc__cols.is-off { opacity: .35; }
+    .fc__col { min-width: 0; display: flex; flex-direction: column; container-type: inline-size; }
+    .fc__head { margin: 0 0 10px; padding: 4px 8px; font-size: .75rem; font-weight: 700; line-height: 1.5; color: var(--lg-ink); background: var(--lg-paper2); border-radius: var(--lg-r-xs); }
+    .fc__sublab { margin: 14px 0 6px; font-size: .75rem; font-weight: 700; color: var(--lg-ink); }
+    .fc__sublab:first-of-type { margin-top: 0; }
+    .fc__entlab { margin: 0 0 6px; font-size: .75rem; font-weight: 700; color: var(--lg-ink); text-align: center; }
+    .fc__entry { container-type: inline-size; }
+    .fc__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+
+    .fc__q, .fc__box { position: relative; padding: 8px 10px; font-size: .78125rem; line-height: 1.6; border-radius: var(--lg-r-sm); overflow-wrap: anywhere; }
+    .fc__q { font-weight: 700; color: var(--lg-ink); text-align: center; background: var(--lg-white); border: 1px solid var(--lg-line); border-radius: 16px; }
+    .fc__q small { display: block; font-weight: 400; font-size: .6875rem; color: var(--lg-text-sub); }
+    .fc__box { color: var(--lg-text); background: color-mix(in srgb, var(--lg-green-lt) 9%, var(--lg-white)); border: 1px solid color-mix(in srgb, var(--lg-green-lt) 26%, var(--lg-white)); }
+    .fc__box--x { background: var(--lg-paper2); border-color: var(--lg-line); }
+    .fc__box--info { background: var(--lg-white); border-style: dashed; border-color: var(--lg-line); }
+    .fc__box--info + .fc__box--info { margin-top: 6px; }
+    .fc__t { font-weight: 700; color: var(--lg-ink); }
+    .fc__cls { font-family: var(--lg-en); font-weight: 600; font-size: .75rem; color: var(--lg-green); white-space: nowrap; }
+    .fc__sub { display: block; font-size: .6875rem; line-height: 1.6; color: var(--lg-text-sub); }
+    .fc__badge { display: inline-block; margin-top: 4px; padding: 1px 8px; font-size: .6875rem; font-weight: 700; line-height: 1.6; border-radius: 10px; }
+    .fc__badge:empty { display: none; }
+
+    /* 線：色と太さは1つ。縦の線は必ず箱の端から箱の端まで届かせる
+       --tx＝縦の線の位置。問いのある列は「問いの箱の中心」、箱だけの列は真ん中 */
+    .fc { --ln: color-mix(in srgb, var(--lg-text-sub) 80%, var(--lg-white)); --hw: 72px; --tx: 50%; }
+    .fc__trunk { --tx: calc((100% - var(--hw)) * .235); }
+    .fc__br, .fc__alt { --tx: 50%; }
+    .fc__arrow { position: relative; min-height: 30px; margin: 0 0 0 calc(var(--tx) - 1px); padding: 5px 0 9px 12px; font-size: .6875rem; line-height: 1.5; color: var(--lg-text); border-left: 2px solid var(--ln); }
+    .fc__arrow::after { content: ""; position: absolute; left: -6px; bottom: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid var(--ln); }
+    .fc__arrow span:empty { display: none; }
+
+    /* 問い → 横の線（上に「はい」）→ 箱。問いの箱は行の高さいっぱいに伸ばし、下の線とくっつける */
+    .fc__qrow { display: grid; grid-template-columns: calc((100% - var(--hw)) * .47) minmax(0, 1fr); }
+    .fc__qrow > .fc__q { display: flex; flex-direction: column; justify-content: center; }
+    .fc__side { position: relative; display: flex; align-items: center; min-width: 0; }
+    .fc__side > .fc__box { flex: 1; min-width: 0; }
+    .fc__yes { position: relative; flex: none; width: var(--hw); align-self: center; height: 0; text-align: center; font-size: .6875rem; line-height: 1.35; color: var(--lg-text); }
+    .fc__yes > span { word-break: keep-all; position: absolute; left: 1px; right: 1px; bottom: 5px; letter-spacing: 0; }
+    .fc__yes::before { content: ""; position: absolute; left: 0; right: 2px; top: -1px; border-top: 2px solid var(--ln); }
+    .fc__yes::after { content: ""; position: absolute; right: 0; top: -5px; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 8px solid var(--ln); }
+    @container (max-width: 330px) {
+      .fc__trunk { --tx: 22px; }
+      .fc__trunk > .fc__arrow { margin-left: 21px; }
+      .fc__qrow { grid-template-columns: minmax(0, 1fr); }
+      .fc__side { display: block; margin-left: 21px; padding: 4px 0 4px 26px; }
+      .fc__side::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; border-left: 2px solid var(--ln); }
+      .fc__qrow--end > .fc__side::before { bottom: auto; height: 39px; }
+      .fc__yes > span { position: static; }
+      .fc__yes { display: block; width: auto; height: 19px; padding: 0; text-align: left; white-space: nowrap; }
+      .fc__yes::before { left: -26px; right: auto; width: 24px; top: 33px; }
+      .fc__yes::after { left: -8px; right: auto; top: 29px; }
+    }
+
+    @container (max-width: 170px) {
+      .fc__group { padding-left: 4px; padding-right: 4px; }
+      .fc__side { padding-left: 20px; }
+      .fc__yes::before { left: -20px; width: 18px; }
+      .fc__side .fc__cls { white-space: normal; }
+    }
+
+    /* 2つとも確かめる問い・入口の行き先：枠で囲む */
+    .fc__group { padding: 6px 8px 8px; border: 1px solid var(--lg-line); border-radius: var(--lg-r-sm); background: color-mix(in srgb, var(--lg-paper2) 35%, var(--lg-white)); }
+    .fc__group > .fc__or { margin-bottom: 6px; }
+    .fc__group > .fc__qrow + .fc__qrow { margin-top: 10px; }
+
+    /* 入口 → 日本・米国の列へ2つに分かれる線 */
+    .fc__fork { position: relative; height: 46px; }
+    .fc__fork::before { content: ""; position: absolute; left: calc(50% - 1px); top: 0; height: 22px; border-left: 2px solid var(--ln); }
+    .fc__fork::after { content: ""; position: absolute; left: calc(25% - 5px); right: calc(25% - 5px); top: 22px; bottom: 0; border: 2px solid var(--ln); border-bottom: 0; }
+    .fc--tool:has(.fc__cols.is-off) .fc__fork { opacity: .35; }
+    .fc__to { display: none; }
+    .fc__fork em { display: none; font-style: normal; }
+    .fc__fork i { position: absolute; bottom: 0; border: 5px solid transparent; border-top: 8px solid var(--ln); border-bottom: 0; }
+    .fc__fork i:first-of-type { left: calc(25% - 9px); }
+    .fc__fork i:last-of-type { right: calc(25% - 9px); }
+    .fc__fork span { position: absolute; left: calc(50% + 12px); top: 2px; font-size: .6875rem; color: var(--lg-text); white-space: nowrap; }
+
+    /* 枝分かれ：広いときは横に2つ、狭いときは左の線から順に枝を出す */
+    .fc__splitw { container-type: inline-size; }
+    .fc__split { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding-top: 16px; }
+    .fc__split::before { content: ""; position: absolute; left: calc(50% - 1px); top: 0; height: 16px; border-left: 2px solid var(--ln); }
+    .fc__br { position: relative; min-width: 0; display: flex; flex-direction: column; }
+    .fc__brlab { position: relative; margin: 0; padding: 10px 0 12px; font-size: .6875rem; font-weight: 700; line-height: 1.4; color: var(--lg-text); text-align: center; }
+    .fc__brlab span { position: relative; z-index: 1; padding: 0 6px; background: var(--lg-white); }
+    .fc__brlab::before { content: ""; position: absolute; left: calc(50% - 1px); top: 0; bottom: 4px; border-left: 2px solid var(--ln); }
+    .fc__brlab::after { content: ""; position: absolute; left: calc(50% - 5px); bottom: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid var(--ln); }
+    .fc__br::before { content: ""; position: absolute; top: -1px; border-top: 2px solid var(--ln); left: 50%; right: -5px; }
+    .fc__br:last-child::before { left: -5px; right: 50%; }
+    @container (max-width: 270px) {
+      .fc__split { grid-template-columns: minmax(0, 1fr); gap: 0; padding-top: 0; }
+      .fc__split::before { display: none; }
+      .fc__br, .fc__br:last-child { padding: 4px 0 6px 30px; }
+      .fc__br::before, .fc__br:last-child::before { top: 0; bottom: 0; left: 17px; right: auto; border-top: 0; border-left: 2px solid var(--ln); }
+      .fc__br:last-child::before { bottom: auto; height: 42px; }
+      .fc__brlab { padding: 0; height: 20px; text-align: left; }
+      .fc__brlab span { padding: 0; background: none; }
+      .fc__brlab::before { left: -13px; width: 11px; top: 36px; bottom: auto; border-left: 0; border-top: 2px solid var(--ln); }
+      .fc__brlab::after { left: -8px; bottom: auto; top: 32px; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 8px solid var(--ln); border-right: 0; }
+    }
+    .fc__brin { min-width: 0; display: flex; flex-direction: column; }
+    .fc__brin > .fc__box + .fc__box { margin-top: 6px; }
+    .fc__col > .fc__box--info { margin-top: 8px; }
+    .fc__col > .fc__box + .fc__box { margin-top: 8px; }
+    .fc__alt { display: flex; flex-direction: column; gap: 6px; padding: 4px 6px 6px; border: 1px dashed var(--lg-line); border-radius: var(--lg-r-sm); }
+    .fc__or { margin: 0; font-size: .6875rem; font-weight: 700; color: var(--lg-text-sub); text-align: center; }
+    .fc__col > .fc__sublab + .fc__box--info { margin-top: 0; }
+    .fc__foot { margin: 10px 0 0; font-size: .6875rem; line-height: 1.7; color: var(--lg-text-sub); }
+
+    /* 判定の中の図：文字を小さく。日米2列のまま */
+    .fc--tool .fc__q, .fc--tool .fc__box { padding: 6px 8px; font-size: .71875rem; }
+    .fc--tool .fc__cols { gap: 10px; }
+
+    /* 状態（色だけにしない：札の文字をつける） */
+    .fc__box.is-now { color: var(--lg-white); background: var(--lg-ink); border-color: var(--lg-ink); border-style: solid; }
+    .fc__box.is-now .fc__t, .fc__box.is-now .fc__cls, .fc__box.is-now .fc__sub, .fc__box.is-now a { color: var(--lg-white); }
+    .fc__box.is-now .fc__badge { color: var(--lg-ink); background: var(--lg-white); }
+    .fc__box.is-done { opacity: .6; }
+    .fc__box.is-done .fc__badge { color: var(--lg-text); background: var(--lg-paper2); }
+    .fc__box.is-skip { color: var(--lg-text-faint); background: var(--lg-white); border-style: dashed; border-color: var(--lg-line); }
+    .fc__box.is-skip .fc__t { color: var(--lg-text-faint); text-decoration: line-through; }
+    .fc__box.is-skip .fc__badge { color: var(--lg-text-sub); background: var(--lg-paper2); }
+
+    @media (max-width: 760px) {
+      .fc { padding: 14px 14px 12px; }
+      .fc--ch .fc__cols { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+      .fc--ch .fc__fork { height: 30px; }
+      .fc--ch .fc__fork i { display: none; }
+      .fc--ch .fc__fork::before { left: 21px; height: 22px; }
+      .fc--ch .fc__fork span { left: 34px; }
+      .fc--ch .fc__fork em { display: inline; }
+      .fc--ch .fc__to { display: block; position: relative; height: 30px; margin-left: 21px; padding: 4px 0 0 12px; font-size: .6875rem; color: var(--lg-text); border-left: 2px solid var(--ln); }
+      .fc--ch .fc__to::after { content: ""; position: absolute; left: -6px; bottom: 0; border: 5px solid transparent; border-top: 8px solid var(--ln); border-bottom: 0; }
+      .fc--ch .fc__fork::after { left: 17px; right: auto; top: auto; border: 5px solid transparent; border-top: 8px solid var(--ln); border-bottom: 0; }
+      .fc--tool { padding-left: 0; padding-right: 0; }
+    }
+    /* 心房細動ページ：計算の枠の下に置く図、枠の中の枝の札、薬の箱の列 */
+    .fc--calc { margin: 20px 0 0; }
+    .fc__group .fc__brlab span { background: #f9f8f4; background: color-mix(in srgb, var(--lg-paper2) 35%, var(--lg-white)); }
+    .fc__alt .fc__brlab span { background: var(--lg-white); }
+    .fc__grid--w { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+    .fc__group .fc__alt .fc__brlab span { background: #f9f8f4; background: color-mix(in srgb, var(--lg-paper2) 35%, var(--lg-white)); }
+    @container (max-width: 270px) { .fc__alt .fc__brlab span, .fc__group .fc__brlab span, .fc__group .fc__alt .fc__brlab span { background: none; } }
+  </style>
 </head>
 <body data-lg-root=".." data-lg-desk="循環器" data-lg-page="心房細動 クイックリファレンス">
 <div id="lg-header"></div>
@@ -543,7 +702,7 @@
             <label class="f"><span>心房細動の型</span>
               <select id="aftype"><option value="">—</option><option value="par">発作性（7日以内に止まる）</option><option value="pers">持続性・長期持続性・永続性</option></select>
             </label>
-            <label class="ck"><input type="checkbox" id="valve">機械弁、または中等度以上の僧帽弁狭窄 <small>（弁膜症性。スコアは使わずワルファリン）</small></label>
+            <label class="ck"><input type="checkbox" id="valve">機械弁、リウマチ性または中等度以上の僧帽弁狭窄 <small>（弁膜症性。スコアは使わずワルファリン）</small></label>
           </fieldset>
 
           <fieldset>
@@ -630,6 +789,7 @@
           </div>
         </div>
       </div>
+      <figure class="fc fc--ch fc--calc" id="fcOac-tool"><figcaption class="fc__cap"><b>抗凝固を始めるか</b><span>順番に1つずつ答えると、行き先が決まります。出典と但し書きは <a href="#anticoag">4 抗凝固療法</a> の図に書いています。</span></figcaption><p class="fc__legend"><span class="lg1">当てはまる</span>入力すると、当てはまる箱が濃くなります</p><div class="fc__cols"><div class="fc__col fc__col--jp fc__trunk"><p class="fc__head">日本（2020 薬物GL 図12・p.50）</p><div class="fc__qrow"><div class="fc__q"><span>弁膜症性？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box" data-k="j_valve"><span class="fc__t">ワルファリン</span> <span class="fc__cls">I/B</span><span class="fc__sub">INR 2.0〜3.0</span><span class="fc__badge"></span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__qrow"><div class="fc__q"><span>肥大型心筋症？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box" data-k="j_hcm"><span class="fc__t">抗凝固を行う</span> <span class="fc__cls">I/B</span><span class="fc__badge"></span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__qrow"><div class="fc__q"><span>CHADS<sub>2</sub> が1点以上？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box" data-k="j_doac"><span class="fc__t">DOAC を推奨</span><span class="fc__sub">ワルファリンは考慮可</span><span class="fc__badge"></span></div></div></div><div class="fc__arrow"><span>いいえ（0点）</span></div><div class="fc__qrow"><div class="fc__q"><span>「その他のリスク」がある？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box" data-k="j_other"><span class="fc__t">抗凝固を考慮可</span><span class="fc__sub">DOAC／ワルファリン</span><span class="fc__badge"></span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__qrow"><div class="fc__q"><span>脳以外の血栓塞栓症の既往？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box" data-k="j_te"><span class="fc__t">抗凝固を検討</span><span class="fc__badge"></span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__box" data-k="j_none"><span class="fc__t">抗凝固は不要と考えてよい</span><span class="fc__sub">女性は数えない</span><span class="fc__badge"></span></div></div><div class="fc__col fc__col--us fc__trunk"><p class="fc__head">米国（2023 GL §6.3.1・Figure 10）</p><div class="fc__qrow"><div class="fc__q"><span>弁膜症性？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box" data-k="u_valve"><span class="fc__t">ワルファリン</span> <span class="fc__cls">1/B-R</span><span class="fc__sub">クラスは僧帽弁狭窄。機械弁は AF GL の対象外</span><span class="fc__badge"></span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__qrow"><div class="fc__q"><span>肥大型心筋症？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box" data-k="u_hcm"><span class="fc__t">抗凝固を推奨</span> <span class="fc__cls">1/B-NR</span><span class="fc__sub">DOAC が第一選択</span><span class="fc__badge"></span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__qrow"><div class="fc__q"><span>CHA<sub>2</sub>DS<sub>2</sub>-VASc が 男性2・女性3点以上？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box" data-k="u_rec"><span class="fc__t">抗凝固を推奨</span> <span class="fc__cls">1/A</span><span class="fc__sub">DOAC を優先</span><span class="fc__badge"></span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__qrow"><div class="fc__q"><span>男性1・女性2点？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box" data-k="u_ok"><span class="fc__t">抗凝固は妥当</span> <span class="fc__cls">2a/A</span><span class="fc__badge"></span></div></div></div><div class="fc__arrow"><span>いいえ（それ未満）</span></div><div class="fc__box" data-k="u_none"><span class="fc__t">抗凝固の推奨の対象外</span><span class="fc__badge"></span></div></div></div></figure>
     </section>
 
     <section class="sec" id="quick">
@@ -647,7 +807,7 @@
               <tr><td>抗凝固を始める</td><td>男性 ≥2・女性 ≥3 で推奨（1/A）<span class="sub">男性1・女性2 は「妥当」（2a/A）</span></td><td>CHADS<sub>2</sub> ≥1 で DOAC を推奨（ワルファリンは考慮可）<span class="sub">0点でも「その他のリスク」があれば考慮可。女性は数えない</span></td></tr>
               <tr><td>肥大型心筋症</td><td>スコアによらず抗凝固、DOAC が第一選択（2024 HCM GL 1/B-NR）</td><td>スコアによらず抗凝固（心筋症診療GL 2018 表34 I/B、2025 心不全GL）</td></tr>
               <tr><td>薬の選び方</td><td>DOAC をワルファリンより推奨（1/A）</td><td>新しく始めるなら DOAC（I/A）</td></tr>
-              <tr><td>弁膜症性（ワルファリン）</td><td>中等度以上の僧帽弁狭窄・機械弁</td><td>リウマチ性僧帽弁疾患（おもに狭窄）・機械弁<span class="sub">生体弁は非弁膜症性に入れる</span></td></tr>
+              <tr><td>弁膜症性（ワルファリン）</td><td>リウマチ性または中等度以上の僧帽弁狭窄・機械弁</td><td>リウマチ性僧帽弁疾患（おもに狭窄）・機械弁<span class="sub">生体弁は非弁膜症性に入れる</span></td></tr>
               <tr><td>ワルファリンの INR</td><td>2.0〜3.0<span class="sub">機械弁は除く（弁の種類と位置で決める）</span></td><td>1.6〜2.6（IIa/B）<span class="sub">70歳未満の二次予防・高リスク（CHADS<sub>2</sub> ≥3 など）は 2.0〜3.0（IIa/B）、弁膜症性は 2.0〜3.0</span></td></tr>
               <tr><td>心拍数の目標</td><td>心不全のない AF で安静時 &lt;100〜110（2a）<span class="sub">頻脈誘発性心筋症などで &lt;80（2b）</span></td><td>安静時 &lt;110</td></tr>
               <tr><td>除細動の前後</td><td>48時間以上・不明なら前3週間か画像で血栓を否定、後4週間以上</td><td>同じ（DOAC は飲み始めて3週間でよい）</td></tr>
@@ -743,6 +903,9 @@ P: TSH・FT4、腎機能（CrCl）・肝機能・血算、経胸壁心エコー�
           <li><b>除細動の段取り</b>：48時間以上・いつからか不明なら、3週間の抗凝固か、経食道心エコーなどで左心耳の血栓を否定してから。除細動後は4週間以上続ける</li>
         </ul>
       </div>
+      <figure class="fc fc--ch" id="fcAcute"><figcaption class="fc__cap"><b>速い心房細動、まず何をするか</b><span>除細動するときの抗凝固は次の図、除細動の方法はその次の図。</span></figcaption><div class="fc__cols"><div class="fc__col fc__col--jp fc__trunk"><p class="fc__head">日本（2020 薬物GL 図17・図16・表44・45）</p><div class="fc__qrow"><div class="fc__q"><span>血行動態が破綻？</span><small>遷延する心筋虚血、症候性低血圧、心不全の増悪など</small></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box fc__box--x"><span class="fc__t">R 波同期の電気的除細動</span> <span class="fc__cls">I/C</span><span class="fc__sub">100 J 以上（p.69）。48時間以上続いていればヘパリン静注下に（p.55）</span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__qrow"><div class="fc__q"><span>早期興奮（WPW）がある？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box fc__box--x"><span class="fc__t">房室結節を抑える薬を使わない</span><span class="fc__sub"><b>ジギタリス・Ca 拮抗薬・β遮断薬</b>などで心室細動に移ることがある（p.23）。米国はアミオダロン・アデノシンも禁忌。→ <a href="../上室頻拍_ACC-AHA-HRS-JCS/上室頻拍_クイックリファレンス.html">上室頻拍・WPW のページ</a></span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__box"><span class="fc__t">心拍数を下げる：目標 安静時 &lt;110/分</span><span class="fc__sub">徐脈に注意。心機能を確かめてから薬を選ぶ</span></div><div class="fc__arrow"><span></span></div><div class="fc__q"><span>LVEF は？</span></div><div class="fc__splitw"><div class="fc__split"><div class="fc__br"><p class="fc__brlab"><span>&lt;40%</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">ランジオロール静注</span> <span class="fc__cls">IIa/B</span><span class="fc__sub">1 μg/kg/min から、1〜10 で調節。LVEF 25% 以上での推奨</span></div><div class="fc__arrow"><span>追加で</span></div><div class="fc__box"><span class="fc__t">ジゴキシン静注</span> <span class="fc__cls">IIa/B</span><span class="fc__sub">β遮断薬に追加して使う</span></div><div class="fc__box fc__box--info"><span class="fc__t">アミオダロン静注</span> <span class="fc__cls">IIb/C</span><span class="fc__sub">注射に心房細動の効能はない（保険適用外）</span></div><div class="fc__box fc__box--x"><span class="fc__t">ベラパミル・ジルチアゼムは使わない</span> <span class="fc__cls">III/C</span></div></div></div><div class="fc__br"><p class="fc__brlab"><span>40% 以上</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">β遮断薬（ビソプロロール・カルベジロール）か、ベラパミル・ジルチアゼム</span><span class="fc__sub">どれかを通常量で。図16 は飲み薬（β遮断薬は貼付も）。表44 は Ca 拮抗薬 I/B、β遮断薬は長期の経口薬として I/B。ジルチアゼムの飲み薬は不整脈の効能なし</span></div><div class="fc__arrow"><span>足りなければ</span></div><div class="fc__box"><span class="fc__t">作用の違う2剤を併用</span><span class="fc__sub">徐脈が強まる。β遮断薬と Ca 拮抗薬の併用は「控える」とも書かれている（p.23）</span></div></div></div></div></div><p class="fc__foot"><b>40% 以上の静注</b>：効能があるのは（推奨とは別）、ベラパミル（発作性）・ジルチアゼム・ジゴキシン、敗血症・手術時・手術後ならランジオロール（この場合うっ血性心不全は禁忌）。図17（除細動）の最初の分岐と、図16（心拍数調節）の急性期をつないだ。早期興奮の問いは p.23 と表45 からこのページで足した。早期興奮があり血行動態が不安定なら電気的除細動（I/C）。安定した例に薬名の推奨はない。推奨クラスは表44・45。</p></div><div class="fc__col fc__col--us fc__trunk"><p class="fc__head">米国（2023 GL Figure 17・§7.2.1）</p><div class="fc__qrow"><div class="fc__q"><span>血行動態が不安定？</span><small>心房細動による不安定（§8.2.2 推奨1）</small></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box fc__box--x"><span class="fc__t">電気的除細動</span> <span class="fc__cls">1/C-LD</span><span class="fc__sub">ただちに（§8.2.2）</span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__qrow"><div class="fc__q"><span>早期興奮（WPW）がある？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box fc__box--x"><span class="fc__t">房室結節を抑える薬を使わない</span> <span class="fc__cls">3: Harm/B-NR</span><span class="fc__sub"><b>ベラパミル・ジルチアゼム・アミオダロン・ジゴキシン・アデノシン・β遮断薬</b>。電気的除細動、またはその代わりに ibutilide（日本未承認）か procainamide の静注（1/C-LD、§10.6）。→ <a href="../上室頻拍_ACC-AHA-HRS-JCS/上室頻拍_クイックリファレンス.html">上室頻拍・WPW のページ</a></span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__q"><span>非代償性心不全？</span></div><div class="fc__splitw"><div class="fc__split"><div class="fc__br"><p class="fc__brlab"><span>はい</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">アミオダロン静注</span> <span class="fc__cls">2b/B-NR</span><span class="fc__sub">心不全の節（§9.2 推奨5）では、β遮断薬・Ca 拮抗薬が使えない・効かないとき 2a/B-NR</span></div><div class="fc__box fc__box--x"><span class="fc__t">ベラパミル・ジルチアゼムは使わない</span> <span class="fc__cls">3: Harm</span><span class="fc__sub">中等度以上の左室収縮障害では、非代償性心不全がなくても使わない（B-NR）</span></div></div></div><div class="fc__br"><p class="fc__brlab"><span>いいえ</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">β遮断薬、またはベラパミル・ジルチアゼム</span> <span class="fc__cls">1/B-R</span><span class="fc__sub">Ca 拮抗薬は EF &gt;40% のときだけ</span></div><div class="fc__arrow"><span>効かない・使えない</span></div><div class="fc__box"><span class="fc__t">ジゴキシン</span> <span class="fc__cls">2a/B-R</span><span class="fc__sub">単独でも、上の薬に足しても</span></div><div class="fc__box"><span class="fc__t">アミオダロン静注</span> <span class="fc__cls">2b/B-NR</span><span class="fc__sub">重症か非代償性心不全で、上の薬が効かない・使えないとき（推奨4）</span></div></div></div></div></div><div class="fc__box fc__box--info"><span class="fc__t">マグネシウム静注を足す</span> <span class="fc__cls">2a/A</span><span class="fc__sub">標準の心拍数調節に追加</span></div><p class="fc__foot">早期興奮の問いは §10.6 からこのページで足した。2023 GL に「不安定」の定義はない。上の本文は非代償性心不全を不安定に数えるが、Figure 17 は血行動態が安定した非代償性心不全を次の問いで扱う。Figure 17 の「中等度〜重度の左室機能障害では禁忌」の＊印は amiodarone に付いているが、推奨文（推奨5）では静注のベラパミル・ジルチアゼムが対象。amiodarone は洞調律に戻って脳梗塞を起こす恐れも考えて使う（推奨4 脚注）。</p></div></div></figure>
+      <figure class="fc fc--ch" id="fcCvac"><figcaption class="fc__cap"><b>除細動の前後の抗凝固</b><span>心房粗動の除細動でも同じ（日本 p.56、米国 §6.8.6）。</span></figcaption><div class="fc__cols"><div class="fc__col fc__col--jp"><p class="fc__head">日本（2020 薬物GL 図13）</p><div class="fc__group"><p class="fc__or">除細動の前に</p><div class="fc__q"><span>心房細動の持続は？</span></div><div class="fc__splitw"><div class="fc__split"><div class="fc__br"><p class="fc__brlab"><span>48時間未満</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">ヘパリン静注</span><span class="fc__sub">通常 2,000〜5,000 単位（量の根拠は弱い）。脳梗塞のリスクがきわめて高ければ経食道心エコーを考慮（p.56）</span></div></div></div><div class="fc__br"><p class="fc__brlab"><span>48時間以上・不明</span></p><div class="fc__brin"><div class="fc__alt"><p class="fc__or">どれか</p><div class="fc__box"><span class="fc__t">3週間の抗凝固</span><span class="fc__sub">DOAC 3週間以上、またはワルファリンが目標 INR に届いてから3週間以上</span></div><div class="fc__brin"><div class="fc__q"><span>経食道心エコーで心房内血栓？</span></div><div class="fc__splitw"><div class="fc__split"><div class="fc__br"><p class="fc__brlab"><span>なし</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">ヘパリン静注</span></div></div></div><div class="fc__br"><p class="fc__brlab"><span>あり</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">3週間の抗凝固</span><span class="fc__sub">経食道心エコーで見直し、血栓がなければ除細動（p.56）</span></div></div></div></div></div></div></div></div></div></div></div></div><div class="fc__arrow"><span>どの道でも</span></div><div class="fc__box fc__box--x"><span class="fc__t">除細動</span></div><div class="fc__arrow"><span></span></div><div class="fc__box"><span class="fc__t">4週間以上の抗凝固</span><span class="fc__sub">DOAC、または目標 INR を保ったワルファリン。その後は、再発（無症候を含む）と血栓のリスクで決める</span></div><p class="fc__foot">48時間未満で除細動のときに十分な経口抗凝固がなければ、除細動のあとは原則 DOAC（図13 の注）。持続が不明なら48時間以上として扱う（p.55）。血行動態が不安定なら待たずに除細動（48時間以上ならヘパリン静注下に）。血栓があったあとの見直しは図13 になく、p.56 の ACUTE 試験から足した。</p></div><div class="fc__col fc__col--us fc__trunk"><p class="fc__head">米国（2023 GL Figure 21・§8.2.1）</p><div class="fc__qrow"><div class="fc__q"><span>3週間以上、途切れずに抗凝固できている？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box fc__box--x"><span class="fc__t">抗凝固を続けたまま除細動</span> <span class="fc__cls">1</span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__q"><span>持続は 48時間未満？</span></div><div class="fc__splitw"><div class="fc__split"><div class="fc__br"><p class="fc__brlab"><span>いいえ</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">除細動の前に画像で血栓を否定</span> <span class="fc__cls">1/B-R</span><span class="fc__sub">または3週間の抗凝固を続けてから</span></div></div></div><div class="fc__br"><p class="fc__brlab"><span>はい</span></p><div class="fc__brin"><div class="fc__q"><span>塞栓リスクが高い？</span><small>CHA<sub>2</sub>DS<sub>2</sub>-VASc 2点以上など</small></div><div class="fc__splitw"><div class="fc__split"><div class="fc__br"><p class="fc__brlab"><span>はい</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">画像を考慮</span> <span class="fc__cls">2b/C-LD</span></div></div></div><div class="fc__br"><p class="fc__brlab"><span>いいえ</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">12時間未満なら、画像・抗凝固の益は不確か</span> <span class="fc__cls">2b/C-LD</span></div></div></div></div></div></div></div></div></div><p class="fc__sublab">画像を撮ったら（上の2つの「画像」から）</p><div class="fc__q"><span>心内血栓がある？</span></div><div class="fc__splitw"><div class="fc__split"><div class="fc__br"><p class="fc__brlab"><span>ある</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">3〜6週間以上の抗凝固 → 画像をくり返す</span> <span class="fc__cls">1/C-LD</span><span class="fc__sub">血栓が消えたのを確かめてから除細動</span></div></div></div><div class="fc__br"><p class="fc__brlab"><span>ない</span></p><div class="fc__brin"><div class="fc__box fc__box--x"><span class="fc__t">抗凝固のもとで除細動</span> <span class="fc__cls">1</span></div></div></div></div></div><div class="fc__box fc__box--info"><span class="fc__t">除細動のあと：4週間以上、途切れずに</span> <span class="fc__cls">1/B-NR</span><span class="fc__sub">その後は脳卒中リスクで決める</span></div><p class="fc__foot">血行動態が安定した人の図。Figure 21 のうち、心臓手術のあとと左心耳閉鎖のあとの枝は省いた。除細動のあとの4週間は図になく、推奨2から。「48時間未満・低リスク」で12時間以上の人については、図に行き先がない。</p></div></div></figure>
+      <figure class="fc fc--ch" id="fcCv"><figcaption class="fc__cap"><b>除細動の方法（電気か薬か）</b><span>血行動態が安定していれば、抗凝固の条件（上の図）を満たしてから。破綻していれば待たない（日本：48時間以上続いていればヘパリン静注下に、p.55）。</span></figcaption><div class="fc__cols"><div class="fc__col fc__col--jp fc__trunk"><p class="fc__head">日本（2020 薬物GL 図17・表45・46）</p><div class="fc__box"><span class="fc__t">適切な抗血栓対策（上の図）</span><span class="fc__sub">緊急の場合を除く（p.69）</span></div><div class="fc__arrow"><span></span></div><div class="fc__qrow"><div class="fc__q"><span>血行動態が破綻？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box fc__box--x"><span class="fc__t">ただちに直流除細動</span> <span class="fc__cls">I/C</span><span class="fc__sub">抗凝固の条件を待たない</span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__q"><span>器質的心疾患がある？</span><small>肥大心・不全心・虚血心</small></div><div class="fc__splitw"><div class="fc__split"><div class="fc__br"><p class="fc__brlab"><span>ある</span></p><div class="fc__brin"><div class="fc__q"><span>症候性の頻拍？</span></div><div class="fc__splitw"><div class="fc__split"><div class="fc__br"><p class="fc__brlab"><span>はい</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">心拍数調節</span></div><div class="fc__arrow"><span></span></div><div class="fc__box fc__box--x"><span class="fc__t">直流除細動</span><span class="fc__sub">アミオダロン ＊ も考慮（点線）</span></div></div></div><div class="fc__br"><p class="fc__brlab"><span>いいえ</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">アミオダロン ＊</span> <span class="fc__cls">IIa/B</span><span class="fc__sub">クラスは、心不全か肥大型心筋症に伴う持続性のもの</span></div><div class="fc__arrow"><span>考慮（点線）</span></div><div class="fc__box fc__box--x"><span class="fc__t">直流除細動</span></div></div></div></div></div></div></div><div class="fc__br"><p class="fc__brlab"><span>ない</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">症候性の頻拍があれば心拍数調節</span></div><div class="fc__arrow"><span></span></div><div class="fc__q"><span>持続は 7日を超える？</span></div><div class="fc__splitw"><div class="fc__split"><div class="fc__br"><p class="fc__brlab"><span>はい</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">ベプリジル</span> <span class="fc__cls">IIa/B</span><span class="fc__sub">心機能と QT が正常なとき。効能は、ほかの抗不整脈薬が使えないか無効の持続性。うっ血性心不全は禁忌</span></div><div class="fc__box"><span class="fc__t">アミオダロン ＊</span></div><div class="fc__arrow"><span>考慮（点線）</span></div><div class="fc__box fc__box--x"><span class="fc__t">直流除細動</span></div></div></div><div class="fc__br"><p class="fc__brlab"><span>いいえ</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">Na チャネル遮断薬</span><span class="fc__sub">ピルシカイニド・シベンゾリン・プロパフェノン・フレカイニド。48時間未満 I/A、48時間〜7日 IIa/C</span></div><div class="fc__arrow"><span>考慮（点線）</span></div><div class="fc__box fc__box--x"><span class="fc__t">直流除細動</span></div></div></div></div></div></div></div></div></div><div class="fc__box fc__box--info"><span class="fc__t">院外の発作に頓服（pill-in-the-pocket）</span> <span class="fc__cls">IIa/B</span><span class="fc__sub">ピルシカイニド・フレカイニド・プロパフェノン・シベンゾリン。洞不全・房室伝導障害・脚ブロック、ブルガダ症候群、陰性変力が問題になる器質的心疾患、心房粗動の既往がない人に。一度は医師が効果と安全を確かめてから（表46）</span></div><div class="fc__box fc__box--info"><span class="fc__t">心機能低下・ブルガダ症候群に Na チャネル遮断薬は使わない</span> <span class="fc__cls">III/C</span><span class="fc__sub">QT 延長を伴う持続性にベプリジルも III/C（表46）</span></div><p class="fc__foot">＊ アミオダロンの心房細動の効能は<b>錠だけ</b>（心不全か肥大型心筋症に伴うもので、ほかの抗不整脈薬が使えないか無効のとき）。<b>注射に心房細動の効能はない</b>（電子添文）。図17 の点線（治療を考慮）は、矢印に「考慮（点線）」と書いた。「ない」側の症候性の頻拍の分岐は、1つの箱にまとめた。クラスは表45・46。</p></div><div class="fc__col fc__col--us fc__trunk"><p class="fc__head">米国（2023 GL Figure 22・§8.2.2〜8.2.3）</p><div class="fc__qrow"><div class="fc__q"><span>血行動態が不安定？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box fc__box--x"><span class="fc__t">ただちに電気的除細動</span> <span class="fc__cls">1/C-LD</span><span class="fc__sub">QRS に同期（1/C-LD）</span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__box"><span class="fc__t">電気的除細動</span> <span class="fc__cls">1/B-R</span><span class="fc__sub">最初から選べる。薬が無効のあとでもよい。待機的なら二相性 200 J 以上で始める（2a/B-R）</span></div><div class="fc__arrow"><span>代わりに薬で（2a/C-LD）</span></div><div class="fc__q"><span>左室機能は？</span></div><div class="fc__splitw"><div class="fc__split"><div class="fc__br"><p class="fc__brlab"><span>正常</span></p><div class="fc__brin"><div class="fc__alt"><p class="fc__or">どれか</p><div class="fc__box"><span class="fc__t">アミオダロン静注</span> <span class="fc__cls">2a/A</span></div><div class="fc__box"><span class="fc__t">ibutilide</span> <span class="fc__cls">2a/A</span><span class="fc__sub">日本未承認</span></div></div><div class="fc__arrow"><span>使えない・選ばない</span></div><div class="fc__box"><span class="fc__t">procainamide 静注</span> <span class="fc__cls">2b/B-R</span><span class="fc__sub">amiodarone・ibutilide のあとには使わない（QT 延長）</span></div></div></div><div class="fc__br"><p class="fc__brlab"><span>HFrEF（≤40%）</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">アミオダロン静注</span> <span class="fc__cls">2a/A</span></div></div></div></div></div><div class="fc__box fc__box--info"><span class="fc__t">院外の再発に頓服（pill-in-the-pocket）</span> <span class="fc__cls">2a/A</span><span class="fc__sub">左室機能が正常な人に flecainide か propafenone。房室結節を抑える薬と併用し、先に監視下で試しておく</span></div><p class="fc__foot">早期興奮がない場合の図（Figure 22 の注）。電気的除細動は §8.2.2 の推奨から足した（Figure 22 は薬だけ）。アミオダロンは効くまで数時間かかる。ibutilide は 30〜90分で効くが、QT 延長と torsades de pointes が多い。</p></div></div></figure>
       <div class="box">
         <h3><span class="en">US · JP</span>除細動の前後の抗凝固</h3>
         <div class="tbl-wrap">
@@ -785,11 +948,13 @@ P: アピキサバン 5 mg 1日2回を開始し、3週間後に電気的除細�
         <h3><span class="en">Key points</span>キーポイント</h3>
         <ul class="kp">
           <li><b>開始基準</b>：日本は CHADS<sub>2</sub> ≥1 で DOAC を推奨。米国は CHA<sub>2</sub>DS<sub>2</sub>-VASc 男性 ≥2・女性 ≥3 で推奨。抗血小板薬は脳梗塞予防に使わない</li>
-          <li><b>DOAC を優先</b>：日米とも、使える人には DOAC をワルファリンより優先。弁膜症性（機械弁・中等度以上の僧帽弁狭窄）はワルファリンだけ</li>
+          <li><b>DOAC を優先</b>：日米とも、使える人には DOAC をワルファリンより優先。弁膜症性（機械弁、リウマチ性または中等度以上の僧帽弁狭窄）はワルファリンだけ</li>
           <li><b>腎機能を測り直す</b>：日本は開始後少なくとも年1回、75歳以上やフレイルは6か月に1回、CrCl 60 未満は「CrCl÷10」か月に1回の採血（IIa/C）</li>
           <li><b>出血したとき</b>：ダビガトランはイダルシズマブ 5 g（出血時と緊急手術）。Xa 阻害薬の命に関わる出血はアンデキサネット アルファ（日本 I/B。手術前の中和は効能にない）</li>
         </ul>
       </div>
+      <figure class="fc fc--ch" id="fcOac-ch"><figcaption class="fc__cap"><b>抗凝固を始めるか</b><span>順番に1つずつ答えると、行き先が決まります。 <a href="#calc">計算</a>に入力すると、同じ図で当てはまる箱が光ります。用量は計算か <a href="#quick">早見表</a>で決めます。</span></figcaption><div class="fc__cols"><div class="fc__col fc__col--jp fc__trunk"><p class="fc__head">日本（2020 薬物GL 図12・p.50）</p><div class="fc__qrow"><div class="fc__q"><span>弁膜症性？</span><small>機械弁・僧帽弁狭窄症（おもにリウマチ性、p.44）</small></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box" data-k="j_valve"><span class="fc__t">ワルファリン</span> <span class="fc__cls">I/B</span><span class="fc__sub">INR 2.0〜3.0。DOAC は使わない。I/B は機械弁と中等度〜重度の狭窄（表35）。生体弁は非弁膜症性に入れる</span><span class="fc__badge"></span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__qrow"><div class="fc__q"><span>肥大型心筋症？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box" data-k="j_hcm"><span class="fc__t">抗凝固を行う</span> <span class="fc__cls">I/B</span><span class="fc__sub">スコアによらない（心筋症診療GL 2018 表34、2025 心不全GL）</span><span class="fc__badge"></span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__qrow"><div class="fc__q"><span>CHADS<sub>2</sub> が1点以上？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box" data-k="j_doac"><span class="fc__t">DOAC を推奨</span><span class="fc__sub">ワルファリンは考慮可（INR 1.6〜2.6。70歳未満の二次予防・3点以上は 2.0〜3.0 を考慮）</span><span class="fc__badge"></span></div></div></div><div class="fc__arrow"><span>いいえ（0点）</span></div><div class="fc__qrow"><div class="fc__q"><span>「その他のリスク」がある？</span><small>心筋症、65〜74歳、血管疾患、持続性・永続性、腎機能障害、体重 50 kg 以下、左房径 45 mm 超</small></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box" data-k="j_other"><span class="fc__t">抗凝固を考慮可</span><span class="fc__sub">DOAC／ワルファリン</span><span class="fc__badge"></span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__qrow"><div class="fc__q"><span>脳以外の血栓塞栓症の既往？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box" data-k="j_te"><span class="fc__t">抗凝固を検討</span><span class="fc__sub">CHA<sub>2</sub>DS<sub>2</sub>-VA が2点になり、「0点なら不要」に当たらない（p.50）</span><span class="fc__badge"></span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__box" data-k="j_none"><span class="fc__t">抗凝固は不要と考えてよい</span><span class="fc__sub">女性を除いた CHA<sub>2</sub>DS<sub>2</sub>-VA が0点（p.50）。年1回スコアを見直す</span><span class="fc__badge"></span></div><p class="fc__foot">図12 の枠は 弁膜症性・CHADS<sub>2</sub>・その他のリスク の3つ。肥大型心筋症と、脳以外の血栓塞栓症の問いは、別の GL と p.50 の本文からこのページで足した。HELT-E<sub>2</sub>S<sub>2</sub> は使用を考慮（IIa）だが、何点から始めるかは決まっていない。</p></div><div class="fc__col fc__col--us fc__trunk"><p class="fc__head">米国（2023 GL §6.3.1・Figure 10）</p><div class="fc__qrow"><div class="fc__q"><span>弁膜症性？</span><small>リウマチ性または中等度以上の僧帽弁狭窄・機械弁</small></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box" data-k="u_valve"><span class="fc__t">ワルファリン</span> <span class="fc__cls">1/B-R</span><span class="fc__sub">クラスは僧帽弁狭窄（INR 2.0〜3.0、§6.8.5）。機械弁は AF GL の推奨の対象外で、目標 INR は弁の種類と位置で決める</span><span class="fc__badge"></span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__qrow"><div class="fc__q"><span>肥大型心筋症？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box" data-k="u_hcm"><span class="fc__t">抗凝固を推奨</span> <span class="fc__cls">1/B-NR</span><span class="fc__sub">スコアによらない。DOAC が第一選択（2024 HCM GL）</span><span class="fc__badge"></span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__qrow"><div class="fc__q"><span>CHA<sub>2</sub>DS<sub>2</sub>-VASc が 男性2・女性3点以上？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box" data-k="u_rec"><span class="fc__t">抗凝固を推奨</span> <span class="fc__cls">1/A</span><span class="fc__sub">年 2% 以上。DOAC をワルファリンより優先（1/A）</span><span class="fc__badge"></span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__qrow"><div class="fc__q"><span>男性1・女性2点？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box" data-k="u_ok"><span class="fc__t">抗凝固は妥当</span> <span class="fc__cls">2a/A</span><span class="fc__sub">年 1% 以上 2% 未満。迷えばリスク修飾因子で判断</span><span class="fc__badge"></span></div></div></div><div class="fc__arrow"><span>いいえ（それ未満）</span></div><div class="fc__box" data-k="u_none"><span class="fc__t">抗凝固の推奨の対象外</span><span class="fc__sub">年 1% 未満。アスピリン単独も益なし（3: No Benefit/B-NR）</span><span class="fc__badge"></span></div><p class="fc__foot">Figure 10 は年間の塞栓リスク（%）で書いてある。点数は §6.3.1 の推奨1・3 から。抗凝固の代わりのアスピリン（±クロピドグレル）は 3: Harm/B-R。弁膜症性と肥大型心筋症の問いは §6.8.5 と 2024 HCM GL からこのページで足した。</p></div></div></figure>
+      <figure class="fc fc--ch" id="fcBleed"><figcaption class="fc__cap"><b>抗凝固中に出血したとき</b><span>緊急手術の前の中和（日本の効能）：ワルファリンはプロトロンビン複合体（ケイセントラ）、ダビガトランはイダルシズマブ。Xa 阻害薬のアンデキサネットには、手術前の効能がない。</span></figcaption><div class="fc__cols"><div class="fc__col fc__col--jp fc__trunk"><p class="fc__head">日本（2024 FU 図10・表24、2020 薬物GL 表43）</p><div class="fc__box"><span class="fc__t">抗凝固薬の情報を集める</span><span class="fc__sub">種類・量・最後に飲んだ時刻・最終の INR</span></div><div class="fc__arrow"><span></span></div><div class="fc__box"><span class="fc__t">出血を評価する</span><span class="fc__sub">循環動態・血圧・血算・凝固検査・腎機能</span></div><div class="fc__arrow"><span></span></div><div class="fc__qrow"><div class="fc__q"><span>中等度〜重度？</span><small>脳・眼底など重要臓器の出血は、軽くても中等度〜重度に準じる</small></div><div class="fc__side"><span class="fc__yes"><span>いいえ<wbr>（軽度）</span></span><div class="fc__box fc__box--x"><span class="fc__t">経過観察</span><span class="fc__sub">安易に休薬せず、続けることを考える（2020 p.63）。休むなら、ワルファリンは休薬・減量、DOAC は1回か1日分。血栓のリスクを説明する</span></div></div></div><div class="fc__arrow"><span>はい</span></div><div class="fc__box"><span class="fc__t">休薬・止血・輸液（必要なら輸血）</span> <span class="fc__cls">I</span><span class="fc__sub">出血性脳卒中では十分に降圧（I/A）。DOAC は内服4時間以内なら活性炭（IIb/C）</span></div><div class="fc__arrow"><span>中和</span></div><div class="fc__group"><p class="fc__or">飲んでいる薬で選ぶ</p><div class="fc__grid fc__grid--w"><div class="fc__box"><span class="fc__t">ワルファリン</span> <span class="fc__cls">I</span><span class="fc__sub">プロトロンビン複合体＋ビタミン K（通常の組み合わせ）。新鮮凍結血漿</span></div><div class="fc__box"><span class="fc__t">ダビガトラン</span> <span class="fc__cls">I/B</span><span class="fc__sub">イダルシズマブ 5 g</span></div><div class="fc__box"><span class="fc__t">Xa 阻害薬</span> <span class="fc__cls">I/B</span><span class="fc__sub">アンデキサネット アルファ（命に関わるか、止血が難しい出血）。血栓塞栓症と、ヘパリンが効きにくくなることに注意（電子添文）</span></div><div class="fc__box"><span class="fc__t">DOAC（中和薬が手に入らないとき）</span> <span class="fc__cls">IIb/C</span><span class="fc__sub">プロトロンビン複合体・遺伝子組換え第VII因子製剤（どちらも保険適用外）</span></div></div></div><div class="fc__arrow"><span>止血を確かめ、適応があれば</span></div><div class="fc__box"><span class="fc__t">できるだけ早く抗凝固を再開</span> <span class="fc__cls">I/C</span><span class="fc__sub">軽度で休薬したときも同じ</span></div><p class="fc__foot">「中和薬が手に入らないとき」は 2024 FU p.54 の本文（プロトロンビン複合体についての記述）から足した。図10 は 2020 薬物GL 図15 と同じ形で、2024 FU の表24 で Xa 阻害薬のアンデキサネットが IIa/C から I/B に上がった。<b>アンデキサネットの量（電子添文）</b>：A法 400 mg（30 mg/分）→ 480 mg（4 mg/分で2時間）、B法 800 mg（30 mg/分）→ 960 mg（8 mg/分で2時間）。最後の服用から8時間以上なら A法。8時間未満・不明なら、アピキサバン 1回 2.5・5 mg とリバーロキサバン 1回 2.5 mg は A法、アピキサバン 10 mg・リバーロキサバン 10・15 mg・エドキサバン・1回量が不明なら B法。米国での販売終了と FDA の見解は、米国の列に書いた。</p></div><div class="fc__col fc__col--us fc__trunk"><p class="fc__head">米国（2023 GL Figure 13・§6.6）</p><div class="fc__qrow"><div class="fc__q"><span>命に関わる、または止められない大出血？</span></div><div class="fc__side"><span class="fc__yes"><span>いいえ</span></span><div class="fc__box fc__box--x"><span class="fc__t">支持療法</span><span class="fc__sub">軽い出血：止血するまで休薬してよい。命に関わらない出血：休薬。ダビガトランは透析を考慮</span></div></div></div><div class="fc__arrow"><span>はい</span></div><div class="fc__group"><p class="fc__or">飲んでいる薬で選ぶ</p><div class="fc__grid fc__grid--w"><div class="fc__box"><span class="fc__t">Xa 阻害薬</span> <span class="fc__cls">1</span><span class="fc__sub">4因子プロトロンビン複合体（C-LD）、または andexanet（アピキサバン・リバーロキサバン B-NR、エドキサバン C-LD）</span></div><div class="fc__box"><span class="fc__t">ダビガトラン</span> <span class="fc__cls">1/B-NR</span><span class="fc__sub">idarucizumab。なければ活性型プロトロンビン複合体（2a/C-LD）</span></div><div class="fc__box"><span class="fc__t">ワルファリン</span> <span class="fc__cls">1/A</span><span class="fc__sub">4因子プロトロンビン複合体＋ビタミン K 静注</span></div></div></div><p class="fc__foot"><b>andexanet は、米国では2025年12月で販売が終わった。</b>会社は商業上の理由で承認の取り下げを申請した。FDA は「危険が益を上回る」とする見解を出している（脳内出血での ANNEXA-I 試験：血栓症 14.6% 対 6.9%、30日以内の血栓関連死 2.5% 対 0.9%）。2023 GL の推奨はその前のもの。日本では電子添文（2025年11月改訂 第6版）が PMDA に載っている。</p></div></div></figure>
       <div class="box">
         <h3><span class="en">US · JP</span>ワルファリンと特別な場面</h3>
         <div class="tbl-wrap">
@@ -797,7 +962,7 @@ P: アピキサバン 5 mg 1日2回を開始し、3週間後に電気的除細�
             <thead><tr><th>場面</th><th>米国（2023）</th><th>日本</th></tr></thead>
             <tbody>
               <tr><td>ワルファリンの INR（非弁膜症性）</td><td class="num">2.0〜3.0</td><td>1.6〜2.6（なるべく 2 に近づける）（IIa/B）<span class="sub">二次予防・高リスク（CHADS<sub>2</sub> ≥3、がん患者など）で70歳未満は 2.0〜3.0（IIa/B、2020 薬物GL 表35）</span></td></tr>
-              <tr><td>弁膜症性</td><td>中等度以上の僧帽弁狭窄はワルファリン（1/B-R）、INR 2.0〜3.0。機械弁もワルファリンだが、目標 INR は弁の種類と位置で決める（AF GL の推奨の対象外）</td><td>ワルファリン（I/B）、INR 2.0〜3.0。生体弁は術後3か月ワルファリン、その後 DOAC へ切り替えてよい</td></tr>
+              <tr><td>弁膜症性</td><td>リウマチ性または中等度以上の僧帽弁狭窄はワルファリン（1/B-R）、INR 2.0〜3.0。機械弁もワルファリンだが、目標 INR は弁の種類と位置で決める（AF GL の推奨の対象外）</td><td>ワルファリン（I/B）、INR 2.0〜3.0。生体弁は術後3か月ワルファリン、その後 DOAC へ切り替えてよい</td></tr>
               <tr><td>CrCl 15〜30 未満</td><td>ワルファリンかラベルどおりの DOAC は妥当（CKD ステージ4、2a/B-NR）</td><td>高齢者では、ダビガトラン以外の DOAC を考慮（IIa/B、2024 FU 表20）。ダビガトランは禁忌</td></tr>
               <tr><td>CrCl 15 未満・透析</td><td>ワルファリン（INR 2.0〜3.0）かアピキサバンを考慮してよい（2b/B-NR）</td><td>DOAC は禁忌（添付文書）。高齢者の推奨（2024 FU 表20）：透析していない CrCl 30 未満の末期腎不全はワルファリンを考慮してもよい（IIb/C）／維持透析ではワルファリンも推奨しない（III［No benefit］/B。アブレーション周術期・機械弁術後・脳梗塞既往は使用可）</td></tr>
               <tr><td>超高齢・高出血リスク</td><td>（相当する推奨なし）</td><td>80歳以上で出血要因があり承認用量が使えなければ、エドキサバン 15 mg（2024 FU 表23 I/B）</td></tr>
@@ -841,6 +1006,7 @@ P: エドキサバン 30 mg 1日1回（60 kg 以下・CrCl 30〜50 のため。�
           <li><b>ジゴキシン</b>：日本は長期投与を「血中濃度を管理していれば考慮してもよい」（IIb）に変えた（2024 FU）。目標は 0.5〜0.8 ng/mL</li>
         </ul>
       </div>
+      <figure class="fc fc--ch" id="fcRate"><figcaption class="fc__cap"><b>心拍数調節：長く続ける薬の選び方</b><span>急性期の薬は <a href="#acute">3 急性期と除細動</a> の図。</span></figcaption><div class="fc__cols"><div class="fc__col fc__col--jp"><p class="fc__head">日本（2020 薬物GL 図16・表44、2024 FU 表25）</p><div class="fc__box"><span class="fc__t">目標：安静時 &lt;110/分</span><span class="fc__sub">徐脈に注意</span></div><div class="fc__arrow"><span></span></div><div class="fc__q"><span>LVEF は？</span></div><div class="fc__splitw"><div class="fc__split"><div class="fc__br"><p class="fc__brlab"><span>&lt;40%</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">ビソプロロール（経口・貼付）／カルベジロール経口</span> <span class="fc__cls">I/A</span><span class="fc__sub">少量から。クラスは経口で LVEF 25% 以上のもの。慢性心不全を合併していれば心不全の用法</span></div><div class="fc__arrow"><span>追加で</span></div><div class="fc__box"><span class="fc__t">ジゴキシン経口</span> <span class="fc__cls">IIb/C</span><span class="fc__sub">血中濃度を定期的に測る（2024 FU 表25）。目標 0.5〜0.8 ng/mL</span></div><div class="fc__box fc__box--x"><span class="fc__t">ベラパミル・ジルチアゼムは使わない</span> <span class="fc__cls">III/C</span></div></div></div><div class="fc__br"><p class="fc__brlab"><span>40% 以上</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">β遮断薬（ビソプロロール・カルベジロール）か、ベラパミル・ジルチアゼム</span> <span class="fc__cls">I/B</span><span class="fc__sub">どれかを通常量で。<b>ジルチアゼムの飲み薬は不整脈の効能なし</b></span></div><div class="fc__arrow"><span>足りなければ</span></div><div class="fc__box"><span class="fc__t">作用の違う2剤を併用</span><span class="fc__sub">徐脈が強まる。β遮断薬と Ca 拮抗薬の併用は「控える」とも書かれている（p.23）</span></div><div class="fc__box fc__box--info"><span class="fc__t">ジゴキシンは推奨されていない</span><span class="fc__sub">心機能が保たれた心房細動では、近年の GL で推奨されていない（2024 FU p.54）</span></div></div></div></div></div><div class="fc__box fc__box--info"><span class="fc__t">どの段でも：心電図・血液検査、必要なら血中濃度</span></div><p class="fc__foot">図16 の慢性期（長期）の部分。図16（2020）はジゴキシン経口を追加の段に置くが、クラスは 2024 FU 表25 で III/C から IIb/C に変わった。</p></div><div class="fc__col fc__col--us"><p class="fc__head">米国（2023 GL Figure 18・§7.2.2）</p><div class="fc__box"><span class="fc__t">目標：安静時 &lt;100〜110/分</span> <span class="fc__cls">2a/B-R</span><span class="fc__sub">心不全のない人。症状と心機能で決める</span></div><div class="fc__arrow"><span></span></div><div class="fc__q"><span>LVEF は？</span></div><div class="fc__splitw"><div class="fc__split"><div class="fc__br"><p class="fc__brlab"><span>≤40%</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">β遮断薬</span> <span class="fc__cls">1/B-NR</span></div><div class="fc__arrow"><span>追加で・代わりに</span></div><div class="fc__box"><span class="fc__t">ジゴキシン</span> <span class="fc__cls">2a/B-R</span><span class="fc__sub">心不全症状がある人。測るなら &lt;1.2 ng/mL（2a/B-NR）</span></div><div class="fc__box fc__box--x"><span class="fc__t">ベラパミル・ジルチアゼムは使わない</span> <span class="fc__cls">3: Harm</span><span class="fc__sub">推奨文は LVEF &lt;40%（C-LD）</span></div></div></div><div class="fc__br"><p class="fc__brlab"><span>&gt;40%</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">β遮断薬、またはベラパミル・ジルチアゼム</span> <span class="fc__cls">1/B-NR</span></div><div class="fc__arrow"><span>追加で・代わりに</span></div><div class="fc__box"><span class="fc__t">ジゴキシン</span> <span class="fc__cls">2a/B-R</span><span class="fc__sub">心不全症状がある人</span></div></div></div></div></div><div class="fc__box fc__box--info"><span class="fc__t">永続性 AF に dronedarone は使わない</span> <span class="fc__cls">3: Harm/B-R</span><span class="fc__sub">心血管の危険因子がある人。日本未承認</span></div><p class="fc__foot">目標は §7.1、薬は Figure 18。ジゴキシンの「心不全症状がある人」は推奨3から。</p></div></div></figure>
       <div class="box">
         <h3><span class="en">US · JP</span>心拍数を下げる薬（日本の効能と用量）</h3>
         <div class="tbl-wrap">
@@ -892,6 +1058,7 @@ P: ビソプロロール 0.625 mg 1日1回から開始（心不全を合併す�
           <li><b>高齢者</b>：80歳以上でも、年齢だけで症候性 AF のアブレーションから外さない（2024 FU CQ1「推奨する」）</li>
         </ul>
       </div>
+      <figure class="fc fc--ch" id="fcRhythm"><figcaption class="fc__cap"><b>再発を防ぐ（薬かアブレーションか）</b><span>発症が早いほどリズム調節を考える（日本 IIa/A、米国は診断から1年以内 2a/B-R）。</span></figcaption><div class="fc__cols"><div class="fc__col fc__col--jp"><p class="fc__head">日本（2020 薬物GL 図18・図19・表47、2024 FU 表13）</p><div class="fc__box"><span class="fc__t">抗血栓対策＋心拍数調節</span><span class="fc__sub">予防を始めても、リスクに応じて続ける</span></div><div class="fc__arrow"><span></span></div><div class="fc__alt"><p class="fc__or">どれか</p><div class="fc__brin"><p class="fc__or">薬で予防する</p><div class="fc__q"><span>器質的心疾患がある？</span><small>肥大心・不全心・虚血心</small></div><div class="fc__splitw"><div class="fc__split"><div class="fc__br"><p class="fc__brlab"><span>ある</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">基礎疾患・併存疾患を治す</span><span class="fc__sub">アップストリーム治療</span></div><div class="fc__arrow"><span></span></div><div class="fc__box"><span class="fc__t">アミオダロン ＊</span> <span class="fc__cls">I/B</span><span class="fc__sub">心不全か肥大型心筋症に伴うもの。ほかの器質的心疾患は IIa/B で保険適用外</span></div><div class="fc__box"><span class="fc__t">ソタロール ＊</span> <span class="fc__cls">IIa/B</span><span class="fc__sub">心不全・肥大型心筋症<b>以外</b>の器質的心疾患で。AF に保険適用なし。重度のうっ血性心不全は禁忌（電子添文）</span></div><div class="fc__box fc__box--x"><span class="fc__t">Na チャネル遮断薬は使わない</span> <span class="fc__cls">III/C</span></div></div></div><div class="fc__br"><p class="fc__brlab"><span>ない</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">併存疾患があれば治す</span><span class="fc__sub">高血圧・脂質異常症・糖尿病・肥満・慢性腎不全・睡眠時呼吸障害</span></div><div class="fc__arrow"><span></span></div><div class="fc__box"><span class="fc__t">Na チャネル遮断薬</span> <span class="fc__cls">I/A</span><span class="fc__sub">有症候性の再発性。ピルシカイニド・シベンゾリン・プロパフェノン・フレカイニド</span></div><div class="fc__box"><span class="fc__t">ベプリジル</span> <span class="fc__cls">IIa/C</span><span class="fc__sub">Na チャネル遮断薬が効かないとき。催不整脈に注意</span></div></div></div></div></div></div><div class="fc__brin"><p class="fc__or">アブレーション（患者の意向・施設の条件で）</p><div class="fc__box fc__box--x"><span class="fc__t">カテーテルアブレーション</span><span class="fc__sub">薬が効かない症候性：発作性 I、持続性 IIa、長期持続性 IIb（図19）。第一選択として：症候性で再発性の発作性にクライオバルーン I/A（2024 FU 表13）、ほかの方法の発作性 IIa、持続性 IIa、長期持続性 IIb（図19）</span></div></div></div><p class="fc__foot">＊ 保険の扱いは図18 の注。図18 では、薬の2つの箱とアブレーションが点線（治療を考慮）で互いに結ばれる。心不全を合併したときのアブレーションは下の表。</p></div><div class="fc__col fc__col--us fc__trunk"><p class="fc__head">米国（2023 GL Figure 20・23・§8.3.1・§8.4）</p><div class="fc__qrow"><div class="fc__q"><span>心不全がある？</span></div><div class="fc__side"><span class="fc__yes"><span>はい</span></span><div class="fc__box fc__box--x"><span class="fc__t">下の「心不全を合併しているとき」の表へ</span><span class="fc__sub">§9.2</span></div></div></div><div class="fc__arrow"><span>いいえ</span></div><div class="fc__box"><span class="fc__t">本人と相談して決める</span><span class="fc__sub">除細動の時期も一緒に</span></div><div class="fc__arrow"><span></span></div><div class="fc__alt"><p class="fc__or">どれか</p><div class="fc__brin"><p class="fc__or">薬（Figure 23）</p><div class="fc__q"><span>心筋梗塞の既往・器質的心疾患・HFrEF（≤40%）がある？</span></div><div class="fc__splitw"><div class="fc__split"><div class="fc__br"><p class="fc__brlab"><span>いいえ</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">flecainide・propafenone・dofetilide・dronedarone</span> <span class="fc__cls">2a/A</span><span class="fc__sub">dofetilide・dronedarone は日本未承認</span></div><div class="fc__arrow"><span></span></div><div class="fc__box"><span class="fc__t">amiodarone</span> <span class="fc__cls">2a/A</span><span class="fc__sub">ほかが効かない・選べないとき</span></div><div class="fc__arrow"><span></span></div><div class="fc__box"><span class="fc__t">sotalol</span> <span class="fc__cls">2b/A</span></div></div></div><div class="fc__br"><p class="fc__brlab"><span>はい</span></p><div class="fc__brin"><div class="fc__box"><span class="fc__t">amiodarone・dofetilide</span> <span class="fc__cls">2a</span><span class="fc__sub">dofetilide は日本未承認</span></div><div class="fc__arrow"><span></span></div><div class="fc__box"><span class="fc__t">sotalol</span> <span class="fc__cls">2b/A</span><span class="fc__sub">HFrEF では避けるのがよい（§8.3.1 本文）</span></div><div class="fc__box fc__box--x"><span class="fc__t">flecainide・propafenone は使わない</span> <span class="fc__cls">3: Harm/B-R</span></div><div class="fc__box fc__box--info"><span class="fc__t">dronedarone</span> <span class="fc__cls">2a/A</span><span class="fc__sub">NYHA III・IV か、最近の非代償性心不全では 3: Harm/B-R。日本未承認</span></div></div></div></div></div></div><div class="fc__brin"><p class="fc__or">アブレーション</p><div class="fc__box fc__box--x"><span class="fc__t">カテーテルアブレーション</span><span class="fc__sub">薬が効かない・使えない症候性 1/A。第一選択：若く併存疾患の少ない症候性の発作性 1/A、そのほかの症候性 2a/B-R</span></div></div><div class="fc__brin"><p class="fc__or">手術</p><div class="fc__box fc__box--info"><span class="fc__t">外科的アブレーション</span><span class="fc__sub">ほかの心臓手術と同時 2a、症候性・持続性で薬が効かない 2b</span></div></div></div><p class="fc__foot">Figure 20 の3本の枝に、薬の枝だけ Figure 23 をつないだ。器質的心疾患は、瘢痕や線維化を伴う明らかなもの。Figure 23 の器質的心疾患の枝は HFrEF を含む（Figure 20 では心不全は別の節へ送られる）。</p></div></div></figure>
       <div class="box">
         <h3><span class="en">US · JP</span>抗不整脈薬</h3>
         <div class="tbl-wrap">
@@ -1131,6 +1298,7 @@ P: DOAC を開始（用量は添付文書）。不整脈専門外来へ紹介し
         <li>Lip GY, Nieuwlaat R, Pisters R, et al. Refining clinical risk stratification for predicting stroke and thromboembolism in atrial fibrillation using a novel risk factor-based approach. Chest. 2010;137:263-272.</li>
         <li>Gage BF, Waterman AD, Shannon W, et al. Validation of clinical classification schemes for predicting stroke. JAMA. 2001;285:2864-2870.</li>
         <li>Okumura K, Tomita H, Nakai M, et al. A novel risk stratification system for ischemic stroke in Japanese patients with non-valvular atrial fibrillation. Circ J. 2021;85:1254-1262. doi:10.1253/circj.CJ-20-1075</li>
+        <li>U.S. Food and Drug Administration. Update on the safety of Andexxa by AstraZeneca: FDA safety communication. 2025-12-18.</li>
         <li>各薬剤の添付文書（PMDA 医療用医薬品情報検索）：プラザキサ（2025年11月）、イグザレルト（2026年10月）、エリキュース（2026年3月）、リクシアナ（2025年11月）、ワーファリン（2026年4月）、プリズバインド、オンデキサ、メインテート、ビソノテープ、アーチスト、オノアクト、ワソラン、ヘルベッサー、ジゴシン、サンリズム、シベノール、タンボコール、プロノン、ベプリコール、アンカロン、ソタロール塩酸塩「TE」。米国の用量は DailyMed の FDA ラベル（Pradaxa・Xarelto・Eliquis・Savaysa）。</li>
       </ol>
       <p>本ページは学習・診療の参照用の要約です。個々の患者への適用は、最新の添付文書・ガイドラインと臨床判断で確かめてください。</p>
@@ -1226,7 +1394,7 @@ P: DOAC を開始（用量は添付文書）。不整脈専門外来へ紹介し
     return "INR 1.6〜2.6（なるべく 2 に近づける）";
   }
   function judgeJP(p, c, h) {
-    if (p.valve) return { cat: "ワルファリン（弁膜症性）", steps: ["弁膜症性 AF（機械弁・中等度以上の僧帽弁狭窄）：ワルファリン（INR 2.0〜3.0）（2020 薬物GL 表35 I/B）。DOAC は使わない"] };
+    if (p.valve) return { cat: "ワルファリン（弁膜症性）", steps: ["弁膜症性 AF（機械弁、リウマチ性または中等度以上の僧帽弁狭窄）：ワルファリン（INR 2.0〜3.0）（2020 薬物GL 図12・p.44。表35 の I/B は機械弁と中等度〜重度の狭窄）。DOAC は使わない"] };
     if (!c.ok) return { cat: "", steps: [] };
     var st = [];
     var cat;
@@ -1254,7 +1422,7 @@ P: DOAC を開始（用量は添付文書）。不整脈専門外来へ紹介し
     return { cat: cat, steps: st };
   }
   function judgeUS(p, v) {
-    if (p.valve) return { cat: "ワルファリン", steps: ["中等度以上の僧帽弁狭窄：スコアによらずワルファリン（INR 2.0〜3.0）（2023 §6.8.5 1/B-R）", "機械弁：ワルファリン。目標 INR は弁の種類と位置で決める（2023 AF GL の推奨の対象外）"] };
+    if (p.valve) return { cat: "ワルファリン", steps: ["リウマチ性または中等度以上の僧帽弁狭窄：スコアによらずワルファリン（INR 2.0〜3.0）（2023 §6.8.5 1/B-R）", "機械弁：ワルファリン。目標 INR は弁の種類と位置で決める（2023 AF GL の推奨の対象外）"] };
     if (p.hcm) return { cat: "抗凝固を推奨（肥大型心筋症）", steps: ["肥大型心筋症：スコアによらず抗凝固（CHA2DS2-VASc を使わない）、DOAC が第一選択（2024 AHA/ACC HCM GL 1/B-NR）"] };
     if (!v.ok) return { cat: "", steps: [] };
     var f = p.sex === "f";
@@ -1357,7 +1525,7 @@ P: DOAC を開始（用量は添付文書）。不整脈専門外来へ紹介し
     var type = p.aftype === "pers" ? "持続性・永続性" : (p.aftype === "par" ? "発作性" : "");
     L.push("#心房細動" + (type ? "（" + type + "）" : ""));
     if (p.valve) {
-      L.push("A: 弁膜症性（機械弁・中等度以上の僧帽弁狭窄）。日本 2020 不整脈薬物治療GL・米国 2023 ACC/AHA/ACCP/HRS とも ワルファリン。");
+      L.push("A: 弁膜症性（機械弁、リウマチ性または中等度以上の僧帽弁狭窄）。日本 2020 不整脈薬物治療GL・米国 2023 ACC/AHA/ACCP/HRS とも ワルファリン。");
       L.push("P: ワルファリン（日本の目標 INR 2.0〜3.0。機械弁の米国の目標は弁の種類と位置で決まる）。DOAC は使わない。");
       return L.join("\n");
     }
@@ -1385,6 +1553,24 @@ P: DOAC を開始（用量は添付文書）。不整脈専門外来へ紹介し
       if (us.cat === "抗凝固は妥当" || us.cat === "抗凝固を推奨") L.push("   米国では：" + us.cat + "。");
     }
     return L.join("\n");
+  }
+
+  // 図1（抗凝固を始めるか）：判定の結果（cat）から、当てはまる箱を1つずつ光らせる。計算はしない
+  var FLOW_JP = [["ワルファリン", "j_valve"], ["抗凝固を行う", "j_hcm"], ["DOAC を推奨", "j_doac"], ["抗凝固を考慮可", "j_other"], ["抗凝固を検討", "j_te"], ["抗凝固は不要", "j_none"]];
+  var FLOW_US = [["ワルファリン", "u_valve"], ["抗凝固を推奨（肥大型心筋症）", "u_hcm"], ["抗凝固を推奨", "u_rec"], ["抗凝固は妥当", "u_ok"], ["抗凝固の推奨の対象外", "u_none"]];
+  function flow(jp, us) {
+    var root = $("fcOac-tool");
+    if (!root) return;
+    var key = function (tbl, cat) {
+      for (var i = 0; i < tbl.length; i++) if (cat && cat.indexOf(tbl[i][0]) === 0) return tbl[i][1];
+      return "";
+    };
+    var on = [key(FLOW_JP, jp.cat), key(FLOW_US, us.cat)];
+    Array.prototype.forEach.call(root.querySelectorAll("[data-k]"), function (n) {
+      var hit = on.indexOf(n.getAttribute("data-k")) >= 0;
+      n.classList.toggle("is-now", hit);
+      n.querySelector(".fc__badge").textContent = hit ? "当てはまる" : "";
+    });
   }
 
   function render() {
@@ -1439,6 +1625,7 @@ P: DOAC を開始（用量は添付文書）。不整脈専門外来へ紹介し
     var fl = flags(p, v, c);
     $("o-flags").innerHTML = fl.length ? fl.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") : '<li class="i">特になし</li>';
     $("o-memo").value = memo(p, v, c, h, jp, us, ds);
+    flow(jp, us);
   }
 
   // 下部バー：スマホは計算の欄にいる間ずっと出す。PC は、結果の枠のスコアが画面から外れている間だけ出す
