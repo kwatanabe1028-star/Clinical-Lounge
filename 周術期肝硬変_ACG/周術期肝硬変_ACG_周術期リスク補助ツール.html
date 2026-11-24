@@ -12,6 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@400;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/lounge.css" />
+  <link rel="stylesheet" href="../assets/tocbar.css" />
 
   <style>
     /* ---------------------------------------------------------------
@@ -380,6 +381,7 @@
 
 <body data-lg-root=".." data-lg-desk="消化器・周術期（肝硬変）" data-lg-page="肝硬変 周術期リスク補助ツール">
   <div id="lg-header"></div>
+  <nav class="tocbar" id="tocbar" aria-label="章へ移動" data-items='[["actions","アクション","次のアクション（推奨フロー）"],["input","入力","臨床情報の入力"],["csph-lsm-plt","CSPH","CSPH の目安（LSM＋血小板）"],["sec-nutrition","栄養","栄養・フレイル"],["sec-labs","検査値","共通検査値"],["sec-fib4","FIB-4","FIB-4（自動計算）"],["sec-meld","MELD","MELD / MELD-Na"],["sec-ctp","CTP","Child–Turcotte–Pugh"],["sec-vocal","VOCAL-Penn","VOCAL-Penn"],["ref","参考","参考"],["ref-cite","参照一覧","参考文献・参照一覧"]]'></nav>
 
   <main>
     <div class="wrap">
@@ -513,7 +515,7 @@
         </div>
 
         <div class="calc-section" id="nutrition-calc">
-          <h3>栄養・フレイル（ACG Key Concepts 16・17）</h3>
+          <h3 id="sec-nutrition">栄養・フレイル（ACG Key Concepts 16・17）</h3>
           <p class="field-hint" style="margin:0 0 0.55rem">
             目標は<strong>理想体重（IBW）</strong>換算：30–35 kcal/kg/日、蛋白 1.25–1.5 g/kg/日。腹水・浮腫があれば実体重ではなく
             <strong>dry weight</strong> を入力してください。
@@ -541,7 +543,7 @@
         </div>
 
         <div class="calc-section" id="common-labs">
-          <h3>共通検査値（各スコアへ反映）</h3>
+          <h3 id="sec-labs">共通検査値（各スコアへ反映）</h3>
           <label class="row-check"
             ><input type="checkbox" id="lab-sync" checked /> 総ビリ・Alb・INR・Cr を MELD・CTP に自動コピー（オフにすると各欄を個別編集可）</label
           >
@@ -585,7 +587,7 @@
         </div>
 
         <div class="calc-section" id="fib4-calc">
-          <h3>FIB-4（自動計算）</h3>
+          <h3 id="sec-fib4">FIB-4（自動計算）</h3>
           <p style="margin:0 0 0.5rem;font-size:0.75rem;color:var(--text-muted);line-height:1.45">
             <strong>式</strong>：（年齢 × AST）/（血小板 [×10³/µL] × √ALT）。上の共通検査値を使用します。
           </p>
@@ -593,7 +595,7 @@
         </div>
 
         <div class="calc-section" id="meld-calc">
-          <h3>MELD / MELD-Na（検査値から算出）</h3>
+          <h3 id="sec-meld">MELD / MELD-Na（検査値から算出）</h3>
           <label class="row-check"><input type="checkbox" id="meld-auto" checked /> クレアチニン・ビリルビン・INR から MELD を自動計算する</label>
           <div class="form-grid">
             <div class="field">
@@ -626,7 +628,7 @@
         </div>
 
         <div class="calc-section" id="ctp-calc">
-          <h3>Child–Turcotte–Pugh（各項目から点数・分類）</h3>
+          <h3 id="sec-ctp">Child–Turcotte–Pugh（各項目から点数・分類）</h3>
           <label class="row-check"><input type="checkbox" id="ctp-auto" checked /> 以下の 5 項目から CTP を自動計算する</label>
           <div class="form-grid">
             <div class="field">
@@ -671,7 +673,7 @@
         </div>
 
         <div class="calc-section" id="vocal-calc">
-          <h3>VOCAL-Penn（公式計算機 → 結果の手入力）</h3>
+          <h3 id="sec-vocal">VOCAL-Penn（公式計算機 → 結果の手入力）</h3>
           <p class="vocal-doc" style="margin-top:0">
             <strong>考え方</strong>：VOCAL-Penn は肝硬変患者の<strong>術式カテゴリ・緊急度・全身状態（ASA）・検査値</strong>などを組み合わせ、<strong>術後死亡や失代償のリスクを確率で提示</strong>するツールです。MELD / CTP 単独では捉えにくい「その手術でのリスク」を整理するために〔ACG〕でも参照されます。予測は<strong>臨床判断の補助</strong>であり、決定の唯一の根拠にはしません。
           </p>
@@ -899,6 +901,7 @@
   <div id="lg-footer"></div>
 
   <script src="../assets/lounge.js"></script>
+  <script src="../assets/tocbar.js"></script>
   <script>
     (function () {
       document.title = "周術期肝硬変：周術期リスク補助ツール（ACG）";

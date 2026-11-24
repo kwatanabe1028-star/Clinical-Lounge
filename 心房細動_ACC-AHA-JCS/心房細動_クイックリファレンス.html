@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/lounge.css">
+  <link rel="stylesheet" href="../assets/tocbar.css">
 
   <style>
     /* ---------------------------------------------------------------
@@ -133,7 +134,7 @@
     .toc a:hover .n { color: inherit; }
 
     /* ---- セクション ---- */
-    .sec { margin: 0 0 64px; scroll-margin-top: calc(var(--lg-header-h) + 16px); }
+    .sec { margin: 0 0 64px; }
     .sec .lg-secttl { margin-bottom: 1.4rem; }
     .lede {
       margin: 0 0 1.2rem;
@@ -258,11 +259,11 @@
       gap: 24px;
       align-items: start;
     }
-    .calc__out { position: sticky; top: calc(var(--lg-header-h) + 16px); }
+    .calc__out { position: sticky; top: calc(var(--stick-h, var(--lg-header-h)) + 16px); }
     /* 結果の枠が画面より長いと、入力欄の下のほうで枠ごと押し上げられて先頭のスコアが見えなくなる。
        PC では枠を画面の高さに収め、中だけスクロールさせる（2026-11-23 心房細動ページの試走で発見） */
     @media (min-width: 901px) {
-      .calc__out { max-height: calc(100vh - var(--lg-header-h) - 32px); overflow-y: auto; overscroll-behavior: contain; }
+      .calc__out { max-height: calc(100vh - var(--stick-h, var(--lg-header-h)) - 32px); overflow-y: auto; overscroll-behavior: contain; }
     }
     @media (max-width: 900px) {
       .calc { grid-template-columns: minmax(0, 1fr); }
@@ -579,6 +580,7 @@
 </head>
 <body data-lg-root=".." data-lg-desk="循環器" data-lg-page="心房細動 クイックリファレンス">
 <div id="lg-header"></div>
+<nav class="tocbar" id="tocbar" aria-label="章へ移動"></nav>
 
 <main>
   <div class="container">
@@ -664,17 +666,17 @@
     </div>
 
     <ul class="toc" aria-label="目次">
-      <li><a href="#calc"><span class="n">0</span>脳梗塞リスクと DOAC の用量（計算）</a></li>
+      <li><a href="#calc" data-short="計算"><span class="n">0</span>脳梗塞リスクと DOAC の用量（計算）</a></li>
       <li><a href="#quick"><span class="n">1</span>早見表</a></li>
-      <li><a href="#eval"><span class="n">2</span>評価（初診）</a></li>
-      <li><a href="#acute"><span class="n">3</span>急性期と除細動</a></li>
-      <li><a href="#anticoag"><span class="n">4</span>抗凝固療法</a></li>
-      <li><a href="#rate"><span class="n">5</span>心拍数調節</a></li>
-      <li><a href="#rhythm"><span class="n">6</span>リズム調節</a></li>
-      <li><a href="#laao"><span class="n">7</span>左心耳閉鎖とアブレーション後の抗凝固</a></li>
-      <li><a href="#ahre"><span class="n">8</span>デバイスで見つかった AF</a></li>
-      <li><a href="#risk"><span class="n">9</span>危険因子の管理</a></li>
-      <li><a href="#flutter"><span class="n">10</span>心房粗動</a></li>
+      <li><a href="#eval" data-short="評価"><span class="n">2</span>評価（初診）</a></li>
+      <li><a href="#acute" data-short="急性期"><span class="n">3</span>急性期と除細動</a></li>
+      <li><a href="#anticoag" data-short="抗凝固"><span class="n">4</span>抗凝固療法</a></li>
+      <li><a href="#rate" data-short="心拍数"><span class="n">5</span>心拍数調節</a></li>
+      <li><a href="#rhythm" data-short="リズム"><span class="n">6</span>リズム調節</a></li>
+      <li><a href="#laao" data-short="左心耳"><span class="n">7</span>左心耳閉鎖とアブレーション後の抗凝固</a></li>
+      <li><a href="#ahre" data-short="デバイス"><span class="n">8</span>デバイスで見つかった AF</a></li>
+      <li><a href="#risk" data-short="危険因子"><span class="n">9</span>危険因子の管理</a></li>
+      <li><a href="#flutter" data-short="粗動"><span class="n">10</span>心房粗動</a></li>
       <li><a href="#ref"><span class="n">—</span>出典</a></li>
     </ul>
 
@@ -1309,6 +1311,7 @@ P: DOAC を開始（用量は添付文書）。不整脈専門外来へ紹介し
 <div class="scorebar" id="scorebar" aria-live="polite" aria-label="リスクスコアの自動計算結果"></div>
 <div id="lg-footer"></div>
 <script src="../assets/lounge.js"></script>
+<script src="../assets/tocbar.js"></script>
 <script>
 (function () {
   "use strict";
@@ -1636,7 +1639,7 @@ P: DOAC を開始（用量は添付文書）。不整脈専門外来へ紹介し
     var on = calcOn;
     if (on && pcMQ.matches) {
       var r = $("o-scores").getBoundingClientRect();
-      var hh = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--lg-header-h")) || 64;
+      var cs = getComputedStyle(document.documentElement), hh = parseFloat(cs.getPropertyValue("--stick-h")) || parseFloat(cs.getPropertyValue("--lg-header-h")) || 64;
       on = !(r.height > 0 && r.top >= hh && r.bottom <= window.innerHeight);
     }
     $("scorebar").classList.toggle("is-on", on);

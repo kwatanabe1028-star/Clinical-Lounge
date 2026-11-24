@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/lounge.css">
+  <link rel="stylesheet" href="../assets/tocbar.css">
 
   <style>
     /* ---------------------------------------------------------------
@@ -133,7 +134,7 @@
     .toc a:hover .n { color: inherit; }
 
     /* ---- セクション ---- */
-    .sec { margin: 0 0 64px; scroll-margin-top: calc(var(--lg-header-h) + 16px); }
+    .sec { margin: 0 0 64px; }
     .sec .lg-secttl { margin-bottom: 1.4rem; }
     .lede {
       margin: 0 0 1.2rem;
@@ -258,11 +259,11 @@
       gap: 24px;
       align-items: start;
     }
-    .calc__out { position: sticky; top: calc(var(--lg-header-h) + 16px); }
+    .calc__out { position: sticky; top: calc(var(--stick-h, var(--lg-header-h)) + 16px); }
     /* 結果の枠が画面より長いと、入力欄の下のほうで枠ごと押し上げられて先頭のスコアが見えなくなる。
        PC では枠を画面の高さに収め、中だけスクロールさせる（2026-11-23 心房細動ページの試走で発見） */
     @media (min-width: 901px) {
-      .calc__out { max-height: calc(100vh - var(--lg-header-h) - 32px); overflow-y: auto; overscroll-behavior: contain; }
+      .calc__out { max-height: calc(100vh - var(--stick-h, var(--lg-header-h)) - 32px); overflow-y: auto; overscroll-behavior: contain; }
     }
     @media (max-width: 900px) {
       .calc { grid-template-columns: minmax(0, 1fr); }
@@ -567,6 +568,7 @@
 </head>
 <body data-lg-root=".." data-lg-desk="循環器" data-lg-page="上室頻拍・WPW 症候群 クイックリファレンス">
 <div id="lg-header"></div>
+<nav class="tocbar" id="tocbar" aria-label="章へ移動"></nav>
 
 <main>
   <div class="container">
@@ -647,16 +649,16 @@
     </div>
 
     <ul class="toc" aria-label="目次">
-      <li><a href="#calc"><span class="n">0</span>次の一手の判定（判定の早見）</a></li>
+      <li><a href="#calc" data-short="判定"><span class="n">0</span>次の一手の判定（判定の早見）</a></li>
       <li><a href="#quick"><span class="n">1</span>早見表</a></li>
-      <li><a href="#eval"><span class="n">2</span>評価と鑑別</a></li>
-      <li><a href="#acute"><span class="n">3</span>急性期の停止</a></li>
-      <li><a href="#avnrt"><span class="n">4</span>房室結節リエントリー性頻拍（AVNRT）</a></li>
-      <li><a href="#wpw"><span class="n">5</span>WPW 症候群と副伝導路</a></li>
-      <li><a href="#at"><span class="n">6</span>心房頻拍・多源性心房頻拍・心房期外収縮</a></li>
-      <li><a href="#sinus"><span class="n">7</span>洞頻脈・不適切洞頻脈・POTS（鑑別）</a></li>
-      <li><a href="#special"><span class="n">8</span>特殊な集団（妊娠・心機能低下・先天性心疾患）</a></li>
-      <li><a href="#drugs"><span class="n">9</span>日本の薬の適応と用量</a></li>
+      <li><a href="#eval" data-short="鑑別"><span class="n">2</span>評価と鑑別</a></li>
+      <li><a href="#acute" data-short="急性期"><span class="n">3</span>急性期の停止</a></li>
+      <li><a href="#avnrt" data-short="AVNRT"><span class="n">4</span>房室結節リエントリー性頻拍（AVNRT）</a></li>
+      <li><a href="#wpw" data-short="WPW"><span class="n">5</span>WPW 症候群と副伝導路</a></li>
+      <li><a href="#at" data-short="心房頻拍"><span class="n">6</span>心房頻拍・多源性心房頻拍・心房期外収縮</a></li>
+      <li><a href="#sinus" data-short="洞頻脈/POTS"><span class="n">7</span>洞頻脈・不適切洞頻脈・POTS（鑑別）</a></li>
+      <li><a href="#special" data-short="特殊例"><span class="n">8</span>特殊な集団（妊娠・心機能低下・先天性心疾患）</a></li>
+      <li><a href="#drugs" data-short="薬"><span class="n">9</span>日本の薬の適応と用量</a></li>
       <li><a href="#ref"><span class="n">—</span>出典</a></li>
     </ul>
 
@@ -1238,6 +1240,7 @@ P: ワソラン錠 40 mg を1日3回（PSVT の効能あり）。
 <div class="scorebar" id="scorebar" aria-live="polite" aria-label="判定の早見の結果"></div>
 <div id="lg-footer"></div>
 <script src="../assets/lounge.js"></script>
+<script src="../assets/tocbar.js"></script>
 <script>
 (function () {
   "use strict";
@@ -1630,7 +1633,7 @@ P: ワソラン錠 40 mg を1日3回（PSVT の効能あり）。
     var on = calcOn;
     if (on && pcMQ.matches) {
       var r = $("o-scores").getBoundingClientRect();
-      var hh = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--lg-header-h")) || 64;
+      var cs = getComputedStyle(document.documentElement), hh = parseFloat(cs.getPropertyValue("--stick-h")) || parseFloat(cs.getPropertyValue("--lg-header-h")) || 64;
       on = !(r.height > 0 && r.top >= hh && r.bottom <= window.innerHeight);
     }
     $("scorebar").classList.toggle("is-on", on);

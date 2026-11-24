@@ -12,6 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@400;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/lounge.css" />
+  <link rel="stylesheet" href="../assets/tocbar.css" />
 
   <style>
     /* ---------------------------------------------------------------
@@ -742,6 +743,7 @@
 
 <body data-lg-root=".." data-lg-desk="予防医療・ヘルスメンテナンス" data-lg-page="ヘルスメンテナンス計画ツール">
   <div id="lg-header"></div>
+  <nav class="tocbar" id="tocbar" aria-label="章へ移動"></nav>
 
   <main>
     <div class="wrap">
@@ -764,14 +766,14 @@
       </div>
 
       <nav class="toc" aria-label="ページ内リンク">
-        <a href="#topics">各論から引く</a>
-        <a href="#actions">推奨アクション</a>
-        <a href="#bg">患者背景</a>
-        <a href="#labs">検査値</a>
-        <a href="#vac">接種歴</a>
-        <a href="#scr">検診歴・サーベイランス</a>
-        <a href="#cards">根拠カード</a>
-        <a href="#memo">カルテ用テキスト</a>
+        <a href="#topics" data-short="各論">各論から引く</a>
+        <a href="#actions" data-short="アクション">推奨アクション</a>
+        <a href="#bg" data-short="患者背景">患者背景</a>
+        <a href="#labs" data-short="検査値">検査値</a>
+        <a href="#vac" data-short="接種歴">接種歴</a>
+        <a href="#scr" data-short="検診歴">検診歴・サーベイランス</a>
+        <a href="#cards" data-short="根拠カード">根拠カード</a>
+        <a href="#memo" data-short="カルテ文">カルテ用テキスト</a>
         <a href="#ref">出典</a>
       </nav>
 
@@ -1431,6 +1433,7 @@
   <div id="lg-footer"></div>
 
   <script src="../assets/lounge.js"></script>
+  <script src="../assets/tocbar.js"></script>
   <script>
     /* =========================================================================
        予防医療・ヘルスメンテナンス計画ツール

@@ -1,0 +1,28 @@
+/* 固定の目次（tocbar）：章の一覧から tocbar.js が作る。どこまで読んでも章へ1回で飛べる。使い方は tocbar.js の先頭。
+   --hd-h＝ヘッダーの実測の高さ、--stick-h＝ヘッダー＋帯（JS が入れる。飛び先と固定の枠はこれを基準にする） ---- */
+html { scroll-padding-top: 0; } /* 帯の中を Tab で動いたときに画面が動かないよう、止まる位置は飛び先の側で決める */
+main [id], main a, main button, main input, main select, main textarea, main summary { scroll-margin-top: calc(var(--stick-h, var(--lg-header-h)) + 14px); }
+.tocbar { position: sticky; top: var(--hd-h, var(--lg-header-h)); z-index: 95; background: color-mix(in srgb, var(--lg-paper) 94%, transparent); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border-bottom: 1px solid var(--lg-line); }
+.tocbar:empty, .tocbar[hidden] { display: none; }
+.tocbar__row { display: flex; align-items: stretch; width: min(100% - 2rem, var(--lg-inner-lg)); margin-inline: auto; }
+.tocbar__btn { flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin: 0; padding: 0 12px 0 2px; font: inherit; font-size: .8125rem; font-weight: 700; color: var(--lg-ink); background: none; border: 0; border-right: 1px solid var(--lg-line); cursor: pointer; }
+.tocbar__btn i { display: block; width: 16px; height: 11px; border-top: 2px solid currentColor; border-bottom: 2px solid currentColor; position: relative; }
+.tocbar__btn i::before { content: ""; position: absolute; left: 0; right: 0; top: 2.5px; border-top: 2px solid currentColor; }
+.tocbar__chips { position: relative; flex: 1; min-width: 0; display: flex; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 24px), transparent); }
+.tocbar__chips::-webkit-scrollbar { display: none; }
+.tocbar__chips a { flex: none; display: flex; align-items: center; min-height: 44px; padding: 0 2px; text-decoration: none; }
+.tocbar__chips a:first-child { padding-left: 8px; }
+.tocbar__chips a:last-child { padding-right: 24px; }
+.tocbar__chips span { padding: 4px 10px; font-size: .8125rem; line-height: 1.5; white-space: nowrap; color: var(--lg-ink); border-radius: 999px; }
+.tocbar__chips a:hover span { background: var(--lg-paper2); }
+.tocbar__chips a.is-cur span { color: var(--lg-white); background: var(--lg-ink); }
+.tocbar a:focus-visible, .tocbar__btn:focus-visible { outline: 2px solid var(--lg-green); outline-offset: -2px; }
+.tocbar__panel { position: absolute; left: 0; right: 0; top: 100%; max-height: calc(100vh - var(--stick-h, 110px)); max-height: calc(100dvh - var(--stick-h, 110px)); overflow-y: auto; overscroll-behavior: contain; background: var(--lg-white); border-bottom: 1px solid var(--lg-line); box-shadow: 0 12px 24px rgb(28 53 48 / 14%); }
+.tocbar__panel[hidden] { display: none; }
+.tocbar__panel ul { width: min(100% - 2rem, var(--lg-inner-lg)); margin: 0 auto; padding: 6px 0 10px; list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); column-gap: 16px; }
+.tocbar__panel a { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 4px 8px; font-size: .875rem; line-height: 1.5; color: var(--lg-ink); text-decoration: none; border-bottom: 1px solid var(--lg-line-soft); }
+.tocbar__panel a:hover { background: var(--lg-paper2); }
+.tocbar__panel a.is-cur { font-weight: 700; background: color-mix(in srgb, var(--lg-green-lt) 12%, var(--lg-white)); }
+.tocbar__panel .n { flex: none; min-width: 1.6em; text-align: center; font-family: var(--lg-en); font-weight: 600; color: var(--lg-green-lt); }
+main [tabindex="-1"]:focus { outline: none; } /* 飛び先（章の全体）に枠を出さない */
+@media print { .tocbar { display: none !important; } }

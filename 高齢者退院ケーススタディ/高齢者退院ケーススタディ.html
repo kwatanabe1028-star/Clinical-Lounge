@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/lounge.css">
+<link rel="stylesheet" href="../assets/tocbar.css">
 
 <style>
 /* ---------------------------------------------------------------
@@ -1188,6 +1189,7 @@ main { overflow-x: clip; }
 
 <body data-lg-root=".." data-lg-desk="退院支援・地域連携" data-lg-page="高齢者退院ケーススタディ">
 <div id="lg-header"></div>
+<nav class="tocbar" id="tocbar" aria-label="章へ移動" data-items='[["ov-sec-1","導入","導入 — なぜこの型を学ぶのか"],["ov-sec-2","一次分岐","一次分岐 — [A]医療保険(治療・機能回復)と[B]介護保険(生活を支える)"],["ov-sec-3","Medical判定","医療の濃さ(Medical: HIGH / MID / LOW)の判定"],["ov-sec-4","ゴール","ゴールの2段階言語化(Goal:Now × Goal:Final)"],["ov-sec-5","施設","施設10カテゴリの比較"],["ov-sec-6","特殊条件","特殊条件 — 緩和・BPSD・透析"],["ov-sec-7","落とし穴","よくある落とし穴"],["ov-sec-8","まとめ","まとめ — では、症例で実践してみましょう"],["res-path","経路","退院ゴールロードマップ(通った経路)"],["res-log","記録","判断ポイントの記録"],["res-debrief","振り返り","症例全体の振り返り"],["res-src","資料","参照資料"]]'></nav>
 
 <!-- 進捗はヘッダー右へ。lounge.js が共通ヘッダー内に移動する -->
 <div class="hdr-progress" id="hdr-progress" data-lg-header-slot></div>
@@ -1270,18 +1272,18 @@ main { overflow-x: clip; }
       </div>
     </div>
 
-    <div class="section-header">◆ 退院ゴールロードマップ(通った経路)</div>
+    <div class="section-header" id="res-path">◆ 退院ゴールロードマップ(通った経路)</div>
     <div class="roadmap-flow" id="roadmap-flow"><!-- フローチャート(全体像・通った経路の強調) --></div>
 
-    <div class="section-header">◆ 判断ポイントの記録</div>
+    <div class="section-header" id="res-log">◆ 判断ポイントの記録</div>
     <div class="result-list" id="result-list"></div>
 
-    <div class="section-header">◆ 症例全体の振り返り</div>
+    <div class="section-header" id="res-debrief">◆ 症例全体の振り返り</div>
     <div class="panel">
       <div class="debrief-body" id="debrief-summary"></div>
     </div>
 
-    <div class="section-header">◆ 参照資料</div>
+    <div class="section-header" id="res-src">◆ 参照資料</div>
     <div class="panel">
       <ul class="sources-list" id="debrief-sources"></ul>
     </div>
@@ -1309,6 +1311,7 @@ main { overflow-x: clip; }
 <div id="lg-footer"></div>
 
 <script src="../assets/lounge.js"></script>
+<script src="../assets/tocbar.js"></script>
 
 <script>
 /* =====================================================================
@@ -1488,7 +1491,7 @@ function renderOverview() {
 
   // ----- 01: 導入 -----
   html += `
-    <section class="ov-section">
+    <section id="ov-sec-1" class="ov-section">
       <div class="ov-section-head">
         <span class="ov-section-num ov-mono">01</span>
         <div>
@@ -1501,7 +1504,7 @@ function renderOverview() {
 
   // ----- 02: 一次分岐[A]/[B] -----
   html += `
-    <section class="ov-section">
+    <section id="ov-sec-2" class="ov-section">
       <div class="ov-section-head">
         <span class="ov-section-num ov-mono">02</span>
         <div>
@@ -1519,7 +1522,7 @@ function renderOverview() {
 
   // ----- 03: Medical判定（vuln-cards風の3カード + 二軸マトリクス） -----
   html += `
-    <section class="ov-section">
+    <section id="ov-sec-3" class="ov-section">
       <div class="ov-section-head">
         <span class="ov-section-num ov-mono">03</span>
         <div>
@@ -1544,7 +1547,7 @@ function renderOverview() {
 
   // ----- 04: ゴールの2段階言語化（flow-steps風） -----
   html += `
-    <section class="ov-section">
+    <section id="ov-sec-4" class="ov-section">
       <div class="ov-section-head">
         <span class="ov-section-num ov-mono">04</span>
         <div>
@@ -1565,7 +1568,7 @@ function renderOverview() {
 
   // ----- 05: 施設10カテゴリ（infra-table風） -----
   html += `
-    <section class="ov-section">
+    <section id="ov-sec-5" class="ov-section">
       <div class="ov-section-head">
         <span class="ov-section-num ov-mono">05</span>
         <div>
@@ -1580,7 +1583,7 @@ function renderOverview() {
 
   // ----- 06: 特殊条件（vuln-cards風の3カード） -----
   html += `
-    <section class="ov-section">
+    <section id="ov-sec-6" class="ov-section">
       <div class="ov-section-head">
         <span class="ov-section-num ov-mono">06</span>
         <div>
@@ -1606,7 +1609,7 @@ function renderOverview() {
 
   // ----- 07: よくある落とし穴（speed-rows風） -----
   html += `
-    <section class="ov-section">
+    <section id="ov-sec-7" class="ov-section">
       <div class="ov-section-head">
         <span class="ov-section-num ov-mono">07</span>
         <div>
@@ -1627,7 +1630,7 @@ function renderOverview() {
 
   // ----- 08: まとめ + CTA（closing） -----
   html += `
-    <section class="ov-section ov-closing">
+    <section id="ov-sec-8" class="ov-section ov-closing">
       <div class="ov-section-head">
         <span class="ov-section-num ov-mono">08</span>
         <div>

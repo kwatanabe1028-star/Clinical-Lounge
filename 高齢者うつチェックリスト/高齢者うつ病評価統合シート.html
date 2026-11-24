@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/lounge.css">
+<link rel="stylesheet" href="../assets/tocbar.css">
 
 <style>
 /* ---------------------------------------------------------------
@@ -601,6 +602,7 @@
 
 <body data-lg-root=".." data-lg-desk="精神・老年医療（評価）" data-lg-page="高齢者うつ病評価統合シート">
 <div id="lg-header"></div>
+<nav class="tocbar" id="tocbar" aria-label="章へ移動" data-items='[["sec-1","導入","導入：最近の気分について"],["sec-2","気分","気分・意欲"],["sec-3","不安","不安・将来への見方"],["sec-4","身体","身体症状"],["sec-5","行動","行動・活動"],["sec-6","認知","認知・集中"],["sec-7","自己評価","自己評価・無価値感"],["sec-8","希死念慮","希死念慮・自傷念慮"],["dsm-be-section","基準B〜E","DSM-5 基準B〜E"],["score-panel","結果","評価の結果"]]'></nav>
 
 <!-- ヘッダー右に出す指標。lounge.js が共通ヘッダー内へ移動する -->
 <div data-lg-header-slot style="display:flex;align-items:center;gap:14px;">
@@ -642,7 +644,7 @@
   <!-- ==============================
        SECTION 1: 導入・一般的な気分
        ============================== -->
-  <div class="section-header">◆ 導入：最近の気分について</div>
+  <div class="section-header" id="sec-1">◆ 導入：最近の気分について</div>
   <p style="font-size:12px;color:color-mix(in srgb, var(--color-dark) 62%, var(--color-bg));margin-bottom:12px;padding:0 4px;">
     ※ 最初は答えやすい質問から入ります。「はい／いいえ」でお答えください。
   </p>
@@ -718,7 +720,7 @@
   <!-- ==============================
        SECTION 2: 気分・意欲（PHQ中心）
        ============================== -->
-  <div class="section-header">
+  <div class="section-header" id="sec-2">
     ◆ 気分・意欲
     <span class="timeframe-badge">以下は「この2週間」について</span>
   </div>
@@ -791,7 +793,7 @@
   <!-- ==============================
        SECTION 3: 不安・将来への見方
        ============================== -->
-  <div class="section-header">◆ 不安・将来への見方</div>
+  <div class="section-header" id="sec-3">◆ 不安・将来への見方</div>
 
   <!-- Q8: GDS6 -->
   <div class="q-card" id="card-8">
@@ -830,7 +832,7 @@
   <!-- ==============================
        SECTION 4: 身体症状
        ============================== -->
-  <div class="section-header">
+  <div class="section-header" id="sec-4">
     ◆ 身体症状
     <span class="timeframe-badge">この2週間</span>
   </div>
@@ -900,7 +902,7 @@
   <!-- ==============================
        SECTION 5: 行動・活動
        ============================== -->
-  <div class="section-header">◆ 行動・活動</div>
+  <div class="section-header" id="sec-5">◆ 行動・活動</div>
 
   <!-- Q13: GDS9 -->
   <div class="q-card" id="card-13">
@@ -942,7 +944,7 @@
   <!-- ==============================
        SECTION 6: 認知・集中
        ============================== -->
-  <div class="section-header">
+  <div class="section-header" id="sec-6">
     ◆ 認知・集中
     <span class="timeframe-badge">この2週間</span>
   </div>
@@ -987,7 +989,7 @@
   <!-- ==============================
        SECTION 7: 自己評価・無価値感
        ============================== -->
-  <div class="section-header">
+  <div class="section-header" id="sec-7">
     ◆ 自己評価・無価値感
     <span class="timeframe-badge">この2週間</span>
   </div>
@@ -1017,7 +1019,7 @@
   <!-- ==============================
        SECTION 8: 希死念慮（最後に）
        ============================== -->
-  <div class="section-header" style="background:color-mix(in srgb, var(--color-warning) 12%, var(--color-white));border-left-color:var(--color-warning);color:color-mix(in srgb, var(--color-warning) 28%, var(--color-dark));">
+  <div class="section-header" id="sec-8" style="background:color-mix(in srgb, var(--color-warning) 12%, var(--color-white));border-left-color:var(--color-warning);color:color-mix(in srgb, var(--color-warning) 28%, var(--color-dark));">
     ◆ 希死念慮・自傷念慮
     <span class="timeframe-badge" style="background:var(--color-warning);">この2週間</span>
   </div>
@@ -1206,6 +1208,7 @@
 <div id="lg-footer"></div>
 
 <script src="../assets/lounge.js"></script>
+<script src="../assets/tocbar.js"></script>
 
 <script>
 // ============================================================
