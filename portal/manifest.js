@@ -1,8 +1,8 @@
 /* Auto-generated from desks.json / news.json — do not edit by hand. */
 window.PORTAL_MANIFEST = {
-  "version": "1.10.0",
-  "updated": "2026-11-24",
-  "changelogNote": "2026-11-24 脂質異常症ページを学ぶページに作り替え（目標と次の一手を出す計算をやめた）。循環器デスクの説明を直した",
+  "version": "1.11.0",
+  "updated": "2026-11-25",
+  "changelogNote": "2026-11-25 心房細動ページを学ぶページに作り替え、心電図を追加（用量と抗凝固の判断を出す計算をやめた）",
   "desks": [
     {
       "id": "desk-cardiology",
@@ -84,7 +84,7 @@ window.PORTAL_MANIFEST = {
         {
           "href": "../心房細動_ACC-AHA-JCS/心房細動_クイックリファレンス.html",
           "title": "心房細動 クイックリファレンス（2023 ACC/AHA・JCS/JHRS 併記）",
-          "desc": "脳梗塞リスク（CHADS2・HELT-E2S2・CHA2DS2-VASc）と抗凝固の判断、DOAC の日本の用量（腎機能・体重・併用薬）を出す計算つき。急性期・心拍数とリズム・左心耳閉鎖・デバイス検出 AF・心房粗動の要点とカルテ記載例",
+          "desc": "実際の心電図（洞調律・心房細動・心房粗動）と、日米を並べた図で学ぶ。脳梗塞リスクのスコア（CHADS2・HELT-E2S2・CHA2DS2-VASc）と CrCl、DOAC の日本と米国の用量表、急性期・抗凝固・心拍数とリズム・危険因子・特別な場面の要点と、考えてみる問い3つ",
           "keywords": [
             "心房細動",
             "AF",
@@ -495,9 +495,16 @@ window.PORTAL_MANIFEST = {
   ]
 };
 window.PORTAL_NEWS = {
-  "version": "1.6.0",
-  "updated": "2026-11-24",
+  "version": "1.7.0",
+  "updated": "2026-11-25",
   "news": [
+    {
+      "date": "2026-11-25",
+      "category": "更新",
+      "title": "心房細動 クイックリファレンスを、心電図つきの学ぶページに作り替えました",
+      "body": "実際の心電図（洞調律・心房細動・心房粗動、12誘導）を載せ、全体の地図・急性期・抗凝固・リズムの4枚の図と、各章の「なぜ」と要点にまとめ直しました。抗凝固の判断と DOAC の用量を出す計算、カルテ記載例はやめ、DOAC の量は日本と米国を並べた表にしました。脳梗塞リスクのスコアと CrCl の計算は残しています。",
+      "href": "../心房細動_ACC-AHA-JCS/心房細動_クイックリファレンス.html"
+    },
     {
       "date": "2026-11-24",
       "category": "訂正",
