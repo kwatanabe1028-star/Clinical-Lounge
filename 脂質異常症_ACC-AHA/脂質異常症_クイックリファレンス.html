@@ -577,6 +577,15 @@
     .more > summary { padding: 12px 16px; font-size: .8125rem; font-weight: 700; color: var(--lg-ink); cursor: pointer; }
     .more > summary:hover { color: var(--lg-green); }
     .more > div { padding: 0 16px 14px; }
+    /* 表：スマホで列が縦書きのようにつぶれないように */
+    .tbl th:first-child, .tbl td:first-child { min-width: 6.5em; }
+    .tbl td { min-width: 7em; }
+    .tbl td.num { min-width: 0; }
+    @media (max-width: 640px) {   /* 見出しを折り返し、日米の列を1画面に並べる */
+      .tbl thead th { white-space: normal; }
+      .tbl th:first-child, .tbl td:first-child { min-width: 5em; }
+      .tbl th, .tbl td { padding-left: .45em; padding-right: .45em; }
+    }
     .qa > summary { font-weight: 500; line-height: 1.8; }
     .qa > summary b { margin-right: .5em; font-family: var(--lg-en); color: var(--lg-green); }
     .score { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px; align-items: start; }
@@ -790,7 +799,7 @@
         </ul>
       </div>
       <div class="box">
-        <h3><span class="en">US · JP</span>FH を疑う目印</h3>
+        <h3><span class="en">JP · US</span>FH を疑う目印</h3>
         <div class="tbl-wrap"><table class="tbl">
           <thead><tr><th></th><th>日本（成人FH GL）</th><th>米国（2026 ACC/AHA）</th></tr></thead>
           <tbody>
@@ -817,7 +826,7 @@
       <div class="lg-secttl"><span class="lg-secttl__en" lang="en">Primary prevention</span><span class="lg-secttl__jp">一次予防</span></div>
       <p class="why"><b>なぜ</b>まだ病気がない人では、薬の利益は<b>その人のリスクの大きさ</b>で決まります。だから先にリスクを測り、本人と相談して始めます。</p>
       <div class="box">
-        <h3><span class="en">US · JP</span>リスクと目標 LDL（mg/dL）</h3>
+        <h3><span class="en">JP · US</span>リスクと目標 LDL（mg/dL）</h3>
         <div class="tbl-wrap"><table class="tbl">
           <thead><tr><th>リスク</th><th>日本（動脈硬化性疾患予防GL 2022）</th><th>米国（2026 ACC/AHA）</th></tr></thead>
           <tbody>
@@ -842,7 +851,7 @@
       <div class="lg-secttl"><span class="lg-secttl__en" lang="en">Secondary prevention</span><span class="lg-secttl__jp">二次予防</span></div>
       <p class="why"><b>なぜ</b>一度起きた人は、また起きやすい。LDL を 1 mmol/L（約 39 mg/dL）下げるごとにリスクは約2割減り、もともと低い人でも同じように減ります。だから<b>「低いほどよい」</b>と考えます。</p>
       <div class="box">
-        <h3><span class="en">US · JP</span>日米の違い</h3>
+        <h3><span class="en">JP · US</span>日米の違い</h3>
         <div class="tbl-wrap"><table class="tbl">
           <thead><tr><th></th><th>日本（2022）</th><th>米国（2026）</th></tr></thead>
           <tbody>
@@ -876,7 +885,7 @@
         <p class="moa__to">肝臓の LDL 受容体が増える → 血液の LDL が下がる</p>
       </div>
       <div class="box">
-        <h3><span class="en">US · JP</span>スタチンの強さと日本の承認用量（1日量）</h3>
+        <h3><span class="en">JP · US</span>スタチンの強さと日本の承認用量（1日量）</h3>
         <div class="tbl-wrap"><table class="tbl">
           <thead><tr><th>薬</th><th>日本の承認用量</th><th>米国の高強度（50% 以上低下）</th><th>米国の中強度（30〜49%）</th></tr></thead>
           <tbody>
@@ -914,7 +923,7 @@
         </ul>
       </div>
       <div class="box">
-        <h3><span class="en">US · JP</span>肝機能はいつ測る？</h3>
+        <h3><span class="en">JP · US</span>肝機能はいつ測る？</h3>
         <div class="tbl-wrap"><table class="tbl">
           <thead><tr><th>日本（添付文書）</th><th>米国（2026）</th></tr></thead>
           <tbody><tr><td>多くの薬で定期的に測る<span class="sub">ロスバスタチン：開始・増量後12週まで原則月1回 → 半年に1回など／アトルバスタチン・ピタバスタチン：12週までに1回以上 → 半年に1回など</span></td><td>症状がなければ、定期の測定は勧めない</td></tr></tbody></table></div>

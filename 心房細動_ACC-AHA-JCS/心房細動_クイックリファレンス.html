@@ -581,6 +581,15 @@
     .more > summary { padding: 12px 16px; font-size: .8125rem; font-weight: 700; color: var(--lg-ink); cursor: pointer; }
     .more > summary:hover { color: var(--lg-green); }
     .more > div { padding: 0 16px 14px; }
+    /* 表：スマホで列が縦書きのようにつぶれないように */
+    .tbl th:first-child, .tbl td:first-child { min-width: 6.5em; }
+    .tbl td { min-width: 7em; }
+    .tbl td.num { min-width: 0; }
+    @media (max-width: 640px) {   /* 見出しを折り返し、日米の列を1画面に並べる */
+      .tbl thead th { white-space: normal; }
+      .tbl th:first-child, .tbl td:first-child { min-width: 5em; }
+      .tbl th, .tbl td { padding-left: .45em; padding-right: .45em; }
+    }
     .qa > summary { font-weight: 500; line-height: 1.8; }
     .qa > summary b { margin-right: .5em; font-family: var(--lg-en); color: var(--lg-green); }
     .score { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px; align-items: start; }
@@ -610,6 +619,41 @@
     .ecg__scroll .ecg__svg { min-width: 720px; }
     @media (min-width: 900px) { .ecg__row { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 20px; align-items: start; } .ecg__row--w { display: block; } }
     @media (max-width: 640px) { .ecg { padding: 14px 12px; } .ecg__st .ecg__svg text.lead { font-size: 4.6px; } .ecg__st .ecg__svg text.rr, .ecg__st .ecg__svg text.mk { font-size: 4.4px; } }
+    /* ---- 模式図（通り道・回路・しくみ） ---- */
+    .dgm { margin: 16px 28px 4px; padding: 16px 18px 14px; border: 1px solid var(--lg-line-soft); border-radius: var(--lg-r-sm); }
+    .dgm figcaption b { display: block; font-family: var(--lg-mincho); font-size: .9375rem; color: var(--lg-ink); letter-spacing: .04em; }
+    .dgm figcaption span { font-size: .6875rem; color: var(--lg-text-sub); }
+    .dgm__l { display: grid; grid-template-columns: repeat(var(--dgm-n, 4), minmax(0, 1fr)); gap: 16px; margin: 12px 0 0; padding: 0; list-style: none; }
+    .dgm__c { display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; }
+    .dgm__svg { display: block; width: 100%; max-width: 190px; height: auto; }
+    .dgm__c b { font-family: var(--lg-mincho); font-size: .9375rem; line-height: 1.4; color: var(--lg-ink); }
+    .dgm__c span { font-size: .75rem; line-height: 1.6; color: var(--lg-text); }
+    .dgm__c small { font-size: .6875rem; color: var(--lg-text-sub); }
+    .dgm__chip { margin: 4px 0 2px; padding: 2px 12px; font-style: normal; font-weight: 700; font-size: .75rem; color: var(--lg-ink); background: color-mix(in srgb, var(--lg-green-lt) 16%, var(--lg-white)); border-radius: 999px; }
+    .dgm__chip::before { content: attr(data-pre); font-weight: 500; }
+    .dgm__chip.is-hot { color: var(--lg-white); background: var(--lg-ink); }
+    .dgm__svg .ch { fill: var(--lg-paper); stroke: var(--lg-line); stroke-width: 1.2; }
+    .dgm__svg .av { fill: #fff; stroke: var(--lg-green-lt); stroke-width: 1.2; }
+    .dgm__svg .ap { fill: color-mix(in srgb, var(--lg-amber) 30%, #fff); stroke: var(--lg-amber); stroke-width: 1; }
+    .dgm__svg .go { fill: none; stroke: var(--lg-green); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+    .dgm__svg .thin { fill: none; stroke: var(--lg-text-faint); stroke-width: 1.4; stroke-linecap: round; }
+    .dgm__svg .fo { fill: var(--lg-green); }
+    .dgm__svg .ri { fill: none; stroke: var(--lg-green); stroke-width: .9; opacity: .6; }
+    .dgm__svg .fib { fill: none; stroke: var(--lg-green); stroke-width: 1.4; }
+    .dgm__svg text { font-family: var(--lg-gothic); font-size: 10.5px; letter-spacing: 0; fill: var(--lg-text-sub); }
+    .dgm__svg text.e, .dgm__svg text.e2 { text-anchor: end; }
+    .dgm__svg .blk { fill: none; stroke: var(--lg-ink); stroke-width: 3; stroke-linecap: round; }
+    @media (max-width: 760px) { .dgm { margin: 16px 16px 4px; padding: 14px 12px; } .dgm__l { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px; } }
+    @media (max-width: 760px) {
+      .dgm__l--3 { grid-template-columns: minmax(0, 1fr); }
+      .dgm__l--3 .dgm__c { display: grid; grid-template-columns: 140px minmax(0, 1fr); column-gap: 14px; align-content: center; justify-items: start; text-align: left; }
+      .dgm__l--3 .dgm__svg { grid-row: 1 / span 4; }
+    }
+    .dgm__svg .clot { fill: var(--lg-ink); }
+    .dgm__c small a { color: var(--lg-blue); white-space: nowrap; }
+    #dgmAfSteps .dgm__chip { white-space: nowrap; }
+    .sec > .kp1__charts .kp1__fig { background: var(--lg-white); }
+    .sec > .kp1__charts { padding: 16px 0 0; }
   </style>
 </head>
 <body data-lg-root=".." data-lg-desk="循環器" data-lg-page="心房細動 クイックリファレンス">
@@ -643,33 +687,7 @@
         <li><span class="kp1__no">3</span><b>危険因子を減らす</b><span>高血圧・肥満・飲酒などを治すと、再発と症状が減る（睡眠時無呼吸は、日本は治療を考慮、米国は洞調律を保つ効果が不確か）。日米とも治療の土台</span></li>
       </ol>
 
-      <div class="kp1__charts">
-        <figure class="kp1__fig">
-          <figcaption><b>HELT-E<sub>2</sub>S<sub>2</sub> が2点を超えると、脳梗塞は急に増える</b><span>日本の5レジストリ・抗凝固なしの群（2024 FU 図8）。100人年あたりの発症数</span></figcaption>
-          <div class="hbar" role="img" aria-label="HELT-E2S2 スコア別の脳梗塞発症率（抗凝固なし、100人年あたり）：0点 0.57、1点 0.73、2点 1.37、3点 2.59、4点 3.96、5点以上 5.82">
-            <div class="hbar__row" title="0点"><span class="hbar__lab">0点</span><span class="hbar__track"><span class="hbar__bar s1" style="width:9.8%"></span></span><span class="hbar__val">0.57</span></div>
-            <div class="hbar__row" title="1点"><span class="hbar__lab">1点</span><span class="hbar__track"><span class="hbar__bar s1" style="width:12.5%"></span></span><span class="hbar__val">0.73</span></div>
-            <div class="hbar__row" title="2点"><span class="hbar__lab">2点</span><span class="hbar__track"><span class="hbar__bar s2" style="width:23.5%"></span></span><span class="hbar__val">1.37</span></div>
-            <div class="hbar__row" title="3点"><span class="hbar__lab">3点</span><span class="hbar__track"><span class="hbar__bar s2" style="width:44.5%"></span></span><span class="hbar__val">2.59</span></div>
-            <div class="hbar__row" title="4点"><span class="hbar__lab">4点</span><span class="hbar__track"><span class="hbar__bar s3" style="width:68%"></span></span><span class="hbar__val">3.96</span></div>
-            <div class="hbar__row" title="5点以上"><span class="hbar__lab">5点以上</span><span class="hbar__track"><span class="hbar__bar s3" style="width:100%"></span></span><span class="hbar__val">5.82</span></div>
-          </div>
-          <p class="kp1__note">抗凝固を始める基準は日本でも CHADS<sub>2</sub> 1点以上のまま。HELT-E<sub>2</sub>S<sub>2</sub> の何点から始めるかは決まっていない → <a href="#score">2章</a></p>
-        </figure>
-
-        <figure class="kp1__fig">
-          <figcaption><b>日本人の脳梗塞は、欧米の推定より少ない</b><span>日本の3レジストリ・抗凝固なし（2020 薬物 GL 図11B）。CHADS<sub>2</sub> 別の年間発症率（%）</span></figcaption>
-          <div class="hbar" role="img" aria-label="CHADS2 スコア別の年間脳梗塞発症率（日本、抗凝固なし）：0点 0.5%、1点 0.9%、2点 1.5%、3点 2.7%、4点 6.1%、5点 3.9%、6点 7.2%">
-            <div class="hbar__row" title="0点"><span class="hbar__lab">0点</span><span class="hbar__track"><span class="hbar__bar s1" style="width:6.9%"></span></span><span class="hbar__val">0.5%</span></div>
-            <div class="hbar__row" title="1点"><span class="hbar__lab">1点</span><span class="hbar__track"><span class="hbar__bar s1" style="width:12.5%"></span></span><span class="hbar__val">0.9%</span></div>
-            <div class="hbar__row" title="2点"><span class="hbar__lab">2点</span><span class="hbar__track"><span class="hbar__bar s2" style="width:20.8%"></span></span><span class="hbar__val">1.5%</span></div>
-            <div class="hbar__row" title="3点"><span class="hbar__lab">3点</span><span class="hbar__track"><span class="hbar__bar s2" style="width:37.5%"></span></span><span class="hbar__val">2.7%</span></div>
-            <div class="hbar__row" title="4点"><span class="hbar__lab">4点</span><span class="hbar__track"><span class="hbar__bar s3" style="width:84.7%"></span></span><span class="hbar__val">6.1%</span></div>
-            <div class="hbar__row" title="5点"><span class="hbar__lab">5点</span><span class="hbar__track"><span class="hbar__bar s3" style="width:54.2%"></span></span><span class="hbar__val">3.9%</span></div>
-            <div class="hbar__row" title="6点"><span class="hbar__lab">6点</span><span class="hbar__track"><span class="hbar__bar s3" style="width:100%"></span></span><span class="hbar__val">7.2%</span></div>
-          </div>
-        </figure>
-      </div>
+      <figure class="dgm" id="dgmAfSteps"><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><marker id="dgmA" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto"><path d="M0 0L10 5L0 10z" fill="#286858"/></marker><marker id="dgmAs" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#93A09A"/></marker></defs></svg><figcaption><b>心房で起きていることが、3つのステップの理由になる</b><span>模式図（実際の心電図は3章）。縮尺は実際と違う。番号は上の3ステップ</span></figcaption><ol class="dgm__l dgm__l--3" style="--dgm-n:3"><li class="dgm__c"><svg class="dgm__svg" viewBox="0 0 160 174" role="img" aria-label="脳梗塞の模式図。震える心房の左心耳で血がよどんで血栓ができ、脳へ飛ぶ"><g transform="translate(0,16)"><rect class="ch" x="12" y="10" width="136" height="56" rx="16"/><path class="ch" d="M12 88h136v22c0 26-34 40-68 40s-68-14-68-40z"/><rect class="av" x="72" y="64" width="16" height="26" rx="8"/><text x="20" y="24">心房</text><path class="fib" d="M22 40q5-9 10 0t10 0 10 0 10 0 10 0 10 0"/><path class="fib" d="M28 53q5-8 10 0t10 0 10 0 10 0 10 0 10 0"/><circle class="clot" cx="124" cy="36" r="6"/><path class="go" d="M124 28V-6" marker-end="url(#dgmA)"/><text x="114" y="40" class="e">血栓</text><text x="118" y="0" class="e">脳へ</text></g></svg><b>① 脳梗塞</b><span>左心耳に血がよどみ、血栓が脳へ飛ぶ</span><em class="dgm__chip" data-pre="対策：">抗凝固</em><small>多くは点数で決める（弁膜症性・肥大型心筋症は別。<a href="#score">2章</a>・<a href="#anticoag">5章</a>）</small></li><li class="dgm__c"><svg class="dgm__svg" viewBox="0 0 160 174" role="img" aria-label="不規則な脈の模式図。心房の震えが房室結節を不規則に通り、心室がばらばらに打つ。速くなることが多いが、遅いこともある"><g transform="translate(0,16)"><rect class="ch" x="12" y="10" width="136" height="56" rx="16"/><path class="ch" d="M12 88h136v22c0 26-34 40-68 40s-68-14-68-40z"/><rect class="av" x="72" y="64" width="16" height="26" rx="8"/><text x="20" y="24">心房</text><path class="fib" d="M22 40q5-9 10 0t10 0 10 0 10 0 10 0 10 0"/><path class="fib" d="M28 53q5-8 10 0t10 0 10 0 10 0 10 0 10 0"/><path class="thin" d="M16 63L68 77" marker-end="url(#dgmAs)"/><path class="thin" d="M124 48L92 72" marker-end="url(#dgmAs)"/><path class="go" d="M80 92V120" marker-end="url(#dgmA)"/><text x="98" y="86">房室結節</text></g></svg><b>② 不規則な脈</b><span>震えが房室結節を不規則に通り、心室がばらばらに打つ。速くなることが多い（遅いこともある）</span><em class="dgm__chip" data-pre="対策：">心拍数・リズム</em><small><a href="#rate">6章</a>・<a href="#rhythm">7章</a></small></li><li class="dgm__c"><svg class="dgm__svg" viewBox="0 0 160 174" role="img" aria-label="危険因子の模式図。高血圧・肥満・飲酒などで心房が傷み、心房細動が起きやすく、続きやすくなる"><text x="20" y="10">高血圧・肥満・飲酒</text><g transform="translate(0,16)"><rect class="ch" x="12" y="10" width="136" height="56" rx="16"/><path class="ch" d="M12 88h136v22c0 26-34 40-68 40s-68-14-68-40z"/><rect class="av" x="72" y="64" width="16" height="26" rx="8"/><text x="20" y="24">心房</text><path class="fib" d="M22 40q5-9 10 0t10 0 10 0 10 0 10 0 10 0"/><path class="fib" d="M28 53q5-8 10 0t10 0 10 0 10 0 10 0 10 0"/><path class="thin" d="M78 -2V20" marker-end="url(#dgmAs)"/><path class="thin" d="M104 -2V20" marker-end="url(#dgmAs)"/><path class="thin" d="M130 -2V20" marker-end="url(#dgmAs)"/></g></svg><b>③ 心房が傷む</b><span>高血圧・肥満・飲酒などで心房が傷み、AF が起きやすく、続きやすくなる</span><em class="dgm__chip" data-pre="対策：">危険因子を治す</em><small>再発と症状が減る（<a href="#risk">8章</a>）</small></li></ol></figure>
 
       <div class="kp1__traps">
         <p class="kp1__traps-ttl">落とし穴 3つ</p>
@@ -744,6 +762,33 @@
           <dl class="res"><dt>CrCl（Cockcroft-Gault、実体重、女性 ×0.85）</dt><dd id="crcl-out"></dd></dl>
           <p class="derived">CHADS<sub>2</sub> と HELT-E<sub>2</sub>S<sub>2</sub> の発症率は、日本のレジストリで抗凝固をしていない人の値。CHA<sub>2</sub>DS<sub>2</sub>-VASc の区分は 2023 GL のもの（男性2・女性3点以上が年 2% 以上）。集めた人が違うので、スコアどうしで比べません。</p>
         </div>
+      </div>
+      <div class="kp1__charts">
+        <figure class="kp1__fig">
+          <figcaption><b>HELT-E<sub>2</sub>S<sub>2</sub> が2点を超えると、脳梗塞は急に増える</b><span>日本の5レジストリ・抗凝固なしの群（2024 FU 図8）。100人年あたりの発症数</span></figcaption>
+          <div class="hbar" role="img" aria-label="HELT-E2S2 スコア別の脳梗塞発症率（抗凝固なし、100人年あたり）：0点 0.57、1点 0.73、2点 1.37、3点 2.59、4点 3.96、5点以上 5.82">
+            <div class="hbar__row" title="0点"><span class="hbar__lab">0点</span><span class="hbar__track"><span class="hbar__bar s1" style="width:9.8%"></span></span><span class="hbar__val">0.57</span></div>
+            <div class="hbar__row" title="1点"><span class="hbar__lab">1点</span><span class="hbar__track"><span class="hbar__bar s1" style="width:12.5%"></span></span><span class="hbar__val">0.73</span></div>
+            <div class="hbar__row" title="2点"><span class="hbar__lab">2点</span><span class="hbar__track"><span class="hbar__bar s2" style="width:23.5%"></span></span><span class="hbar__val">1.37</span></div>
+            <div class="hbar__row" title="3点"><span class="hbar__lab">3点</span><span class="hbar__track"><span class="hbar__bar s2" style="width:44.5%"></span></span><span class="hbar__val">2.59</span></div>
+            <div class="hbar__row" title="4点"><span class="hbar__lab">4点</span><span class="hbar__track"><span class="hbar__bar s3" style="width:68%"></span></span><span class="hbar__val">3.96</span></div>
+            <div class="hbar__row" title="5点以上"><span class="hbar__lab">5点以上</span><span class="hbar__track"><span class="hbar__bar s3" style="width:100%"></span></span><span class="hbar__val">5.82</span></div>
+          </div>
+          <p class="kp1__note">抗凝固を始める基準は日本でも CHADS<sub>2</sub> 1点以上のまま。HELT-E<sub>2</sub>S<sub>2</sub> の何点から始めるかは決まっていない</p>
+        </figure>
+
+        <figure class="kp1__fig">
+          <figcaption><b>日本人の脳梗塞は、欧米の推定より少ない</b><span>日本の3レジストリ・抗凝固なし（2020 薬物 GL 図11B）。CHADS<sub>2</sub> 別の年間発症率（%）</span></figcaption>
+          <div class="hbar" role="img" aria-label="CHADS2 スコア別の年間脳梗塞発症率（日本、抗凝固なし）：0点 0.5%、1点 0.9%、2点 1.5%、3点 2.7%、4点 6.1%、5点 3.9%、6点 7.2%">
+            <div class="hbar__row" title="0点"><span class="hbar__lab">0点</span><span class="hbar__track"><span class="hbar__bar s1" style="width:6.9%"></span></span><span class="hbar__val">0.5%</span></div>
+            <div class="hbar__row" title="1点"><span class="hbar__lab">1点</span><span class="hbar__track"><span class="hbar__bar s1" style="width:12.5%"></span></span><span class="hbar__val">0.9%</span></div>
+            <div class="hbar__row" title="2点"><span class="hbar__lab">2点</span><span class="hbar__track"><span class="hbar__bar s2" style="width:20.8%"></span></span><span class="hbar__val">1.5%</span></div>
+            <div class="hbar__row" title="3点"><span class="hbar__lab">3点</span><span class="hbar__track"><span class="hbar__bar s2" style="width:37.5%"></span></span><span class="hbar__val">2.7%</span></div>
+            <div class="hbar__row" title="4点"><span class="hbar__lab">4点</span><span class="hbar__track"><span class="hbar__bar s3" style="width:84.7%"></span></span><span class="hbar__val">6.1%</span></div>
+            <div class="hbar__row" title="5点"><span class="hbar__lab">5点</span><span class="hbar__track"><span class="hbar__bar s3" style="width:54.2%"></span></span><span class="hbar__val">3.9%</span></div>
+            <div class="hbar__row" title="6点"><span class="hbar__lab">6点</span><span class="hbar__track"><span class="hbar__bar s3" style="width:100%"></span></span><span class="hbar__val">7.2%</span></div>
+          </div>
+        </figure>
       </div>
       <details class="more" style="margin-top:14px"><summary>くわしく：点数の表と、日本が CHADS<sub>2</sub> を使い続ける理由</summary><div>
         <div class="tbl-wrap"><table class="tbl">

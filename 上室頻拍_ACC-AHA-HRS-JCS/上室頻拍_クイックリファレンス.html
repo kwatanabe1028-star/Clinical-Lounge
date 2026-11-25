@@ -581,6 +581,15 @@
     .more > summary { padding: 12px 16px; font-size: .8125rem; font-weight: 700; color: var(--lg-ink); cursor: pointer; }
     .more > summary:hover { color: var(--lg-green); }
     .more > div { padding: 0 16px 14px; }
+    /* 表：スマホで列が縦書きのようにつぶれないように */
+    .tbl th:first-child, .tbl td:first-child { min-width: 6.5em; }
+    .tbl td { min-width: 7em; }
+    .tbl td.num { min-width: 0; }
+    @media (max-width: 640px) {   /* 見出しを折り返し、日米の列を1画面に並べる */
+      .tbl thead th { white-space: normal; }
+      .tbl th:first-child, .tbl td:first-child { min-width: 5em; }
+      .tbl th, .tbl td { padding-left: .45em; padding-right: .45em; }
+    }
     .qa > summary { font-weight: 500; line-height: 1.8; }
     .qa > summary b { margin-right: .5em; font-family: var(--lg-en); color: var(--lg-green); }
     .score { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px; align-items: start; }
