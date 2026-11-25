@@ -40,6 +40,7 @@ curl -s https://kwatanabe1028-star.github.io/Clinical-Lounge/portal/desks.json |
 
 - `assets/lounge.css` — 配色・書体のトークン、共通部品（ヘッダー / パンくず / 見出し / パネル / カード / ボタン / 表 / 入力欄 / バッジ / フッター）
 - `assets/lounge.js` — 共通ヘッダーとフッターの生成、スクロール演出
+- `assets/tocbar.css`・`assets/tocbar.js` — 固定の目次（スクロールしても触れる目次バー）。目次のあるページだけが読み込む
 
 新しいツールを足すときは、既存ツールの `<head>`（Google Fonts ＋ `../assets/lounge.css`）と `<body>` の骨格をそのまま真似るのが早道です。ページ側は `<body>` の data 属性で位置を伝えます。
 
