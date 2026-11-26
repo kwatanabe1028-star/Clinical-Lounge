@@ -1,8 +1,8 @@
 /* Auto-generated from desks.json / news.json — do not edit by hand. */
 window.PORTAL_MANIFEST = {
-  "version": "1.12.0",
-  "updated": "2026-11-25",
-  "changelogNote": "2026-11-25 上室頻拍・WPW ページを学ぶページに作り替え、通り道の模式図と心電図を追加（判定の早見をやめた）",
+  "version": "1.13.0",
+  "updated": "2026-11-26",
+  "changelogNote": "2026-11-26 集中治療デスクを追加（姉妹サイト Critical Lounge への入口）",
   "desks": [
     {
       "id": "desk-cardiology",
@@ -491,13 +491,60 @@ window.PORTAL_MANIFEST = {
           ]
         }
       ]
+    },
+    {
+      "id": "desk-critical-care",
+      "roleLabel": "Clinical desk",
+      "nameEn": "Critical Care",
+      "name": "集中治療",
+      "lede": "集中治療は姉妹サイト Critical Lounge にまとめています。呼吸・循環・神経のデスクで学ぶ。",
+      "keywords": [
+        "集中治療",
+        "ICU",
+        "クリティカルケア",
+        "Critical Lounge",
+        "クリティカルラウンジ",
+        "人工呼吸",
+        "人工呼吸器",
+        "ARDS",
+        "肺保護",
+        "肺保護換気",
+        "一回換気量",
+        "プラトー圧",
+        "driving pressure",
+        "メカニカルパワー",
+        "PEEP",
+        "酸素目標",
+        "SpO2",
+        "Less is more"
+      ],
+      "tools": [
+        {
+          "href": "https://kwatanabe1028-star.github.io/Critical-Lounge/portal/index.html",
+          "title": "Critical Lounge（集中治療の姉妹サイト）",
+          "desc": "集中治療を、臓器ごとのデスク（呼吸・循環・神経）で学ぶ姉妹サイト。1本目は呼吸デスクの「肺保護換気（Less is more とガイドライン）」",
+          "keywords": [
+            "姉妹サイト",
+            "肺保護換気",
+            "PEEP",
+            "ARDS"
+          ]
+        }
+      ]
     }
   ]
 };
 window.PORTAL_NEWS = {
-  "version": "1.8.0",
-  "updated": "2026-11-25",
+  "version": "1.9.0",
+  "updated": "2026-11-26",
   "news": [
+    {
+      "date": "2026-11-26",
+      "category": "サイト",
+      "title": "集中治療デスクを追加し、姉妹サイト Critical Lounge を開設しました",
+      "body": "集中治療は、姉妹サイト Critical Lounge に呼吸・循環・神経のデスクとしてまとめていきます。1本目は呼吸デスクの「肺保護換気（Less is more とガイドライン）」です。作りは Clinical Lounge と同じで、色だけ深い青にしています。",
+      "href": "https://kwatanabe1028-star.github.io/Critical-Lounge/portal/index.html"
+    },
     {
       "date": "2026-11-25",
       "category": "更新",

@@ -78,6 +78,14 @@
       nav.appendChild(back);
     }
 
+    // 姉妹サイトへのリンク（Clinical Lounge ⇄ Critical Lounge）。どのページのヘッダーにも出す
+    var sister = el("a", "lg-sister", "Critical Lounge ↗");
+    sister.href = "https://kwatanabe1028-star.github.io/Critical-Lounge/portal/index.html";
+    sister.title = "集中治療の姉妹サイト Critical Lounge へ";
+    sister.setAttribute("lang", "en");
+    sister.setAttribute("data-lg-nav", "sister");
+    nav.appendChild(sister);
+
     inner.appendChild(nav);
     header.appendChild(inner);
     return header;
@@ -131,6 +139,12 @@
         ["ベンゾジアゼピン系薬剤の換算/benzo_calculator.html", "ベンゾジアゼピン換算"],
         ["高齢者うつチェックリスト/高齢者うつ病評価統合シート.html", "高齢者うつ病評価統合シート"]
       ]
+    },
+    {
+      en: "Sister Site",
+      items: [
+        ["https://kwatanabe1028-star.github.io/Critical-Lounge/portal/index.html", "Critical Lounge（集中治療を学ぶ）"]
+      ]
     }
   ];
 
@@ -156,7 +170,7 @@
       col.items.forEach(function (item) {
         var li = el("li");
         var a = el("a", null, item[1]);
-        a.href = url(item[0]);
+        a.href = /^https?:/.test(item[0]) ? item[0] : url(item[0]);
         li.appendChild(a);
         ul.appendChild(li);
       });

@@ -1,7 +1,14 @@
 {
-  "version": "1.8.0",
-  "updated": "2026-11-25",
+  "version": "1.9.0",
+  "updated": "2026-11-26",
   "news": [
+    {
+      "date": "2026-11-26",
+      "category": "サイト",
+      "title": "集中治療デスクを追加し、姉妹サイト Critical Lounge を開設しました",
+      "body": "集中治療は、姉妹サイト Critical Lounge に呼吸・循環・神経のデスクとしてまとめていきます。1本目は呼吸デスクの「肺保護換気（Less is more とガイドライン）」です。作りは Clinical Lounge と同じで、色だけ深い青にしています。",
+      "href": "https://kwatanabe1028-star.github.io/Critical-Lounge/portal/index.html"
+    },
     {
       "date": "2026-11-25",
       "category": "更新",

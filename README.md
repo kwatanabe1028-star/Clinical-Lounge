@@ -34,6 +34,12 @@ curl -s https://kwatanabe1028-star.github.io/Clinical-Lounge/portal/desks.json |
 - ワークフローの `permissions:` にある `pages: write` と `id-token: write` を消さないこと。
   リポジトリ既定のワークフロー権限が `read` のため、ここで明示しないとデプロイが権限エラーで落ちます。
 
+## 姉妹サイト（Critical Lounge）
+
+集中治療は姉妹サイト Critical Lounge（`https://kwatanabe1028-star.github.io/Critical-Lounge/`、ローカルは隣の `クリティカルラウンジ/`）にまとめる。
+`assets/lounge.js` のヘッダーとフッターに相互リンク（`a.lg-sister`・フッターの Sister Site）がある。ポータルの「集中治療」デスクも入口。
+共通ファイルを直したら、色・名前以外の差分を姉妹サイトの `assets/` にも写す。
+
 ## デザイン（共通）
 
 見た目は **`assets/lounge.css` と `assets/lounge.js` の2本**に集約しています。ポータルも各ツールも、この2本を読み込んだうえでページ固有の CSS だけを自前の `<style>` に持ちます。
