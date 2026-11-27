@@ -852,3 +852,19 @@ input[type="number"].lg-input {
   .lg-panel, .lg-card { box-shadow: none; border-color: #ccc; }
   .lg-reveal { opacity: 1 !important; transform: none !important; }
 }
+
+/* --------------------------------------------------------------------------
+   姉妹サイトへの切り替えボタン：行き先のサイトの色をまとう（Clinical → 深い青の Critical）
+   -------------------------------------------------------------------------- */
+.lg-header__nav a.lg-sister {
+  display: inline-flex; align-items: center; gap: .5em;
+  padding: .5em 1.1em .5em .95em;
+  font-weight: 700; letter-spacing: .08em;
+  color: #FFFFFF; background: #1A4178;
+  border-radius: 999px;
+  box-shadow: 0 2px 10px rgb(26 65 120 / 28%);
+  transition: background var(--lg-ease), box-shadow var(--lg-ease);
+}
+.lg-header__nav a.lg-sister::before { content: ""; width: .5em; height: .5em; border-radius: 50%; background: #A9C6EE; }
+.lg-header__nav a.lg-sister::after { display: none; }
+.lg-header__nav a.lg-sister:hover { color: #FFFFFF; background: #0F2240; box-shadow: 0 4px 16px rgb(15 34 64 / 34%); }
